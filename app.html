@@ -1,0 +1,73 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+	<title>Rhapsody</title> 
+
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+	<script type="text/javascript" src="js/sb-1.4.1.js"></script>
+
+    <script type="text/javascript">
+
+    // call 'setupSpacebrew' function on pageload
+		$(window).on("load", setupSpacebrew);
+
+		// Spacebrew Variables/Objects
+		var sb, values = {}, rhcpTracks = ["drums1", "drums2", "drums3", "guitar", "rhythm", "vocals"];
+
+		// called on pageload
+		function setupSpacebrew (){
+			console.log("Setting up spacebrew connection");
+			sb = new Spacebrew.Client();
+			sb.name("Rhapsody");
+			sb.description("Web->Processing");
+            
+			// configure the publication and subscription feeds
+            for(var i = 0; i < rhcpTracks.length; i++){
+                sb.addPublish(rhcpTracks[i], "range", "0");
+            }
+            sb.addPublish("buttonPress", "boolean", "false");
+            
+			// override Spacebrew events - this is how you catch events coming from Spacebrew
+			sb.onOpen = onOpen;
+			// connect to spacbrew
+			sb.connect();
+            setupUI();
+		};
+
+		// called when Spacebrew connection is established
+		function onOpen() {
+			$("#name").html("Connected as <strong>" + sb.name() + "</strong>.");
+		}
+
+		// called on init
+		function setupUI() {
+			console.log("Setting up the UI listeners");
+			// when the slider state changes it sends a message to spacebrew
+			$(".slider").on("input", function(e) {
+				if (values[e.target.id] != e.target.value) {
+					sb.send(e.target.id, "range", e.target.value);
+					values[e.target.id] = e.target.value;
+				}
+			});
+            $("#buttonMsg").on("mousedown", function(e) {
+				e.preventDefault();
+	      	    console.log("[onButtonPress] button has been pressed"); 
+	            sb.send("buttonPress", "boolean", "true");
+			});
+		}
+
+    </script>
+
+</head> 
+<body> 
+    <input type="range" class="slider" id="drums1" value="0" min="-50" max="50"/>
+    <input type="range" class="slider" id="drums2" value="0" min="-50" max="50"/>
+    <input type="range" class="slider" id="drums3" value="0" min="-50" max="50"/>
+    <input type="range" class="slider" id="guitar" value="0" min="-50" max="50"/>
+    <input type="range" class="slider" id="rhythm" value="0" min="-50" max="50"/>
+    <input type="range" class="slider" id="vocals" value="0" min="-50" max="50"/>
+    <button type="button" id="buttonMsg">Play Song</button>
+    <div id="name">Trying to connect</div>
+</body>
+</html>
