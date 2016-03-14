@@ -3,6 +3,44 @@
 <head> 
 	<title>Rhapsody</title> 
 
+    <style type="text/css">
+        /*input[type="range"] {
+           transform: rotate(270deg);
+        }*/
+        #name{
+            clear: both;
+        }
+        #playButton{
+            background-color: #8a3b93;
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            width: 85px;
+            height: 20px;
+            padding: 3px;
+            text-align: center;
+            clear: both;
+        }
+        .trackContainer{
+            width: 300px;
+            text-align: center;
+            float: left;
+            margin: 5px;
+        }
+        .trackName{
+            background-color: #ed3286;
+            padding: 1px 0;
+            cursor: pointer;
+        }
+        .trackName h3{
+            color: white;
+            margin: 5px 0px;
+        }
+        .trackSliders{
+            background-color: #ffd3e7;
+            padding: 5px;
+        }
+    </style>
 	<meta name="viewport" content="width=device-width, initial-scale=1"> 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
 	<script type="text/javascript" src="js/sb-1.4.1.js"></script>
@@ -13,7 +51,7 @@
 		$(window).on("load", setupSpacebrew);
 
 		// Spacebrew Variables/Objects
-		var sb, values = {}, rhcpTracks = ["drums1", "drums2", "drums3", "guitar", "rhythm", "vocals"];
+		var sb, values = {}, rhcpTracks = ["drums1Gain", "drums2Gain", "drums3Gain", "guitarGain", "rhythmGain", "vocalsGain"];
 
 		// called on pageload
 		function setupSpacebrew (){
@@ -26,7 +64,7 @@
             for(var i = 0; i < rhcpTracks.length; i++){
                 sb.addPublish(rhcpTracks[i], "range", "0");
             }
-            sb.addPublish("buttonPress", "boolean", "false");
+            sb.addPublish("playButton", "boolean", "false");
             
 			// override Spacebrew events - this is how you catch events coming from Spacebrew
 			sb.onOpen = onOpen;
@@ -50,24 +88,83 @@
 					values[e.target.id] = e.target.value;
 				}
 			});
-            $("#buttonMsg").on("mousedown", function(e) {
+            $("#playButton").on("mousedown", function(e) {
 				e.preventDefault();
-	      	    console.log("[onButtonPress] button has been pressed"); 
-	            sb.send("buttonPress", "boolean", "true");
+	      	    console.log("[playButton] button has been pressed"); 
+	            sb.send("playButton", "boolean", "true");
 			});
+            
+            $(".trackName").on("click", function(){
+                $(this).next().slideToggle(); 
+            });
 		}
 
     </script>
 
 </head> 
-<body> 
-    <input type="range" class="slider" id="drums1" value="0" min="-50" max="50"/>
-    <input type="range" class="slider" id="drums2" value="0" min="-50" max="50"/>
-    <input type="range" class="slider" id="drums3" value="0" min="-50" max="50"/>
-    <input type="range" class="slider" id="guitar" value="0" min="-50" max="50"/>
-    <input type="range" class="slider" id="rhythm" value="0" min="-50" max="50"/>
-    <input type="range" class="slider" id="vocals" value="0" min="-50" max="50"/>
-    <button type="button" id="buttonMsg">Play Song</button>
+<body>
+    
+    <div class="trackContainer">
+        <div class="trackName"><h3>Drums 1</h3></div>
+        <div class="trackSliders" style="display: none;">
+            <input type="range" class="slider" id="drums1Gain" value="0" min="-50" max="50"/>
+            <input type="range" class="slider" id="drums1Delay" value="0" min="-50" max="50"/><br>
+            <input type="range" class="slider" id="drums1Balance" value="0" min="-50" max="50"/>
+            <input type="range" class="slider" id="drums1Pitch" value="0" min="-50" max="50"/>
+        </div>
+    </div>
+    
+    <div class="trackContainer">
+        <div class="trackName"><h3>Drums 2</h3></div>
+        <div class="trackSliders" style="display: none;">
+            <input type="range" class="slider" id="drums2Gain" value="0" min="-50" max="50"/>
+            <input type="range" class="slider" id="drums2Delay" value="0" min="-50" max="50"/><br>
+            <input type="range" class="slider" id="drums2Balance" value="0" min="-50" max="50"/>
+            <input type="range" class="slider" id="drums2Pitch" value="0" min="-50" max="50"/>
+        </div>
+    </div>
+    
+    <div class="trackContainer">
+        <div class="trackName"><h3>Drums 3</h3></div>
+        <div class="trackSliders" style="display: none;">
+            <input type="range" class="slider" id="drums3Gain" value="0" min="-50" max="50"/>
+            <input type="range" class="slider" id="drums3Delay" value="0" min="-50" max="50"/><br>
+            <input type="range" class="slider" id="drums3Balance" value="0" min="-50" max="50"/>
+            <input type="range" class="slider" id="drums3Pitch" value="0" min="-50" max="50"/>
+        </div>
+    </div>
+    
+    <div class="trackContainer">
+        <div class="trackName"><h3>Guitar</h3></div>
+        <div class="trackSliders" style="display: none;">
+            <input type="range" class="slider" id="guitarGain" value="0" min="-50" max="50"/>
+            <input type="range" class="slider" id="guitarDelay" value="0" min="-50" max="50"/><br>
+            <input type="range" class="slider" id="guitarBalance" value="0" min="-50" max="50"/>
+            <input type="range" class="slider" id="guitarPitch" value="0" min="-50" max="50"/>
+        </div>
+    </div>
+    
+    <div class="trackContainer">
+        <div class="trackName"><h3>Rhythm</h3></div>
+        <div class="trackSliders" style="display: none;">
+            <input type="range" class="slider" id="rhythmGain" value="0" min="-50" max="50"/>
+            <input type="range" class="slider" id="rhythmDelay" value="0" min="-50" max="50"/><br>
+            <input type="range" class="slider" id="rhythmBalance" value="0" min="-50" max="50"/>
+            <input type="range" class="slider" id="rhythmPitch" value="0" min="-50" max="50"/>
+        </div>
+    </div>
+    
+    <div class="trackContainer">
+        <div class="trackName"><h3>Vocals</h3></div>
+        <div class="trackSliders" style="display: none;">
+            <input type="range" class="slider" id="vocalsGain" value="0" min="-50" max="50"/>
+            <input type="range" class="slider" id="vocalsDelay" value="0" min="-50" max="50"/><br>
+            <input type="range" class="slider" id="vocalsBalance" value="0" min="-50" max="50"/>
+            <input type="range" class="slider" id="vocalsPitch" value="0" min="-50" max="50"/>
+        </div>
+    </div>
+    
+    <div id="playButton">Play Song</div>
     <div id="name">Trying to connect</div>
 </body>
 </html>

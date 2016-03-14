@@ -31,9 +31,9 @@ void setup() {
   
   //ADD PUBLISH/SUBSCRIBE
   for(int i = 0; i < rhcp.length; i++){
-    spacebrewConnection.addSubscribe(rhcpTracks[i], "range");
+    spacebrewConnection.addSubscribe(rhcpTracks[i] + "Gain", "range");
   }
-  spacebrewConnection.addSubscribe("buttonPress", "boolean");
+  spacebrewConnection.addSubscribe("playButton", "boolean");
   
   //CONNECT SPACEBREW
   spacebrewConnection.connect(server, port, name, description);
@@ -59,7 +59,7 @@ void onRangeMessage( String name, int value ){
 
 void onBooleanMessage( String name, boolean value ){
   println("got bool message " + name + " : " + value); 
-  if (name.equals("buttonPress")){
+  if (name.equals("playButton")){
     if (value == true) {
       for(int i = 0; i < rhcp.length; i++){
         rhcp[i].rewind();
