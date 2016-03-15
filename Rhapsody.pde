@@ -1,6 +1,7 @@
 import spacebrew.*;
 import ddf.minim.*;
 import ddf.minim.analysis.*;
+import ddf.minim.spi.*;
 import ddf.minim.ugens.*;
 
 Spacebrew spacebrewConnection;
@@ -10,21 +11,23 @@ String description ="Web To Processing";
 int port = 80;
 
 Minim minim;
-AudioPlayer kick;
+AudioOutput out;
+
 
 String[] rhcpTracks = {"drums1", "drums2", "drums3", "guitar", "rhythm", "vocals"};
-AudioPlayer[] rhcp = new AudioPlayer[rhcpTracks.length];
+FilePlayer[] rhcp = new FilePlayer[rhcpTracks.length];
+Gain[] gain = new Gain[rhcpTracks.length];
 
 void setup() {
   size(1280,720);
   
   minim = new Minim(this);
+  out = minim.getLineOut();
   
   for(int i = 0; i < rhcp.length; i++){
-    rhcp[i] = minim.loadFile("audio/" + rhcpTracks[i] + ".mp3");
+    rhcp[i] = new FilePlayer(minim.loadFileStream("audio/" + rhcpTracks[i] + ".mp3"));
+    gain[i] = new Gain(0);
   }
-  
-  //kick = minim.loadFile("kick.mp3");
   
   //CREATE SPACEBREW
   spacebrewConnection = new Spacebrew(this);
@@ -51,20 +54,19 @@ void draw() {
 void onRangeMessage( String name, int value ){
   println("got int message " + name + " : " + value);
   for(int i = 0; i < rhcp.length; i++){
-    if(name.equals(rhcpTracks[i])){
-      rhcp[i].setGain(value);
+    if(name.equals(rhcpTracks[i] + "Gain")){
+      gain[i].setValue(value);
     }
   }
 }
 
 void onBooleanMessage( String name, boolean value ){
   println("got bool message " + name + " : " + value); 
-  if (name.equals("playButton")){
-    if (value == true) {
-      for(int i = 0; i < rhcp.length; i++){
-        rhcp[i].rewind();
-        rhcp[i].play();
-      }
+  if(name.equals("playButton") && value == true){
+    for(int i = 0; i < rhcp.length; i++){
+      rhcp[i].rewind();
+      rhcp[i].play();
+      rhcp[i].patch(gain[i]).patch(out);
     }
-  } 
+  }
 }

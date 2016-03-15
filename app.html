@@ -51,7 +51,7 @@
 		$(window).on("load", setupSpacebrew);
 
 		// Spacebrew Variables/Objects
-		var sb, values = {}, rhcpTracks = ["drums1Gain", "drums2Gain", "drums3Gain", "guitarGain", "rhythmGain", "vocalsGain"];
+		var sb, values = {}, rhcpTracks = ["drums1", "drums2", "drums3", "guitar", "rhythm", "vocals"];
 
 		// called on pageload
 		function setupSpacebrew (){
@@ -62,7 +62,7 @@
             
 			// configure the publication and subscription feeds
             for(var i = 0; i < rhcpTracks.length; i++){
-                sb.addPublish(rhcpTracks[i], "range", "0");
+                sb.addPublish(rhcpTracks[i] + "Gain", "range", "0");
             }
             sb.addPublish("playButton", "boolean", "false");
             
