@@ -22,15 +22,13 @@ ControlP5 cp5;
 String[] rhcpTracks = {"drums1", "drums2", "drums3", "guitar", "rhythm", "vocals"};
 int[] rhcpColors = {#AA3333, #AA3333, #AA3333, #66AA66, #6666AA, #FF2E87};
 FilePlayer[] rhcpPlayer = new FilePlayer[rhcpTracks.length];
+
 Gain[] gain = new Gain[rhcpTracks.length];
 Delay[] delay = new Delay[rhcpTracks.length];
 Flanger[] flanger = new Flanger[rhcpTracks.length];
 
-/*MoogFilter[] moog = new MoogFilter[rhcpTracks.length];
-MoogFilter[] moog2 = new MoogFilter[rhcpTracks.length];*/
-
-HighPassSP[] highpass = new HighPassSP[rhcpTracks.length];
-LowPassSP[] lowpass = new LowPassSP[rhcpTracks.length];
+MoogFilter[] highpass = new MoogFilter[rhcpTracks.length];
+MoogFilter[] lowpass = new MoogFilter[rhcpTracks.length];
 
 AudioOutput[] out = new AudioOutput[rhcpTracks.length];
 
@@ -53,10 +51,6 @@ void setup() {
     //Delay(float maxDelayTime, float amplitudeFactor, boolean feedBackOn, boolean passAudioOn)
     delay[i] = new Delay(0.5f, 0.5f, true, true);
     
-    //delay[i].setDelAmp(1.0);
-    
-    //println(delay[i].delTime.getLastValue());
-    
     flanger[i] = new Flanger( 1,      // delay length in milliseconds ( clamped to [0,100] )
                               0.2f,   // lfo rate in Hz ( clamped at low end to 0.001 )
                               1,      // delay depth in milliseconds ( minimum of 0 )
@@ -65,25 +59,23 @@ void setup() {
                               0.5f    // amount of wet signal ( clamped to [0,1] )
     );
     
-    //moog[i] = new MoogFilter(1200, 0.9, MoogFilter.Type.BP);
+    highpass[i] = new MoogFilter(20, 0.5, MoogFilter.Type.HP);
+    lowpass[i] = new MoogFilter(20000, 0.5, MoogFilter.Type.LP);
     
-    /*moog2[i] = new MoogFilter(44000, 0.5);
-    moog2[i].type = MoogFilter.Type.LP;*/
-    
-    highpass[i] = new HighPassSP(0, rhcpPlayer[i].sampleRate());
-    lowpass[i] = new LowPassSP(44100, rhcpPlayer[i].sampleRate());
-    
-    cp5.addToggle(rhcpTracks[i] + " Delay", false, 50, i*55+50, 75, 20)
+    cp5.addToggle(rhcpTracks[i] + " Delay", false, 50, i*60+50, 75, 20)
                   .setLabel(rhcpTracks[i] + " Delay Off")
                   .setMode(ControlP5.SWITCH);
                   
-    cp5.addSlider(rhcpTracks[i] + " Gain", -50.0, 50.0, 140, i*55+50, 180, 10)
+    cp5.addSlider(rhcpTracks[i] + " Gain", -50.0, 50.0, 140, i*60+50, 180, 10)
                   .setLabel("Gain")
                   .setValue(0.0);
                   
-    cp5.addSlider(rhcpTracks[i] + " Delay Amp", 0.0, 1.0, 140, i*55+65, 180, 10)
+    cp5.addSlider(rhcpTracks[i] + " Delay Amp", 0.0, 1.0, 140, i*60+65, 180, 10)
                   .setLabel("Delay Amp")
                   .setValue(0.5);
+                  
+    cp5.addRange(rhcpTracks[i] + " Filter", 20, 20000, 140, i*60+80, 180, 15)
+                  .setLabel("Filter Frequencies");
   }
   
   //separate loop so all tracks can load first
@@ -92,10 +84,6 @@ void setup() {
     rhcpPlayer[i].play();
     rhcpPlayer[i].patch(gain[i]).patch(highpass[i]).patch(lowpass[i]).patch(out[i]);
   }
-  
-  //rhcpPlayer[3].patch(gain[3]); //slows down track(?)
-  //gain[3].patch(out[3]); //no difference
-  //rhcpPlayer[3].patch(gain[3]).patch(out[3]); //overlays another track on top of old
 }
 
 void controlEvent(ControlEvent controlEvent) {
@@ -120,6 +108,10 @@ void controlEvent(ControlEvent controlEvent) {
     }
     else if(controlEvent.isFrom(rhcpTracks[i] + " Gain")){
       gain[i].setValue(controlEvent.value());
+    }
+    else if(controlEvent.isFrom(rhcpTracks[i] + " Filter")){
+      highpass[i].frequency.setLastValue(controlEvent.getController().getArrayValue(0));
+      lowpass[i].frequency.setLastValue(controlEvent.getController().getArrayValue(1));
     }
   }
 }
