@@ -20,7 +20,7 @@ Minim minim;
 ControlP5 cp5;
 
 String[] rhcpTracks = {"drums1", "drums2", "drums3", "guitar", "rhythm", "vocals"};
-int[] rhcpColors = {#AA3333, #AA3333, #AA3333, #66AA66, #6666AA, #FF2E87};
+int[] rhcpColors = {#FD756D, #FD756D, #FD756D, #F7FF3A, #FF2E87, #FABA54};
 FilePlayer[] rhcpPlayer = new FilePlayer[rhcpTracks.length];
 
 Gain[] gain = new Gain[rhcpTracks.length];
@@ -212,7 +212,7 @@ void draw() {
     
     noFill();
     fill(rhcpColors[i], 10);
-    ellipse(0, 0, 2*rad, 2*rad);
+    //ellipse(0, 0, 2*rad, 2*rad);
     stroke(rhcpColors[i], 20);
     strokeWeight(3);
     
