@@ -25,10 +25,16 @@ FilePlayer[] rhcpPlayer = new FilePlayer[rhcpTracks.length];
 
 Gain[] gain = new Gain[rhcpTracks.length];
 Delay[] delay = new Delay[rhcpTracks.length];
+boolean[] delayIsPatched = new boolean[rhcpTracks.length];
+
 Flanger[] flanger = new Flanger[rhcpTracks.length];
 
 MoogFilter[] highpass = new MoogFilter[rhcpTracks.length];
 MoogFilter[] lowpass = new MoogFilter[rhcpTracks.length];
+
+Vocoder[] vocoder = new Vocoder[rhcpTracks.length];
+boolean[] vocoderIsPatched = new boolean[rhcpTracks.length];
+Oscil[] wave = new Oscil[rhcpTracks.length];
 
 AudioOutput[] out = new AudioOutput[rhcpTracks.length];
 
@@ -50,6 +56,7 @@ void setup() {
     
     //Delay(float maxDelayTime, float amplitudeFactor, boolean feedBackOn, boolean passAudioOn)
     delay[i] = new Delay(0.5f, 0.5f, true, true);
+    delayIsPatched[i] = false;
     
     flanger[i] = new Flanger( 1,      // delay length in milliseconds ( clamped to [0,100] )
                               0.2f,   // lfo rate in Hz ( clamped at low end to 0.001 )
@@ -62,8 +69,16 @@ void setup() {
     highpass[i] = new MoogFilter(20, 0.5, MoogFilter.Type.HP);
     lowpass[i] = new MoogFilter(20000, 0.5, MoogFilter.Type.LP);
     
-    cp5.addToggle(rhcpTracks[i] + " Delay", false, 50, i*60+50, 75, 20)
-                  .setLabel(rhcpTracks[i] + " Delay Off")
+    vocoder[i] = new Vocoder(1024, 8);
+    vocoderIsPatched[i] = false;
+    wave[i] = new Oscil(50, 0.8, Waves.SAW);
+    
+    cp5.addToggle(rhcpTracks[i] + " Delay", false, 60, i*60+50, 30, 10)
+                  .setLabel("Delay Off")
+                  .setMode(ControlP5.SWITCH);
+                  
+    cp5.addToggle(rhcpTracks[i] + " Vocoder", false, 60, i*60+80, 30, 10)
+                  .setLabel("Vocoder Off")
                   .setMode(ControlP5.SWITCH);
                   
     cp5.addSlider(rhcpTracks[i] + " Gain", -50.0, 50.0, 140, i*60+50, 180, 10)
@@ -89,18 +104,66 @@ void setup() {
 void controlEvent(ControlEvent controlEvent) {
   for(int i = 0; i < rhcpTracks.length; i++){
     if(controlEvent.isFrom(rhcpTracks[i] + " Delay")){
+      delayIsPatched[i] = !delayIsPatched[i];
       if(controlEvent.value() == 1){
-        controlEvent.getController().setLabel(controlEvent.name() + " on");
+        controlEvent.getController().setLabel("Delay on");
         
-        lowpass[i].unpatch(out[i]);
-        lowpass[i].patch(delay[i]).patch(out[i]);
+        if(vocoderIsPatched[i]){
+          lowpass[i].unpatch(vocoder[i]);
+          lowpass[i].patch(delay[i]).patch(vocoder[i].modulator);
+        }
+        else{
+          lowpass[i].unpatch(out[i]);
+          lowpass[i].patch(delay[i]).patch(out[i]);
+        }
       }
       else{
-        controlEvent.getController().setLabel(controlEvent.name() + " off");
+        controlEvent.getController().setLabel("Delay off");
         
-        delay[i].unpatch(out[i]);
-        lowpass[i].unpatch(delay[i]);
-        lowpass[i].patch(out[i]);
+        if(vocoderIsPatched[i]){
+          delay[i].unpatch(vocoder[i]);
+          lowpass[i].unpatch(delay[i]);
+          lowpass[i].patch(vocoder[i].modulator);
+        }
+        else{
+          delay[i].unpatch(out[i]);
+          lowpass[i].unpatch(delay[i]);
+          lowpass[i].patch(out[i]);
+        }
+      }
+    }
+    else if(controlEvent.isFrom(rhcpTracks[i] + " Vocoder")){
+      vocoderIsPatched[i] = !vocoderIsPatched[i];
+      if(controlEvent.value() == 1){
+        controlEvent.getController().setLabel("Vocoder on");
+        
+        if(delayIsPatched[i]){
+          delay[i].unpatch(out[i]);
+          delay[i].patch(vocoder[i].modulator).patch(out[i]);
+        }
+        else{
+          lowpass[i].unpatch(out[i]);
+          lowpass[i].patch(vocoder[i].modulator).patch(out[i]);
+        }
+        wave[i].patch(vocoder[i]).patch(out[i]);
+        
+      }
+      else{
+        controlEvent.getController().setLabel("Vocoder off");
+        
+        if(delayIsPatched[i]){
+          vocoder[i].unpatch(out[i]);
+          delay[i].unpatch(vocoder[i]);
+          delay[i].patch(out[i]);
+        }
+        else{
+          vocoder[i].unpatch(out[i]);
+          lowpass[i].unpatch(vocoder[i]);
+          lowpass[i].patch(out[i]);
+        }
+        vocoder[i].unpatch(out[i]);
+        wave[i].unpatch(vocoder[i]);
+        
       }
     }
     else if(controlEvent.isFrom(rhcpTracks[i] + " Delay Amp")){
