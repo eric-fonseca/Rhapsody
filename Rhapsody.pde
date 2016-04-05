@@ -71,25 +71,29 @@ void setup() {
     
     vocoder[i] = new Vocoder(1024, 8);
     vocoderIsPatched[i] = false;
-    wave[i] = new Oscil(50, 0.8, Waves.SAW);
+    wave[i] = new Oscil(100, 0.8, Waves.SAW);
     
-    cp5.addToggle(rhcpTracks[i] + " Delay", false, 60, i*60+50, 30, 10)
+    cp5.addToggle(rhcpTracks[i] + " Delay", false, 60, i*75+50, 30, 10)
                   .setLabel("Delay Off")
                   .setMode(ControlP5.SWITCH);
                   
-    cp5.addToggle(rhcpTracks[i] + " Vocoder", false, 60, i*60+80, 30, 10)
+    cp5.addToggle(rhcpTracks[i] + " Vocoder", false, 60, i*75+80, 30, 10)
                   .setLabel("Vocoder Off")
                   .setMode(ControlP5.SWITCH);
                   
-    cp5.addSlider(rhcpTracks[i] + " Gain", -50.0, 50.0, 140, i*60+50, 180, 10)
+    cp5.addSlider(rhcpTracks[i] + " Gain", -50, 50, 140, i*75+50, 180, 10)
                   .setLabel("Gain")
                   .setValue(0.0);
                   
-    cp5.addSlider(rhcpTracks[i] + " Delay Amp", 0.0, 1.0, 140, i*60+65, 180, 10)
+    cp5.addSlider(rhcpTracks[i] + " Delay Amp", 0.0, 1.0, 140, i*75+65, 180, 10)
                   .setLabel("Delay Amp")
                   .setValue(0.5);
                   
-    cp5.addRange(rhcpTracks[i] + " Filter", 20, 20000, 140, i*60+80, 180, 15)
+    cp5.addSlider(rhcpTracks[i] + " Vocoder Freq", 20, 1000, 140, i*75+80, 180, 10)
+                  .setLabel("Vocoder Freq")
+                  .setValue(100);
+                  
+    cp5.addRange(rhcpTracks[i] + " Filter", 20, 20000, 140, i*75+95, 180, 15)
                   .setLabel("Filter Frequencies");
   }
   
@@ -171,6 +175,9 @@ void controlEvent(ControlEvent controlEvent) {
     }
     else if(controlEvent.isFrom(rhcpTracks[i] + " Gain")){
       gain[i].setValue(controlEvent.value());
+    }
+    else if(controlEvent.isFrom(rhcpTracks[i] + " Vocoder Freq")){
+      wave[i].setFrequency(controlEvent.value());
     }
     else if(controlEvent.isFrom(rhcpTracks[i] + " Filter")){
       highpass[i].frequency.setLastValue(controlEvent.getController().getArrayValue(0));
