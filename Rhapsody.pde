@@ -39,12 +39,14 @@ Oscil[] wave = new Oscil[rhcpTracks.length];
 AudioOutput[] out = new AudioOutput[rhcpTracks.length];
 
 ControlKnob[] gainKnob = new ControlKnob[rhcpTracks.length];
+ControlKnob[] delayKnob = new ControlKnob[rhcpTracks.length];
+ControlKnob[] vocoderKnob = new ControlKnob[rhcpTracks.length];
 
 int r = 200;
 float rad = 70;
 
 void setup() {
-  size(1280,720);
+  size(1280,800);
   background(38,38,38);
   
   minim = new Minim(this);
@@ -76,30 +78,27 @@ void setup() {
     vocoderIsPatched[i] = false;
     wave[i] = new Oscil(100, 0.8, Waves.SAW);
     
-    cp5.addToggle(rhcpTracks[i] + " Delay", false, 60, i*75+50, 30, 10)
+    cp5.addToggle(rhcpTracks[i] + " Delay", false, 60, i*130+35, 30, 10)
                   .setLabel("Delay Off")
-                  .setMode(ControlP5.SWITCH);
+                  .setMode(ControlP5.SWITCH)
+                  .setColorBackground(#a5a5a5)
+                  .setColorActive(#FA814A);
                   
-    cp5.addToggle(rhcpTracks[i] + " Vocoder", false, 60, i*75+80, 30, 10)
+    cp5.addToggle(rhcpTracks[i] + " Vocoder", false, 60, i*130+65, 30, 10)
                   .setLabel("Vocoder Off")
-                  .setMode(ControlP5.SWITCH);
+                  .setMode(ControlP5.SWITCH)
+                  .setColorBackground(#a5a5a5)
+                  .setColorActive(#f4e200);
                   
-    /*cp5.addSlider(rhcpTracks[i] + " Gain", -50, 50, 140, i*75+50, 180, 10)
-                  .setLabel("Gain")
-                  .setValue(0.0);*/
-    
-    gainKnob[i] = new ControlKnob(475, i*100+60, 65, 5, #FFCC00, PI, 0.5); 
+    gainKnob[i] = new ControlKnob(150, i*130+60, 65, 5, #FF2E87, PI, 0.5); 
+    delayKnob[i] = new ControlKnob(250, i*130+60, 65, 5, #FA814A, PI, 0.35); 
+    vocoderKnob[i] = new ControlKnob(350, i*130+60, 65, 5, #F7FF3A, PI, 0.2);
                   
-    cp5.addSlider(rhcpTracks[i] + " Delay Amp", 0.0, 1.0, 140, i*75+65, 180, 10)
-                  .setLabel("Delay Amp")
-                  .setValue(0.5);
-                  
-    cp5.addSlider(rhcpTracks[i] + " Vocoder Freq", 20, 1000, 140, i*75+80, 180, 10)
-                  .setLabel("Vocoder Freq")
-                  .setValue(100);
-                  
-    cp5.addRange(rhcpTracks[i] + " Filter", 20, 20000, 140, i*75+95, 180, 15)
-                  .setLabel("Filter Frequencies");
+    cp5.addRange(rhcpTracks[i] + " Filter", 20, 20000, 125, i*130+105, 260, 20)
+                  .setLabel("")
+                  .setColorForeground(#A93ABC)
+                  .setColorBackground(#a5a5a5)
+                  .setColorActive(#c864d9);
   }
   
   //separate loop so all tracks can load first
@@ -175,15 +174,6 @@ void controlEvent(ControlEvent controlEvent) {
         
       }
     }
-    else if(controlEvent.isFrom(rhcpTracks[i] + " Delay Amp")){
-      delay[i].setDelAmp(controlEvent.value());
-    }
-    /*else if(controlEvent.isFrom(rhcpTracks[i] + " Gain")){
-      gain[i].setValue(controlEvent.value());
-    }*/
-    else if(controlEvent.isFrom(rhcpTracks[i] + " Vocoder Freq")){
-      wave[i].setFrequency(controlEvent.value());
-    }
     else if(controlEvent.isFrom(rhcpTracks[i] + " Filter")){
       highpass[i].frequency.setLastValue(controlEvent.getController().getArrayValue(0));
       lowpass[i].frequency.setLastValue(controlEvent.getController().getArrayValue(1));
@@ -197,7 +187,7 @@ void draw() {
   fill(#1A1F18, 10);
   noStroke();
   rect(0,0,width,height);
-  translate(width*0.65, height/2);
+  translate(width*0.68, height/2);
   
   for(int i = 0; i < rhcpTracks.length; i++){
     
@@ -256,12 +246,24 @@ void draw() {
   
   for(int i = 0; i < rhcpTracks.length; i++){
     gainKnob[i].Knob();
+    delayKnob[i].Knob();
+    vocoderKnob[i].Knob();
   }
+  
+  textSize(20);
+  text("Drums 1", 405, 80); 
+  text("Drums 2", 405, 210); 
+  text("Drums 3", 405, 340); 
+  text("Guitar", 405, 470); 
+  text("Rhythm", 405, 600); 
+  text("Vocals", 405, 730); 
 }
 
 void mousePressed(){
   for(int i = 0; i < rhcpTracks.length; i++){
     gainKnob[i].isMouseOnKnob(mouseX, mouseY);
+    delayKnob[i].isMouseOnKnob(mouseX, mouseY);
+    vocoderKnob[i].isMouseOnKnob(mouseX, mouseY);
   }
 }
 
@@ -270,11 +272,19 @@ void mouseDragged(){
     if(gainKnob[i].movable){
       gain[i].setValue(gainKnob[i].getValue()*100-50);
     }
+    else if(delayKnob[i].movable){
+      delay[i].setDelAmp(delayKnob[i].getValue());
+    }
+    else if(vocoderKnob[i].movable){
+      wave[i].setFrequency(vocoderKnob[i].getValue()*480+20);
+    }
   }
 }
 
 void mouseReleased(){
   for(int i = 0; i < rhcpTracks.length; i++){
     gainKnob[i].movable = false;
+    delayKnob[i].movable = false;
+    vocoderKnob[i].movable = false;
   }
 }
