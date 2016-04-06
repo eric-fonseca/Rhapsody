@@ -6,17 +6,18 @@ class ControlKnob{
   Boolean block = false;
   // Touch currentTouchReference;
   
-  ControlKnob(float x_, float y_, float r_, float sw_, color ccolor_, float setAngle_){
+  ControlKnob(float x_, float y_, float r_, float sw_, color ccolor_, float setAngle_, float knobAngle_){
     x = x_;
     y = y_;
     r = r_;
     sw = sw_;
     ccolor = ccolor_;
     setAngle = setAngle_; // SetAngle should only be either 0 or PI
+    knobAngle = knobAngle_;
     if(setAngle == 0){
-      knobAngle = PI/4 + 0.01;
+      knobAngle = PI/4 + knobAngle_*PI*1.5 + 0.01;
     } else {
-      knobAngle = -3 * PI/4 + 0.01; 
+      knobAngle = -3 * PI/4 + knobAngle_*PI*1.5 + 0.01; 
     }
   }
   
@@ -25,6 +26,10 @@ class ControlKnob{
     pushMatrix();
     translate(x,y);
     noStroke();
+    
+    fill(38,38,38);
+    ellipse(0,0,r*1.3,r*1.3);
+    
     if(movable){
       fill(ccolor, 95);
     } else {
@@ -109,7 +114,7 @@ class ControlKnob{
     rotate(knobAngle - PI/2);
     noStroke();
     fill(255);
-    ellipse(0,r/2,sw*2,sw*2);
+    ellipse(0,r/2,sw*2.5,sw*2.5);
     popMatrix(); 
    }
    
@@ -146,7 +151,7 @@ class ControlKnob{
    
    // In the future for multitouch, reference to the specific touch must be recorded at the top of the class
    void isMouseOnKnob(float x_, float y_){
-     if(dist(x_, y_, x, y) < r/2){
+     if(dist(x_, y_, x, y) < r/1.5){
        movable = true;
      } else {
        movable = false; 
