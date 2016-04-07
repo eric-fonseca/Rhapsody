@@ -1,17 +1,18 @@
 class ControlCenter{
-  float x, y, r;
   
-  CenterCircle centerCircle;
-  DotPath outer, inner;
-  Control c1, c2, c3;
-  
+  final int numControls = 3;
   final float centerCircleRatio = 0.5;
   final float outerRingRatio = 1.0;
   final float outerRingRotate = -0.0010;
-  final float innerRingRatio = 0.7;
+  final float innerRingRatio = 0.5;
   final float innerRingRotate = 0.0015;
   final float outerControlRatio = 0.3;
   final float innerControlRatio = 0.2;
+  
+  CenterCircle centerCircle;
+  DotPath outer, inner;
+  Control[] controls = new Control[numControls];
+  float x, y, r;  
 
   ControlCenter(float x_, float y_, float r_){
     x = x_;
@@ -20,39 +21,79 @@ class ControlCenter{
     centerCircle = new CenterCircle(x,y,r*centerCircleRatio, 8, color(247, 255, 58), color(255,46,135));
     outer = new DotPath(x,y,r*outerRingRatio,5,color(255, 202), 30, outerRingRotate);
     inner = new DotPath(x,y,r*innerRingRatio,5,color(255, 202), 20, innerRingRotate);
-    c1 = new Control(x,y,r,0,inner,outer,innerControlRatio,outerControlRatio,5,color(247, 255, 58),color(255,46,135));
-    //c2 = new Control(x,y,r,-2 * PI / 3,inner,outer,innerControlRatio,outerControlRatio,5,color(247, 255, 58),color(255,46,135));
-    //c3 = new Control(x,y,r,2 * PI / 3,inner,outer,innerControlRatio,outerControlRatio,5,color(247, 255, 58),color(255,46,135));
-  } 
-  
-  void drawAll(){
-    centerCircle.drawCenterCircle();
-    outer.drawDotPath(); 
-    inner.drawDotPath();
-    c1.update();
-    //c2.update();
-    //c3.update();
-    c1.drawControl();
-    //c2.drawControl();
-    //c3.drawControl();
+    for(int i = 0; i < numControls; i++){
+      float temp = 2 * PI / numControls;
+      Control c = new Control(x,y,r,i * temp - PI,inner,outer,innerControlRatio,outerControlRatio,5,color(247, 255, 58),color(255,46,135));
+      controls[i] = c;
+    }
   }
   
+  void drawAll(){
+    boolean btemp = false;
+    outer.drawDotPath(); 
+    inner.drawDotPath();
+    centerCircle.drawCenterCircle();
+    splitControls();
+    for(int i = 0; i < numControls; i++){
+      controls[i].update();
+      controls[i].drawControl();
+    }
+  }
+  
+  void splitControls(){
+    for(int i = 0; i < numControls; i++){
+      for(int u = i; u < numControls; u++){
+        if(u == i){
+          continue;
+        }
+        if(controls[i].getSelected() == false && controls[u].getSelected() == false){
+          boolean a1B = false; 
+          boolean a2B = false;
+          Control c1 = controls[i];
+          Control c2 = controls[u];
+          float a1 = c1.getAngle() + PI;
+          float a2 = c2.getAngle() + PI;
+          if(Math.abs(Math.abs(a1) - Math.abs(a2)) < PI/6){
+            if(a1 > a2){
+              pushControls(a1,c1,PI/16);
+              pushControls(a2,c2,-PI/16);
+            } else {
+              pushControls(a1,c1,-PI/16);
+              pushControls(a2,c2,PI/16);
+            }
+          }
+        }
+      }
+    }
+  }
+    
+    void pushControls(float a, Control c, float t){
+      a = a + t - PI;
+      if(t > 0 && a > PI){
+        a -= 2 * PI;
+      }
+      if(t < 0 && a < -PI){
+       a += 2 * PI; 
+      }
+      c.setAngle(a);
+    }
+  
   void detectPress(float x_, float y_){
-    c1.toggleSelected(x_,y_);
-    //c2.toggleSelected(x_,y_);
-    //c3.toggleSelected(x_,y_);
+    for(int i = 0; i < numControls; i++){
+      controls[i].toggleSelected(x_,y_);
+    }
   }
   
   void detectDrag(float x_, float y_){
-    c1.dragControl(x_,y_);
-    //c2.dragControl(x_,y_);
-    //c3.dragControl(x_,y_);
+    for(int i = 0; i < numControls; i++){
+      controls[i].dragControl(x_,y_);
+    }
   }
   
   void detectRelease(){
-    c1.detectRelease();
-    //c2.detectRelease();
-    //c3.detectRelease();
+    for(int i = 0; i < numControls; i++){
+      controls[i].detectRelease();
+    }
     outer.dragPause(false);
     inner.dragPause(false);
   }
@@ -197,9 +238,19 @@ class Control{
     if(!isDragging){
       if(selected){
         tr = cr * ocr;
+        if(Math.abs(a) > PI/2){
+          tx = cos(PI) * outer.getRadiusRatio() + cx;
+          ty = sin(PI) * outer.getRadiusRatio() + cy;
+        } else {
+          tx = cos(0) * outer.getRadiusRatio() + cx;
+          ty = sin(0) * outer.getRadiusRatio() + cy;
+        }
+        rate = 0;
+        /*
         tx = cos(a) * outer.getRadiusRatio() + cx;
         ty = sin(a) * outer.getRadiusRatio() + cy;
         rate = outer.getDirection();
+        */
       } else {
         tr = cr * icr;
 
@@ -232,29 +283,26 @@ class Control{
   }
   
   void toggleSelected(float x_, float y_){
-    if(dist(x_,y_,x,y) < r+sw/2){
+    if(dist(x_,y_,x,y) < r/2+sw/2){
        if(selected){
          selected = false;
          //segueToInner();
        } else {
          selected = true;
-         //segueToOuter();
        }
-    } else {
-      selected = false; 
-      //segueToInner();
     }
   }
   
   void dragControl(float x_, float y_){
-    isDragging = true;
-    selected = true;
-    rate = 0;
-    tr = cr * ocr;
-    tx = x_;
-    ty = y_;
-    outer.dragPause(isDragging);
-    inner.dragPause(isDragging);
+    if(dist(x_,y_,x,y) < r+sw/2){
+      isDragging = true;
+      rate = 0;
+      tr = cr * ocr;
+      tx = x_;
+      ty = y_;
+      outer.dragPause(isDragging);
+      inner.dragPause(isDragging);
+    }
   }
   
   void detectRelease(){
@@ -295,5 +343,21 @@ class Control{
         break getOuterAngle;
       }
     }
+  }
+  
+  boolean getSelected(){
+   return selected; 
+  }
+  
+  boolean getSideSelect(){
+    return isRightSide;
+  }
+  
+  float getAngle(){
+    return a; 
+  }
+  
+  void setAngle(float a_){
+    a = a_;
   }
 }
