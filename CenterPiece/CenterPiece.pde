@@ -1,4 +1,4 @@
-ControlCenter cc = new ControlCenter(400,300, 250);
+ControlCenter cc = new ControlCenter(400,300, 250, 4);
 
 void setup(){
   size(800,600);
