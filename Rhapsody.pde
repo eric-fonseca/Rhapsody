@@ -33,6 +33,7 @@ MoogFilter[] highpass = new MoogFilter[rhcpTracks.length];
 MoogFilter[] lowpass = new MoogFilter[rhcpTracks.length];
 
 Vocoder[] vocoder = new Vocoder[rhcpTracks.length];
+BitCrush[] bitcrush = new BitCrush[rhcpTracks.length];
 boolean[] vocoderIsPatched = new boolean[rhcpTracks.length];
 Oscil[] wave = new Oscil[rhcpTracks.length];
 
@@ -75,24 +76,13 @@ void setup() {
     lowpass[i] = new MoogFilter(20000, 0.5, MoogFilter.Type.LP);
     
     vocoder[i] = new Vocoder(1024, 8);
+    bitcrush[i] = new BitCrush(4, 3000);
     vocoderIsPatched[i] = false;
     wave[i] = new Oscil(100, 0.8, Waves.SAW);
-    
-    cp5.addToggle(rhcpTracks[i] + " Delay", false, 60, i*130+35, 30, 10)
-                  .setLabel("Delay Off")
-                  .setMode(ControlP5.SWITCH)
-                  .setColorBackground(#a5a5a5)
-                  .setColorActive(#FA814A);
                   
-    cp5.addToggle(rhcpTracks[i] + " Vocoder", false, 60, i*130+65, 30, 10)
-                  .setLabel("Vocoder Off")
-                  .setMode(ControlP5.SWITCH)
-                  .setColorBackground(#a5a5a5)
-                  .setColorActive(#f4e200);
-                  
-    gainKnob[i] = new ControlKnob(150, i*130+60, 65, 5, #FF2E87, PI, 0.5); 
-    delayKnob[i] = new ControlKnob(250, i*130+60, 65, 5, #FA814A, PI, 0.35); 
-    vocoderKnob[i] = new ControlKnob(350, i*130+60, 65, 5, #F7FF3A, PI, 0.2);
+    gainKnob[i] = new ControlKnob(150, i*130+60, 65, PI/8, 5, color(247, 255, 58), color(255,46,135), PI, 0.5); 
+    delayKnob[i] = new ControlKnob(250, i*130+60, 65, PI/8, 5, color(247, 255, 58), color(255,46,135), PI, 0.35); 
+    vocoderKnob[i] = new ControlKnob(350, i*130+60, 65, PI/8, 5, color(247, 255, 58), color(255,46,135), PI, 0.2);
                   
     cp5.addRange(rhcpTracks[i] + " Filter", 20, 20000, 125, i*130+105, 260, 20)
                   .setLabel("")
@@ -111,70 +101,7 @@ void setup() {
 
 void controlEvent(ControlEvent controlEvent) {
   for(int i = 0; i < rhcpTracks.length; i++){
-    if(controlEvent.isFrom(rhcpTracks[i] + " Delay")){
-      delayIsPatched[i] = !delayIsPatched[i];
-      if(controlEvent.value() == 1){
-        controlEvent.getController().setLabel("Delay on");
-        
-        if(vocoderIsPatched[i]){
-          lowpass[i].unpatch(vocoder[i]);
-          lowpass[i].patch(delay[i]).patch(vocoder[i].modulator);
-        }
-        else{
-          lowpass[i].unpatch(out[i]);
-          lowpass[i].patch(delay[i]).patch(out[i]);
-        }
-      }
-      else{
-        controlEvent.getController().setLabel("Delay off");
-        
-        if(vocoderIsPatched[i]){
-          delay[i].unpatch(vocoder[i]);
-          lowpass[i].unpatch(delay[i]);
-          lowpass[i].patch(vocoder[i].modulator);
-        }
-        else{
-          delay[i].unpatch(out[i]);
-          lowpass[i].unpatch(delay[i]);
-          lowpass[i].patch(out[i]);
-        }
-      }
-    }
-    else if(controlEvent.isFrom(rhcpTracks[i] + " Vocoder")){
-      vocoderIsPatched[i] = !vocoderIsPatched[i];
-      if(controlEvent.value() == 1){
-        controlEvent.getController().setLabel("Vocoder on");
-        
-        if(delayIsPatched[i]){
-          delay[i].unpatch(out[i]);
-          delay[i].patch(vocoder[i].modulator).patch(out[i]);
-        }
-        else{
-          lowpass[i].unpatch(out[i]);
-          lowpass[i].patch(vocoder[i].modulator).patch(out[i]);
-        }
-        wave[i].patch(vocoder[i]).patch(out[i]);
-        
-      }
-      else{
-        controlEvent.getController().setLabel("Vocoder off");
-        
-        if(delayIsPatched[i]){
-          vocoder[i].unpatch(out[i]);
-          delay[i].unpatch(vocoder[i]);
-          delay[i].patch(out[i]);
-        }
-        else{
-          vocoder[i].unpatch(out[i]);
-          lowpass[i].unpatch(vocoder[i]);
-          lowpass[i].patch(out[i]);
-        }
-        vocoder[i].unpatch(out[i]);
-        wave[i].unpatch(vocoder[i]);
-        
-      }
-    }
-    else if(controlEvent.isFrom(rhcpTracks[i] + " Filter")){
+    if(controlEvent.isFrom(rhcpTracks[i] + " Filter")){
       highpass[i].frequency.setLastValue(controlEvent.getController().getArrayValue(0));
       lowpass[i].frequency.setLastValue(controlEvent.getController().getArrayValue(1));
     }
@@ -184,7 +111,7 @@ void controlEvent(ControlEvent controlEvent) {
 void draw() {
   pushMatrix();
   
-  fill(#1A1F18, 10);
+  fill(#1A1F18, 20);
   noStroke();
   rect(0,0,width,height);
   translate(width*0.68, height/2);
@@ -261,15 +188,87 @@ void draw() {
 
 void mousePressed(){
   for(int i = 0; i < rhcpTracks.length; i++){
-    gainKnob[i].isMouseOnKnob(mouseX, mouseY);
-    delayKnob[i].isMouseOnKnob(mouseX, mouseY);
-    vocoderKnob[i].isMouseOnKnob(mouseX, mouseY);
+    if(gainKnob[i].switchSelection(mouseX, mouseY)){
+      if(gainKnob[i].selected){
+        gain[i].setValue(gainKnob[i].getValue()*100-50);
+      }
+      else{
+        gain[i].setValue(0); 
+      }
+    }
+    else if(delayKnob[i].switchSelection(mouseX, mouseY)){
+      delayIsPatched[i] = !delayIsPatched[i];
+      if(delayKnob[i].selected){
+        if(vocoderIsPatched[i]){
+          lowpass[i].unpatch(vocoder[i]);
+          lowpass[i].patch(delay[i]).patch(vocoder[i].modulator);
+          //lowpass[i].unpatch(bitcrush[i]);
+          //lowpass[i].patch(delay[i]).patch(bitcrush[i]);
+        }
+        else{
+          lowpass[i].unpatch(out[i]);
+          lowpass[i].patch(delay[i]).patch(out[i]);
+        }
+      }
+      else{
+        if(vocoderIsPatched[i]){
+          delay[i].unpatch(vocoder[i]);
+          //delay[i].unpatch(bitcrush[i]);
+          lowpass[i].unpatch(delay[i]);
+          lowpass[i].patch(vocoder[i].modulator);
+          //lowpass[i].patch(bitcrush[i]);
+        }
+        else{
+          delay[i].unpatch(out[i]);
+          lowpass[i].unpatch(delay[i]);
+          lowpass[i].patch(out[i]);
+        }
+      }
+    }
+    else if(vocoderKnob[i].switchSelection(mouseX, mouseY)){
+      vocoderIsPatched[i] = !vocoderIsPatched[i];
+      if(vocoderKnob[i].selected){
+        if(delayIsPatched[i]){
+          delay[i].unpatch(out[i]);
+          delay[i].patch(vocoder[i].modulator).patch(out[i]);
+          //delay[i].patch(bitcrush[i]).patch(out[i]);
+        }
+        else{
+          lowpass[i].unpatch(out[i]);
+          lowpass[i].patch(vocoder[i].modulator).patch(out[i]);
+          //lowpass[i].patch(bitcrush[i]).patch(out[i]);
+        }
+        wave[i].patch(vocoder[i]).patch(out[i]);
+      }
+      else{
+        if(delayIsPatched[i]){
+          vocoder[i].unpatch(out[i]);
+          delay[i].unpatch(vocoder[i]);
+          //bitcrush[i]vocoder[i].unpatch(out[i]);
+          //delay[i].unpatch(bitcrush[i]vocoder[i]);
+          delay[i].patch(out[i]);
+        }
+        else{
+          vocoder[i].unpatch(out[i]);
+          lowpass[i].unpatch(vocoder[i]);
+          //bitcrush[i].unpatch(out[i]);
+          //lowpass[i].unpatch(bitcrush[i]);
+          lowpass[i].patch(out[i]);
+        }
+        vocoder[i].unpatch(out[i]);
+        wave[i].unpatch(vocoder[i]);
+      }
+    }
   }
 }
 
 void mouseDragged(){
   for(int i = 0; i < rhcpTracks.length; i++){
-    if(gainKnob[i].movable){
+    gainKnob[i].isMouseOnKnob(mouseX, mouseY);
+    delayKnob[i].isMouseOnKnob(mouseX, mouseY);
+    vocoderKnob[i].isMouseOnKnob(mouseX, mouseY);
+    
+    if(gainKnob[i].movable && gainKnob[i].selected){
       gain[i].setValue(gainKnob[i].getValue()*100-50);
     }
     else if(delayKnob[i].movable){
