@@ -9,7 +9,7 @@ class ControlKnob{
   // Touch currentTouchReference;
   
   // Constant Ratios
-  final color backgroundColor = #262626;
+  final color backgroundColor = #202020;
   final float hitboxSpread = 1.4;
   final float centerCircle = 0.7;
   final float scanPadding = 1.1;
