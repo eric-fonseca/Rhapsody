@@ -80,9 +80,9 @@ void setup() {
     vocoderIsPatched[i] = false;
     wave[i] = new Oscil(100, 0.8, Waves.SAW);
                   
-    gainKnob[i] = new ControlKnob(150, i*130+60, 65, PI/8, 5, color(247, 255, 58), color(255,46,135), PI, 0.5); 
-    delayKnob[i] = new ControlKnob(250, i*130+60, 65, PI/8, 5, color(247, 255, 58), color(255,46,135), PI, 0.35); 
-    vocoderKnob[i] = new ControlKnob(350, i*130+60, 65, PI/8, 5, color(247, 255, 58), color(255,46,135), PI, 0.2);
+    gainKnob[i] = new ControlKnob(150, i*130+60, 65, PI/8, 5, color(247, 255, 58), color(255,46,135), PI, 0); 
+    delayKnob[i] = new ControlKnob(250, i*130+60, 65, PI/8, 5, color(247, 255, 58), color(255,46,135), PI, -0.8); 
+    vocoderKnob[i] = new ControlKnob(350, i*130+60, 65, PI/8, 5, color(247, 255, 58), color(255,46,135), PI, -2);
                   
     cp5.addRange(rhcpTracks[i] + " Filter", 20, 20000, 125, i*130+105, 260, 20)
                   .setLabel("")
