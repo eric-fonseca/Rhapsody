@@ -6,6 +6,8 @@ class ControlKnob{
   Boolean selected = false;
   Boolean movable = false;
   Boolean block = false;
+  
+  PImage outerGlow = loadImage("knobGlow.png");
   // Touch currentTouchReference;
   
   // Constant Ratios
@@ -42,7 +44,8 @@ class ControlKnob{
     translate(x,y);
     noStroke();
     if(selected){
-      fill(primary);
+      image(outerGlow, -r/2, -r/2, r, r);
+      fill(#F866F3);
     } else {
       fill(#C8C8C8);
     }
