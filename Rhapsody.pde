@@ -5,6 +5,7 @@ import ddf.minim.analysis.*;
 import ddf.minim.ugens.*;
 import ddf.minim.effects.*;
 import controlP5.*;
+import processing.net.*;
 
 /*
 Possible effects:
@@ -46,9 +47,14 @@ ControlKnob[] vocoderKnob = new ControlKnob[rhcpTracks.length];
 int r = 200;
 float rad = 70;
 
+Server server;
+String songData = "";
+
 void setup() {
   size(1280,800);
   background(38,38,38);
+  
+  server = new Server(this, 5204); 
   
   minim = new Minim(this);
   cp5 = new ControlP5(this);
@@ -109,6 +115,8 @@ void controlEvent(ControlEvent controlEvent) {
 }
 
 void draw() {
+  visualizerData = "";
+  
   pushMatrix();
   
   fill(#1A1F18, 20);
@@ -117,7 +125,6 @@ void draw() {
   translate(width*0.68, height/2);
   
   for(int i = 0; i < rhcpTracks.length; i++){
-    
     switch(i){
       //Drums
       case 0:
@@ -146,18 +153,30 @@ void draw() {
     strokeWeight(3);
     
     int bsize = out[i].bufferSize();
-    for(int u = 0; u < bsize - 1; u += 10){
+    float firstX = 0, firstY = 0;
+    
+    for(int u = 0; u < bsize - 1; u += 10){ //called 103 times
       float x = (r)*cos(u*2*PI/bsize);
       float y = (r)*sin(u*2*PI/bsize);
       float x2 = (r + out[i].left.get(u)*100)*cos(u*2*PI/bsize);
       float y2 = (r + out[i].left.get(u)*100)*sin(u*2*PI/bsize);
-      
+     
       line(x,y,x2,y2);
+      
+      if(u == 0){
+        firstX = x;
+        firstY = y;
+      }
+      else if(u == 1020){
+        line(x2, y2, firstX, firstY);
+      }
+      
+      songData += x+"a"+y+"b"+x2+"c"+y2+"d"; //projector data: x = a, y = b, x2 = c, y2 = d, 103*numTracks = total (618)
     }
     beginShape();
     noFill();
     stroke(rhcpColors[i], 20);
-    for(int y = 0; y < bsize; y+= 30){
+    for(int y = 0; y < bsize; y+= 30){ //called 35 times
       float x3 = (r + out[i].left.get(y)*100)*cos(y*2*PI/bsize);
       float y3 = (r + out[i].left.get(y)*100)*sin(y*2*PI/bsize);
       vertex(x3,y3);
@@ -166,10 +185,14 @@ void draw() {
       strokeWeight(2);
       point(x3,y3);
       popStyle();
+      
+      songData += x3+"x"+y3+"y"; //projector data: x3 = x, y3 = y, 35*numTracks = total (210)
     }
     endShape();
   }
   popMatrix();
+  
+  server.write(songData+"e");
   
   for(int i = 0; i < rhcpTracks.length; i++){
     gainKnob[i].Knob();
