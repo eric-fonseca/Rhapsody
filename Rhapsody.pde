@@ -115,7 +115,7 @@ void controlEvent(ControlEvent controlEvent) {
 }
 
 void draw() {
-  visualizerData = "";
+  songData = "";
   
   pushMatrix();
   
@@ -171,7 +171,7 @@ void draw() {
         line(x2, y2, firstX, firstY);
       }
       
-      songData += x+"a"+y+"b"+x2+"c"+y2+"d"; //projector data: x = a, y = b, x2 = c, y2 = d, 103*numTracks = total (618)
+      songData += out[i].left.get(u) + "/"; //projector data
     }
     beginShape();
     noFill();
@@ -185,14 +185,12 @@ void draw() {
       strokeWeight(2);
       point(x3,y3);
       popStyle();
-      
-      songData += x3+"x"+y3+"y"; //projector data: x3 = x, y3 = y, 35*numTracks = total (210)
     }
     endShape();
   }
   popMatrix();
   
-  server.write(songData+"e");
+  server.write(songData+"x");
   
   for(int i = 0; i < rhcpTracks.length; i++){
     gainKnob[i].Knob();

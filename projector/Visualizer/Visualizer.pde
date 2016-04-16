@@ -1,13 +1,15 @@
 import processing.net.*;
+import java.util.Arrays; 
 
 Client client;
 
 String messageFromServer = "";
 String songData = "";
-String visualizerData = "";
-String visualizerCopy = "";
+float[] visualizerData;
 boolean dataReceived = false;
 color trackColor = #FFFFFF;
+int r = 200;
+int runOnce = 0;
 
 void setup() {
   size(800, 800);
@@ -17,7 +19,7 @@ void setup() {
 }
 
 void draw() {
-  fill(#1A1F18, 10);
+  fill(#1A1F18, 20);
   noStroke();
   rect(0,0,width,height);
   translate(width/2, height/2);
@@ -28,17 +30,15 @@ void draw() {
     
     songData += messageFromServer;
     
-    if(messageFromServer.indexOf("e") != -1){ //checks if all data is received, "e" is always the last character
+    if(messageFromServer.indexOf("x") != -1){ //checks if all data is received, "x" is always the last character
       dataReceived = true;
-      songData = songData.substring(0, songData.indexOf("e"));
-      visualizerData = songData;
-      
+      songData = songData.substring(0, songData.indexOf("x")); //remove the "x" at the end of the data
+      visualizerData = float(songData.split("/"));
       songData = "";
     }
   }
   
   if(dataReceived){
-     visualizerCopy = visualizerData;
      for(int i = 0; i < 6; i++){
         switch(i){
           //Drums
@@ -46,18 +46,22 @@ void draw() {
           case 1:
           case 2:
             trackColor = #FD756D;
+            r = 175;
             break;
           // Lead-Guitar
           case 3:
             trackColor = #F7FF3A;
+            r = 275;
             break;
           // Rhythm-Guitar
           case 4:
             trackColor = #FF2E87;
+            r = 125;
             break;
           // Vocals
           case 5:
             trackColor = #FABA54;
+            r = 225;
             break;
         }
         
@@ -66,60 +70,28 @@ void draw() {
         stroke(trackColor, 20);
         strokeWeight(3);
         
-        for(int j = 0; j < 1023; j += 10){ //called 103 times
-          Float x = null;
-          Float y = null;
-          Float x2 = null;
-          Float y2 = null;
-        
-          if(visualizerData.indexOf("a") != -1){
-            x = float(visualizerData.substring(0, visualizerData.indexOf("a")));
-            visualizerData = visualizerData.substring(visualizerData.indexOf("a") + 1);
-          }
-          if(visualizerData.indexOf("b") != -1){
-            y = float(visualizerData.substring(0, visualizerData.indexOf("b")));
-            visualizerData = visualizerData.substring(visualizerData.indexOf("b") + 1);
-          }
-          if(visualizerData.indexOf("c") != -1){
-            x2 = float(visualizerData.substring(0, visualizerData.indexOf("c")));
-            visualizerData = visualizerData.substring(visualizerData.indexOf("c") + 1);
-          }
-          if(visualizerData.indexOf("d") != -1){
-            y2 = float(visualizerData.substring(0, visualizerData.indexOf("d")));
-            visualizerData = visualizerData.substring(visualizerData.indexOf("d") + 1);
-          }
+        for(int u = 0; u < 1023; u += 10){ //called 103 times
+          float x = (r)*cos(u*2*PI/1024);
+          float y = (r)*sin(u*2*PI/1024);
+          float x2 = (r + visualizerData[u/10+i*103]*100)*cos(u*2*PI/1024);
+          float y2 = (r + visualizerData[u/10+i*103]*100)*sin(u*2*PI/1024);
           
-          if(x != null && y != null && x2 != null && y2 != null){
-            line(x, y, x2, y2);
-          }
+          line(x,y,x2,y2);
         }
         beginShape();
         noFill();
         stroke(trackColor, 20);
-        for(int k = 0; k < 1024; k+= 30){ //called 35 times
-          Float x3 = null;
-          Float y3 = null;
-        
-          if(visualizerData.indexOf("x") != -1){
-            x3 = float(visualizerData.substring(0, visualizerData.indexOf("x")));
-            visualizerData = visualizerData.substring(visualizerData.indexOf("x") + 1);
-          }
-          if(visualizerData.indexOf("y") != -1){
-            y3 = float(visualizerData.substring(0, visualizerData.indexOf("y")));
-            visualizerData = visualizerData.substring(visualizerData.indexOf("y") + 1);
-          }
-        
-          if(x3 != null && y3 != null){
-            vertex(x3,y3);
-            pushStyle();
-            stroke(trackColor);
-            strokeWeight(2);
-            point(x3,y3);
-            popStyle();
-          }
+        for(int y = 0; y < 1024; y+= 30){ //called 35 times
+          float x3 = (r + visualizerData[y/10+i*103]*100)*cos(y*2*PI/1024);
+          float y3 = (r + visualizerData[y/10+i*103]*100)*sin(y*2*PI/1024);
+          vertex(x3,y3);
+          pushStyle();
+          stroke(trackColor);
+          strokeWeight(2);
+          point(x3,y3);
+          popStyle();
         }
-        endShape(); 
+        endShape();
       }
-      visualizerData = visualizerCopy;
    }
 }
