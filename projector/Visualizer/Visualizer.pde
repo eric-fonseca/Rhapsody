@@ -1,6 +1,8 @@
 import processing.net.*;
+import processing.video.*;
 
 Client client;
+Movie musicVideo;
 
 String messageFromServer = "";
 String songData = "";
@@ -14,9 +16,14 @@ void setup() {
   
   // Create the Client, connect to server at 127.0.0.1 (localhost), port 5204
   client = new Client(this, "127.0.0.1", 5204);
+  
+  musicVideo = new Movie(this, "RHCPsnow.mp4"); //music videos should be placed in the data directory
+  musicVideo.play();
 }
 
 void draw() {
+  pushMatrix();
+  
   fill(#1A1F18, 20);
   noStroke();
   rect(0,0,width,height);
@@ -97,4 +104,11 @@ void draw() {
         endShape();
       }
    }
+   
+   popMatrix();
+   image(musicVideo, 0, 0, 220, 165);
+}
+
+void movieEvent(Movie m) {
+  m.read();
 }

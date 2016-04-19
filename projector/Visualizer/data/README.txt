@@ -1,0 +1,1 @@
+All music videos should be placed in this directory. Github has a 100mb size limit and will not allow the files to be stored here.
