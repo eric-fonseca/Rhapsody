@@ -1,13 +1,14 @@
-ControlCenter cc = new ControlCenter(400,300, 250, 4);
+ControlCenter cc;
 
 void setup(){
-  size(800,600);
+  size(1000,600);
+  cc = new ControlCenter(width/2,height/2, 250, 4);
 }
 
 void draw(){
   fill(0);
   noStroke();
-  rect(0,0,800,600);
+  rect(0,0,width,height);
   cc.drawAll();
 }
 
