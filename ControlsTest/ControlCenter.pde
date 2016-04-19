@@ -1,13 +1,14 @@
+// Merging Point for all UI components, handles intra-control behaviors
 class ControlCenter{
   
   // Constants used to safely & quickly change aspects of the program, to act as an interface for Team Designers/Developers
-  final float centerCircleRatio = 0.5; // Relative radius ratio of the colored circle within the center of the class
+  final float CenterControlRatio = 0.5; // Relative radius ratio of the colored circle within the center of the class
   final float outerRingRatio = 1.0; // Relative radius ratio of the outer dot path
   final float outerRingRotate = -0.0010; // The speed of which the outer dot path rotates
   final float innerRingRatio = 0.5; // Relative radius ratio of the inner dot path
   final float innerRingRotate = 0.0015; // Relative radius ratio of the inner dot path
   
-  CenterCircle centerCircle;
+  CenterControl centerCircle;
   DotPath outer, inner;
   TrackControl[] controls;
   
@@ -24,21 +25,21 @@ class ControlCenter{
     controls = new TrackControl[nc];
     
     // Creating classes
-    centerCircle = new CenterCircle(x,y,r*centerCircleRatio, 8, color(247, 255, 58), color(255,46,135));
+    centerCircle = new CenterControl(x,y,r*CenterControlRatio, 8, color(247, 255, 58), color(255,46,135));
     outer = new DotPath(x,y,r*outerRingRatio,5,color(255, 202), 30, outerRingRotate);
     inner = new DotPath(x,y,r*innerRingRatio,5,color(255, 202), 20, innerRingRotate);
     for(int i = 0; i < nc; i++){
       float temp = 2 * PI / nc;
-      TrackControl c = new TrackControl(x,y,r,i * temp - PI,inner,outer,5,color(247, 255, 58),color(255,46,135));
+      TrackControl c = new TrackControl(x,y,r,i * temp - PI,inner,outer,centerCircle,5,color(247, 255, 58),color(255,46,135));
       controls[i] = c;
     }
   }
   
-  // This function draws all of the classes, built intending it to be run every frame. Call within Draw()
+  // This function draws all of the classes, built intending it to be ran every frame. Call within Draw()
   void drawAll(){
     outer.drawDotPath(); 
     inner.drawDotPath();
-    centerCircle.drawCenterCircle();
+    centerCircle.drawCenterControl();
     
     splitControls();
     
@@ -46,6 +47,8 @@ class ControlCenter{
       limitSelections(controls[i], i);
       controls[i].update();
       controls[i].drawTrackControl();
+      controls[i].drawControlKnobs();
+      controls[i].drawEchoes();
     }
     
     if(!rsc){
@@ -59,11 +62,11 @@ class ControlCenter{
   
     // This function causes there to only allow one control be to selected on each side at a given moment.
     void limitSelections(TrackControl c, int i){
-      if(controls[i].getSelected() == true){
+      if(controls[i].selected == true){
         if(c.getDirection() == "right"){
           if(cri != -1){
             if(i != cri){
-              c.setSelected(false); // refuse to select
+              c.selected = false; // refuse to select
               controls[cri].addEcho();
             } 
             rsc = true;
@@ -76,7 +79,7 @@ class ControlCenter{
         if(c.getDirection() == "left"){
           if(cli != -1){
             if(i != cli){
-              c.setSelected(false); // refuse to select
+              c.selected = false; // refuse to select
               controls[cli].addEcho();
             }
             lsc = true;
@@ -110,13 +113,13 @@ class ControlCenter{
           }
           
           // Note that function only runs if both controls are in an unselected state
-          if(controls[i].getSelected() == false && controls[u].getSelected() == false){
+          if(controls[i].selected == false && controls[u].selected == false){
             boolean a1B = false; 
             boolean a2B = false;
             TrackControl c1 = controls[i];
             TrackControl c2 = controls[u];
-            float a1 = c1.getAngle() + PI;
-            float a2 = c2.getAngle() + PI;
+            float a1 = c1.a + PI;
+            float a2 = c2.a + PI;
             if(Math.abs(Math.abs(a1) - Math.abs(a2)) < minAngleDifference){
               if(a1 > a2){
                 pushControls(a1,c1,repellingForce);
@@ -140,11 +143,11 @@ class ControlCenter{
         if(t < 0 && a < -PI){
          a += 2 * PI; 
         }
-        c.setAngle(a);
+        c.a = a;
       }
   
   // Function to relay mousePress data to controls. Call within mousePressed();
-  void detectPress(float x_, float y_){
+  void detectPress(float x_, float y_){ 
     for(int i = 0; i < nc; i++){
       controls[i].passMousePress(x_,y_);
     }
@@ -155,6 +158,7 @@ class ControlCenter{
     for(int i = 0; i < nc; i++){
       controls[i].passMouseDrag(x_,y_);
     }
+    centerCircle.passMouseDrag(x_,y_);
   }
   
   // Function to relay mouseRelease data to controls. Call within mouseReleased();
@@ -162,101 +166,8 @@ class ControlCenter{
     for(int i = 0; i < nc; i++){
       controls[i].passMouseRelease();
     }
+    centerCircle.passMouseRelease();
     outer.dragPause(false);
     inner.dragPause(false);
-  }
-}
-
-class CenterCircle{
-  float x, y, r, sw;
-  color cPrimary, cSecondary;
-  
-  CenterCircle(float x_, float y_, float r_, float sw_, color c1_, color c2_){
-    x = x_;
-    y = y_;
-    r = r_;
-    sw = sw_;
-    cPrimary = c1_;
-    cSecondary = c2_;
-  }
-  
-  void drawCenterCircle(){
-    pushMatrix();
-    translate(x,y);
-    stroke(cPrimary);
-    strokeWeight(sw);
-    fill(0);
-    ellipse(0,0,r*2,r*2);
-    popMatrix(); 
-  }
-}
-
-// The dotted circular line
-class DotPath{
-  float x, y, r;
-  float dr;
-  color dcolor;
-  int numDots;
-  float orientation, direction, rate;
-  float angleBetween;
-  
-  DotPath(float x_, float y_, float r_, float dr_, color dc_, int nd_, float dir_){
-    x = x_;
-    y = y_;
-    r = r_;
-    dr = dr_;
-    dcolor = dc_;
-    numDots = nd_;
-    orientation = 0;
-    direction = dir_;
-    rate = direction;
-  }
-  
-    float getNumDots(){
-      return numDots; 
-    }
-    
-    float getOrientation(){
-      return orientation; 
-    }
-    
-    float getRadiusRatio(){
-      return r; 
-    }
-    
-    float getDirection(){
-      return direction; 
-    }
-    
-    float getAngleBetween(){
-      return angleBetween; 
-    }
-  
-  void drawDotPath(){
-    angleBetween = 2 * PI / numDots;
-    orientation += rate;
-    for(int i = 1; i <= numDots; i++){
-      float tempAngle = angleBetween * i - PI + orientation;
-      if(tempAngle < -PI){
-        tempAngle += 2*PI; 
-      } else if(tempAngle > PI){
-        tempAngle -= 2*PI; 
-      }
-      pushMatrix();
-      translate(x,y);
-      rotate(tempAngle);
-      noStroke();
-      fill(dcolor);
-      ellipse(0, r, dr, dr);
-      popMatrix();
-    }
-  }
-  
-  void dragPause(boolean b_){
-    if(b_){
-      rate = 0; 
-    } else {
-      rate = direction; 
-    }
   }
 }

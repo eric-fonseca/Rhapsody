@@ -1,10 +1,12 @@
+// Track selection UI component
 class TrackControl{
   
   // Constants used to safely & quickly change aspects of the program, to act as an interface for Team Designers/Developers
+  final float increasedRotateRatio = 10; // The increased speed of rotation when center control is selected
   final float selectedControlRatio = 0.3; // Relative radius ratio of controls when they are selected
   final float unselectedControlRatio = 0.2; // Relative radius ratio of controls when they are selected
-  final int numberOfKnobs = 3; // 
-  final float widthSpacingRatio = 0.10;
+  final int numberOfKnobs = 3;
+  final float widthSpacingRatio = 0.10; // Spacing of of far the knobs are drawn from the edges of the screen
   final float knobRadius = 100;
   final float animationRate = 10; // Speed of how quickly this class snaps to new given positions
   
@@ -16,52 +18,38 @@ class TrackControl{
   boolean selected = false;
   boolean isDragging = false;
   DotPath inner, outer;
-  ArrayList<ControlEcho> echoes;
+  CenterControl cc;
+  ArrayList<Echo> echoes;
   ControlKnob[] knobs = new ControlKnob[numberOfKnobs];
   float heightSpacing;
   
-  // parameters looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooool
-  TrackControl(float cx_, float cy_, float r_, float a_, DotPath inner_, DotPath outer_, float sw_, color c1_, color c2_){
-    cx = cx_;
-    cy = cy_;
-    cr = r_;
-    x = cx_;
-    y = cy_;
-    r = 0;
-    a = a_;
-    sw = sw_;
-    tx = sin(a) * inner_.getRadiusRatio() + cx;
-    ty = cos(a) * outer_.getRadiusRatio() + cy;
-    tr = 0;
-    rate = inner_.getDirection();
+  TrackControl(float cx_, float cy_, float r_, float a_, DotPath inner_, DotPath outer_, CenterControl cc_, float sw_, color c1_, color c2_){
+    cx = cx_; // reference to x-value of center point of ControlCenter
+    cy = cy_; // reference to y-value of center point of ControlCenter
+    cr = r_; // reference to the distance of this object from the center point of ControlCenter
+    x = cx_; // current drawn x-value
+    y = cy_; // current drawn y-value
+    r = 0; // current radius size
+    a = a_; // angle away from center point of ControlCenter
+    sw = sw_; // stroke width
+    tx = sin(a) * inner_.r + cx; // the x-value where the track control move towards over time
+    ty = cos(a) * outer_.r + cy; // the y-value where the track control move towards over time
+    tr = 0; // For changes in radius over time
+    rate = inner_.direction; // rate of rotation while in the inner dot path
     cPrimary = c1_;
     cSecondary = c2_;
-    inner = inner_;
-    outer = outer_;
-    echoes = new ArrayList<ControlEcho>();
-    heightSpacing = height/(numberOfKnobs + 1);
+    inner = inner_; // Reference to dot path
+    outer = outer_; // Reference to dot path
+    cc = cc_; // Reference to center control
+    echoes = new ArrayList<Echo>(); // Echoes are for user feedback when an action is denied
+    heightSpacing = height/(numberOfKnobs + 1); // building variable
 
+    // Creating knobs
     for (int i = 0; i < numberOfKnobs; i++){
       knobs[i] = new ControlKnob(0, 0, knobRadius, PI/8, 5, color(247, 255, 58), color(255,46,135), PI, 0);
     }
   }
   
-    float getAngle(){
-      return a; 
-    }
-    
-    void setAngle(float a_){
-      a = a_;
-    }
-  
-    boolean getSelected(){
-     return selected; 
-    }
-    
-    void setSelected(boolean b_){
-      selected = b_;
-    }
-    
     String getDirection(){
       if(Math.abs(a) > PI/2){
         return "left";
@@ -70,9 +58,15 @@ class TrackControl{
       }
     }
   
-  // There's a lot of repeating for-loops, but for the sake of the least amount of if-statement checks, this runs the most efficiently- albeit looks ugly on code.
+  // Built to be ran every frame
   void update(){
     if(!isDragging){
+      if(cc.selected){
+        rate = inner.direction * increasedRotateRatio;
+      } else {
+        rate = inner.direction;
+      }
+      // Code to slowly rotate the track control while on the inner dot path
       float tempAngle = a + rate;
       if(tempAngle < -PI){
         tempAngle += 2*PI; 
@@ -84,40 +78,41 @@ class TrackControl{
       if(selected){
         tr = cr * selectedControlRatio;
         float widthSpacing;
-        if(Math.abs(a) > PI/2){
+        if(Math.abs(a) > PI/2){ // If selection is left side
           widthSpacing = width * widthSpacingRatio;
-          tx = cos(PI) * outer.getRadiusRatio() + cx;
-          ty = sin(PI) * outer.getRadiusRatio() + cy;
+          tx = cos(PI) * outer.r + cx;
+          ty = sin(PI) * outer.r + cy;
+          // Changes the knobs towards the left side
           for(int i = 0; i < numberOfKnobs; i++){
-            knobs[i].setNewPosition(widthSpacing, heightSpacing * (i + 1), PI, 0);
+            knobs[i].setNewPosition(widthSpacing, heightSpacing * (i + 1), PI);
           }
-        } else {
+        } else { // If selection is right side
           widthSpacing = width - width * widthSpacingRatio;
-          tx = cos(0) * outer.getRadiusRatio() + cx;
-          ty = sin(0) * outer.getRadiusRatio() + cy;
+          tx = cos(0) * outer.r + cx;
+          ty = sin(0) * outer.r + cy;
+          // Changes the knobs towards the right side
           for(int i = 0; i < numberOfKnobs; i++){
-            knobs[i].setNewPosition(widthSpacing, heightSpacing * (i + 1), PI, 0);
+            knobs[i].setNewPosition(widthSpacing, heightSpacing * (i + 1), PI);
           }
         }
         rate = 0;
-      } else {
+      } else { // If not selected
         tr = cr * unselectedControlRatio;
-        tx = cos(a) * inner.getRadiusRatio() + cx;
-        ty = sin(a) * inner.getRadiusRatio() + cy;
-        rate = inner.getDirection();
+        tx = cos(a) * inner.r + cx;
+        ty = sin(a) * inner.r + cy;
+        rate = inner.direction;
       }
-    } else {
+    } else { // If is currently being dragged
       a = atan2(y - cy,x - cx);
     }
     
+    // Rate of change is higher when objects are farther away from objective location
     r += (tr - r)/animationRate;
     x += (tx - x)/animationRate;
     y += (ty - y)/animationRate; 
   }
   
   void drawTrackControl(){
-    drawEchoes();
-    
     pushMatrix();
     if(selected){
       if(Math.abs(a) > PI/2){
@@ -132,25 +127,55 @@ class TrackControl{
     fill(0);
     ellipse(x,y,r,r);
     popMatrix();
-    
-    if(selected){
+  }
+  
+  void drawControlKnobs(){
+   // pushing and popping occurs inside the ControlKnob class
+   if(selected && !isDragging){
       for(int i = 0; i < numberOfKnobs; i++){
-        if(knobs[i].getXPosition() != 0 && knobs[i].getYPosition() != 0){
-          knobs[i].setActive(true);
+        if(knobs[i].x != 0 && knobs[i].y != 0){
+          knobs[i].active = true;
           knobs[i].drawKnob();
         }
       }
-    } else {
+    } else { // Doesn't draw the knobs
       for(int i = 0; i < numberOfKnobs; i++){
-        knobs[i].setActive(false);
+        knobs[i].active = false;
       }
+    } 
+  }
+  
+  void drawEchoes(){
+    for(int i = echoes.size() - 1; i >= 0; i--){
+      if(echoes.get(i).getOpacity() > 0){
+        echoes.get(i).update();
+      } else {
+        echoes.remove(i); 
+      }
+    } 
+  }
+
+  void addEcho(){// Only one echo per control for the moment
+    if(echoes.size() > 0){
+      return; 
     }
+    
+    color temp;
+    if(Math.abs(a) > PI/2){
+      temp = cSecondary;
+    } else {
+      temp = cPrimary;
+    }
+    Echo ce = new Echo(x,y,r,sw,temp);
+    echoes.add(ce);
   }
   
   // Mouse Event Functions
   void passMousePress(float x_, float y_){
-    for(int i = 0; i < numberOfKnobs; i++){
-      knobs[i].switchSelection(x_, y_);
+    if(selected){
+      for(int i = 0; i < numberOfKnobs; i++){
+          knobs[i].switchSelection(x_, y_);
+      }
     }
   }
   
@@ -170,8 +195,10 @@ class TrackControl{
       }
     }
     
-    for(int i = 0; i < numberOfKnobs; i++){
-      knobs[i].isMouseOnKnob(x_, y_);
+    if(selected){
+      for(int i = 0; i < numberOfKnobs; i++){
+        knobs[i].isMouseOnKnob(x_, y_);
+      }
     }
   }
   
@@ -184,75 +211,7 @@ class TrackControl{
     }
     
     for(int i = 0; i < echoes.size(); i++){
-      echoes.get(i).setStart();
-    }
-  }
-  
-  void addEcho(){
-    // Only one echo per control for the moment
-    if(echoes.size() > 0){
-      return; 
-    }
-    
-    color temp;
-    if(Math.abs(a) > PI/2){
-      temp = cSecondary;
-    } else {
-      temp = cPrimary;
-    }
-    ControlEcho ce = new ControlEcho(x,y,r,sw,temp);
-    echoes.add(ce);
-  }
-  
-  void drawEchoes(){
-    for(int i = echoes.size() - 1; i >= 0; i--){
-      if(echoes.get(i).getOpacity() > 0){
-        echoes.get(i).update();
-      } else {
-        echoes.remove(i); 
-      }
-    } 
-  }
-}
-
-class ControlEcho{
-  
-  // Constants used to safely & quickly change aspects of the program, to act as an interface for Team Designers/Developers
-  final float opacityDecay = 10; // How quickly the echo's color alpha value decays each frame
-  final float radiusRate = 10; // How quickly the radius of the echo increases each frame
-  
-  float x, y, r, o, sw;
-  color primary;
-  boolean start = false;
-
-  ControlEcho(float x_, float y_, float r_, float sw_, color primary_){
-    x = x_;
-    y = y_;
-    o = 255;
-    sw = sw_;
-    primary = primary_;
-  }
-  
-    void setStart(){
-      start = true;
-    }
-    
-    float getOpacity(){
-      return o; 
-    }
-  
-  void update(){
-    if(start){
-      o -= opacityDecay;
-      r += radiusRate;
-      if(o > 0){
-        pushMatrix();
-        stroke(primary, o);
-        strokeWeight(sw);
-        noFill();
-        ellipse(x,y,r,r);
-        popMatrix();
-      }
+      echoes.get(i).start = true;
     }
   }
 }

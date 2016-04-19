@@ -1,3 +1,4 @@
+// Dial knob for the user to change how effects are changing the audio track
 class ControlKnob{
   float x, y, r, a, sw;
   float setAngle, knobAngle;
@@ -17,40 +18,24 @@ class ControlKnob{
   final int gradientParts = 20;
   
   ControlKnob(float x_, float y_, float r_, float a_, float sw_, color ccolor1_, color ccolor2_, float setAngle_, float initValue){
-    x = x_;
-    y = y_;
-    r = r_;
-    a = a_;
-    sw = sw_;
+    x = x_; // x value that the knob is based on
+    y = y_; // y value that the knob is based on
+    r = r_; // radius/size value
+    a = a_; // half the amount of angle that is not drawn of the knob arc
+    sw = sw_; // arc width
     primary = ccolor1_;
     secondary = ccolor2_;
     setAngle = setAngle_; // SetAngle should only be either 0 or PI
     knobAngle = initValue;
   }
   
-    float getXPosition(){
-      return x; 
-    }
-    
-    float getYPosition(){
-      return y; 
-    }
-  
-    void setNewPosition(float x_, float y_, float setAngle_, float initValue){
+    void setNewPosition(float x_, float y_, float setAngle_){
       x = x_;
       y = y_;
       setAngle = setAngle_; // SetAngle should only be either 0 or PI
-      knobAngle = initValue;
-    }
-    
-    boolean getActive(){
-      return active; 
-    }
-    
-    void setActive(boolean b_){
-      active = b_;
     }
   
+  // Built to be ran every frame
   void drawKnob(){
     // Background draw
     pushMatrix();
@@ -60,7 +45,7 @@ class ControlKnob{
     ellipse(0,0,r*hitboxSpread, r*hitboxSpread);
     popMatrix();
     
-    // Center circle
+    // Center circle switch
     pushMatrix();
     translate(x,y);
     noStroke();
@@ -73,7 +58,7 @@ class ControlKnob{
     ellipse(0,0,r * centerCircle,r * centerCircle);
     popMatrix();
     
-    // Dull arc
+    // Dull arc for unselected status
     pushMatrix();
     translate(x, y);
     rotate(setAngle);
@@ -83,6 +68,7 @@ class ControlKnob{
     arc(0, 0, r, r, a, 2*PI - a);
     popMatrix();
     
+    // Highlighted gradient arc for selected status
     pushMatrix();
     translate(x,y);
     rotate(setAngle);
@@ -119,45 +105,6 @@ class ControlKnob{
       arc(0, 0, r, r, a, knobAngle + PI);
     }
     popMatrix();
-   
-    /*
-    // Highlight arc
-    pushMatrix();
-    translate(x,y);
-    rotate(setAngle);
-    noFill();
-    if(selected){
-      stroke(primary);
-    } else {
-      stroke(primary, 95);
-    }
-    strokeWeight(sw);
-    if(setAngle == 0){
-      arc(0, 0, r, r, a, knobAngle);
-    } else {
-      arc(0, 0, r, r, a, knobAngle + PI);
-    }
-    popMatrix();
-    
-    // Second hightlight arc, sometimes needed due to processing's rotation handling
-    if(setAngle == 0){
-      if(knobAngle < a){
-      pushMatrix();
-      translate(x,y);
-      rotate(setAngle);
-      noFill();
-      if(selected){
-        stroke(primary);
-      } else {
-        stroke(primary, 95);
-      }
-      strokeWeight(sw);
-      arc(0, 0, r, r, a, PI);
-      arc(0, 0, r, r, -PI, knobAngle);
-      popMatrix();
-      }
-    }
-     */
     
     // Small indication circle
     pushMatrix();
@@ -217,6 +164,21 @@ class ControlKnob{
     }
    }
    
+     // support function
+     void moveToMouseAngle(float temp){
+       if(!(knobAngle > temp && block)){
+         knobAngle = temp;
+         movable = true;
+         block = false;
+       }
+       if(!(knobAngle < temp && block)){
+         knobAngle = temp;
+         movable = true;
+         block = false;
+       }
+     }
+   
+   // Returns the value ratio of the current knob
    float getValue(){
      float value;
      if(setAngle == 0){
@@ -234,19 +196,5 @@ class ControlKnob{
      }
      // Ideally never returns zero
      return 0;
-   }
-   
-   // support function
-   void moveToMouseAngle(float temp){
-     if(!(knobAngle > temp && block)){
-         knobAngle = temp;
-         movable = true;
-         block = false;
-     }
-     if(!(knobAngle < temp && block)){
-       knobAngle = temp;
-       movable = true;
-       block = false;
-     }
    }
 }
