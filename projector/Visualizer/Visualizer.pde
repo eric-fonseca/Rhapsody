@@ -1,5 +1,4 @@
 import processing.net.*;
-import java.util.Arrays; 
 
 Client client;
 
@@ -9,7 +8,6 @@ float[] visualizerData;
 boolean dataReceived = false;
 color trackColor = #FFFFFF;
 int r = 200;
-int runOnce = 0;
 
 void setup() {
   size(800, 800);
@@ -34,6 +32,7 @@ void draw() {
       dataReceived = true;
       songData = songData.substring(0, songData.indexOf("x")); //remove the "x" at the end of the data
       visualizerData = float(songData.split("/"));
+      //println(visualizerData.length);
       songData = "";
     }
   }
@@ -71,25 +70,29 @@ void draw() {
         strokeWeight(3);
         
         for(int u = 0; u < 1023; u += 10){ //called 103 times
-          float x = (r)*cos(u*2*PI/1024);
-          float y = (r)*sin(u*2*PI/1024);
-          float x2 = (r + visualizerData[u/10+i*103]*100)*cos(u*2*PI/1024);
-          float y2 = (r + visualizerData[u/10+i*103]*100)*sin(u*2*PI/1024);
-          
-          line(x,y,x2,y2);
+          if(visualizerData.length > u/10+i*103){
+            float x = (r)*cos(u*2*PI/1024);
+            float y = (r)*sin(u*2*PI/1024);
+            float x2 = (r + visualizerData[u/10+i*103]*100)*cos(u*2*PI/1024);
+            float y2 = (r + visualizerData[u/10+i*103]*100)*sin(u*2*PI/1024);
+            
+            line(x,y,x2,y2);
+          }
         }
         beginShape();
         noFill();
         stroke(trackColor, 20);
         for(int y = 0; y < 1024; y+= 30){ //called 35 times
-          float x3 = (r + visualizerData[y/10+i*103]*100)*cos(y*2*PI/1024);
-          float y3 = (r + visualizerData[y/10+i*103]*100)*sin(y*2*PI/1024);
-          vertex(x3,y3);
-          pushStyle();
-          stroke(trackColor);
-          strokeWeight(2);
-          point(x3,y3);
-          popStyle();
+          if(visualizerData.length > y/10+i*103){
+            float x3 = (r + visualizerData[y/10+i*103]*100)*cos(y*2*PI/1024);
+            float y3 = (r + visualizerData[y/10+i*103]*100)*sin(y*2*PI/1024);
+            vertex(x3,y3);
+            pushStyle();
+            stroke(trackColor);
+            strokeWeight(2);
+            point(x3,y3);
+            popStyle();
+          }
         }
         endShape();
       }
