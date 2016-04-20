@@ -10,6 +10,7 @@ float[] visualizerData;
 boolean dataReceived = false;
 color trackColor = #FFFFFF;
 int r = 200;
+boolean runOnce = true;
 
 void setup() {
   size(800, 800);
@@ -35,12 +36,15 @@ void draw() {
     
     songData += messageFromServer;
     
-    if(messageFromServer.indexOf("x") != -1){ //checks if all data is received, "x" is always the last character
+    if(messageFromServer.indexOf("t") != -1){ //checks if a full chunk of data is received, "t" is always the last character
       dataReceived = true;
-      songData = songData.substring(0, songData.indexOf("x")); //remove the "x" at the end of the data
-      visualizerData = float(songData.split("/"));
-      //println(visualizerData.length);
-      songData = "";
+      visualizerData = float(songData.substring(0, songData.indexOf("d")).split("/")); //split the data into an array of floats
+      if(runOnce){
+        float songTime = float(songData.substring(songData.indexOf("d") + 1, songData.indexOf("t")));
+        musicVideo.jump(songTime); //sync up music video with audio tracks
+        runOnce = false;
+      }
+      songData = songData.substring(songData.lastIndexOf("t") + 1); //keep trailing data
     }
   }
   

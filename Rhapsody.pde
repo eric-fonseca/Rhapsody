@@ -52,6 +52,7 @@ String songData = "";
 
 void setup() {
   size(1280,800);
+  
   background(38,38,38);
   
   server = new Server(this, 5204); 
@@ -153,7 +154,6 @@ void draw() {
     strokeWeight(3);
     
     int bsize = out[i].bufferSize();
-    float firstX = 0, firstY = 0;
     
     for(int u = 0; u < bsize - 1; u += 10){ //called 103 times
       float x = (r)*cos(u*2*PI/bsize);
@@ -162,14 +162,6 @@ void draw() {
       float y2 = (r + out[i].left.get(u)*100)*sin(u*2*PI/bsize);
      
       line(x,y,x2,y2);
-      
-      if(u == 0){
-        firstX = x;
-        firstY = y;
-      }
-      else if(u == 1020){
-        line(x2, y2, firstX, firstY);
-      }
       
       songData += out[i].left.get(u) + "/"; //projector data
     }
@@ -190,7 +182,8 @@ void draw() {
   }
   popMatrix();
   
-  server.write(songData+"x");
+  float songTime = rhcpPlayer[0].position()/1000f; //song time in seconds
+  server.write(songData+"d"+songTime+"t");
   
   for(int i = 0; i < rhcpTracks.length; i++){
     gainKnob[i].Knob();
@@ -204,7 +197,7 @@ void draw() {
   text("Drums 3", 405, 340); 
   text("Guitar", 405, 470); 
   text("Rhythm", 405, 600); 
-  text("Vocals", 405, 730); 
+  text("Vocals", 405, 730);
 }
 
 void mousePressed(){
