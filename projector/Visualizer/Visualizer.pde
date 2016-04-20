@@ -40,7 +40,7 @@ void draw() {
       dataReceived = true;
       visualizerData = float(songData.substring(0, songData.indexOf("d")).split("/")); //split the data into an array of floats
       if(runOnce){
-        float songTime = float(songData.substring(songData.indexOf("d") + 1, songData.indexOf("t")));
+        float songTime = float(songData.substring(songData.lastIndexOf("d") + 1, songData.lastIndexOf("t")));
         musicVideo.jump(songTime); //sync up music video with audio tracks
         runOnce = false;
       }
