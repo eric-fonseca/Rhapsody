@@ -1,5 +1,5 @@
 // Track selection UI component
-class TrackControl{
+class TrackControl extends Control{
   
   // Constants used to safely & quickly change aspects of the program, to act as an interface for Team Designers/Developers
   final float increasedRotateRatio = 10; // The increased speed of rotation when center control is selected
@@ -11,25 +11,22 @@ class TrackControl{
   final float animationRate = 10; // Speed of how quickly this class snaps to new given positions
   
   float cx, cy, cr;
-  float x, y, r, a, sw;
+  float a, sw;
   float tx, ty, tr;
   float rate;
   color cPrimary, cSecondary;
-  boolean selected = false;
   boolean isDragging = false;
-  DotPath inner, outer;
+  DotPathControl inner, outer;
   CenterControl cc;
   ArrayList<Echo> echoes;
-  ControlKnob[] knobs = new ControlKnob[numberOfKnobs];
+  KnobControl[] knobs = new KnobControl[numberOfKnobs];
   float heightSpacing;
   
-  TrackControl(float cx_, float cy_, float r_, float a_, DotPath inner_, DotPath outer_, CenterControl cc_, float sw_, color c1_, color c2_){
+  TrackControl(float cx_, float cy_, float r_, float a_, DotPathControl inner_, DotPathControl outer_, CenterControl cc_, float sw_, color c1_, color c2_){
+    super(cx_, cy_, 0);
     cx = cx_; // reference to x-value of center point of ControlCenter
     cy = cy_; // reference to y-value of center point of ControlCenter
     cr = r_; // reference to the distance of this object from the center point of ControlCenter
-    x = cx_; // current drawn x-value
-    y = cy_; // current drawn y-value
-    r = 0; // current radius size
     a = a_; // angle away from center point of ControlCenter
     sw = sw_; // stroke width
     tx = sin(a) * inner_.r + cx; // the x-value where the track control move towards over time
@@ -46,7 +43,7 @@ class TrackControl{
 
     // Creating knobs
     for (int i = 0; i < numberOfKnobs; i++){
-      knobs[i] = new ControlKnob(0, 0, knobRadius, PI/8, 5, color(247, 255, 58), color(255,46,135), PI, 0);
+      knobs[i] = new KnobControl(0, 0, knobRadius, PI/8, 5, color(247, 255, 58), color(255,46,135), PI, 0);
     }
   }
   
@@ -61,7 +58,7 @@ class TrackControl{
   // Built to be ran every frame
   void update(){
     if(!isDragging){
-      if(cc.selected){
+      if(cc.selection){
         rate = inner.direction * increasedRotateRatio;
       } else {
         rate = inner.direction;
@@ -75,7 +72,7 @@ class TrackControl{
       }
       a = tempAngle;
       
-      if(selected){
+      if(selection){
         tr = cr * selectedControlRatio;
         float widthSpacing;
         if(Math.abs(a) > PI/2){ // If selection is left side
@@ -114,7 +111,7 @@ class TrackControl{
   
   void drawTrackControl(){
     pushMatrix();
-    if(selected){
+    if(selection){
       if(Math.abs(a) > PI/2){
         stroke(cSecondary);
       } else {
@@ -131,7 +128,7 @@ class TrackControl{
   
   void drawControlKnobs(){
    // pushing and popping occurs inside the ControlKnob class
-   if(selected && !isDragging){
+   if(selection && !isDragging){
       for(int i = 0; i < numberOfKnobs; i++){
         if(knobs[i].x != 0 && knobs[i].y != 0){
           knobs[i].active = true;
@@ -166,21 +163,25 @@ class TrackControl{
     } else {
       temp = cPrimary;
     }
-    Echo ce = new Echo(x,y,r,sw,temp);
+    Echo ce = new Echo(x,y,tr,sw,temp);
     echoes.add(ce);
   }
   
   // Mouse Event Functions
   void passMousePress(float x_, float y_){
-    if(selected){
+    if(dist(x_,y_,x,y) < r){
+      pressed = true;
+    }
+    
+    if(selection){
       for(int i = 0; i < numberOfKnobs; i++){
-          knobs[i].switchSelection(x_, y_);
+          knobs[i].detectPress(x_, y_);
       }
     }
   }
   
   void passMouseDrag(float x_, float y_){
-    if(dist(x_,y_,x,y) < r+sw/2 || isDragging){
+    if(pressed){
       isDragging = true;
       rate = 0;
       tr = cr * selectedControlRatio;
@@ -189,25 +190,26 @@ class TrackControl{
       outer.dragPause(isDragging);
       inner.dragPause(isDragging);
       if(dist(x,y,cx,cy) > cr){
-        selected = true; 
+        selection = true; 
       } else {
-        selected = false; 
+        selection = false; 
       }
     }
     
-    if(selected){
+    if(selection){
       for(int i = 0; i < numberOfKnobs; i++){
-        knobs[i].isMouseOnKnob(x_, y_);
+        knobs[i].detectDrag(x_, y_);
       }
     }
   }
   
   void passMouseRelease(){
     isDragging = false;
+    pressed = false;
     a = atan2(y - cy,x - cx);
     
     for(int i = 0; i < numberOfKnobs; i++){
-      knobs[i].movable = false;
+      knobs[i].detectRelease();
     }
     
     for(int i = 0; i < echoes.size(); i++){

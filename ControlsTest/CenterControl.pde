@@ -1,13 +1,10 @@
 // UI component at the center of the ControlCenter
-class CenterControl{
-  float x, y, r, sw;
+class CenterControl extends Control{
+  float sw;
   color cPrimary, cSecondary;
-  boolean selected = false;
   
   CenterControl(float x_, float y_, float r_, float sw_, color c1_, color c2_){
-    x = x_;
-    y = y_;
-    r = r_;
+    super(x_, y_, r_);
     sw = sw_;
     cPrimary = c1_;
     cSecondary = c2_;
@@ -18,7 +15,7 @@ class CenterControl{
     translate(x,y);
     stroke(cPrimary);
     strokeWeight(sw);
-    if(selected){
+    if(selection){
       fill(cPrimary);
     } else {
       fill(0);
@@ -27,16 +24,20 @@ class CenterControl{
     popMatrix(); 
   }
   
-  // Mouse event
-  void passMouseDrag(float x_, float y_){
-    if(dist(x_,y_,x,y) < r + sw/2){
-      selected = true;
-    } else {
-      selected = false;
+  // Overriding press function
+  void detectPress(float x_, float y_){
+    if(dist(x_,y_,x,y) < r/2){
+      pressed = true;
+      selection = true;
     }
   }
   
-  void passMouseRelease(){
-    selected = false;
+  // Overriding drag function
+  void detectDrag(float x_, float y_){
+    if(dist(x_,y_,x,y) < r/2 && pressed){
+      selection = true;
+    } else {
+      selection = false;
+    }
   }
 }

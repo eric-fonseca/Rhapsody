@@ -1,5 +1,5 @@
 // Merging Point for all UI components, handles intra-control behaviors
-class ControlCenter{
+class MainInterface{
   
   // Constants used to safely & quickly change aspects of the program, to act as an interface for Team Designers/Developers
   final float CenterControlRatio = 0.5; // Relative radius ratio of the colored circle within the center of the class
@@ -9,7 +9,7 @@ class ControlCenter{
   final float innerRingRotate = 0.0015; // Relative radius ratio of the inner dot path
   
   CenterControl centerCircle;
-  DotPath outer, inner;
+  DotPathControl outer, inner;
   TrackControl[] controls;
   
   float x, y, r; // x-value, y-value, class wide radius
@@ -17,7 +17,7 @@ class ControlCenter{
   int cri, cli; // current right index, current left index
   boolean rsc, lsc; // right selection check, left selection check
 
-  ControlCenter(float x_, float y_, float r_, int nc_){
+  MainInterface(float x_, float y_, float r_, int nc_){
     x = x_; // x value of the center of the class
     y = y_; // y value of the center of the class
     r = r_; // radius value for the class
@@ -26,8 +26,8 @@ class ControlCenter{
     
     // Creating classes
     centerCircle = new CenterControl(x,y,r*CenterControlRatio, 8, color(247, 255, 58), color(255,46,135));
-    outer = new DotPath(x,y,r*outerRingRatio,5,color(255, 202), 30, outerRingRotate);
-    inner = new DotPath(x,y,r*innerRingRatio,5,color(255, 202), 20, innerRingRotate);
+    outer = new DotPathControl(x,y,r*outerRingRatio,5,color(255, 202), 30, outerRingRotate);
+    inner = new DotPathControl(x,y,r*innerRingRatio,5,color(255, 202), 20, innerRingRotate);
     for(int i = 0; i < nc; i++){
       float temp = 2 * PI / nc;
       TrackControl c = new TrackControl(x,y,r,i * temp - PI,inner,outer,centerCircle,5,color(247, 255, 58),color(255,46,135));
@@ -62,11 +62,11 @@ class ControlCenter{
   
     // This function causes there to only allow one control be to selected on each side at a given moment.
     void limitSelections(TrackControl c, int i){
-      if(controls[i].selected == true){
+      if(controls[i].selection == true){
         if(c.getDirection() == "right"){
           if(cri != -1){
             if(i != cri){
-              c.selected = false; // refuse to select
+              c.selection = false; // refuse to select
               controls[cri].addEcho();
             } 
             rsc = true;
@@ -79,7 +79,7 @@ class ControlCenter{
         if(c.getDirection() == "left"){
           if(cli != -1){
             if(i != cli){
-              c.selected = false; // refuse to select
+              c.selection = false; // refuse to select
               controls[cli].addEcho();
             }
             lsc = true;
@@ -113,7 +113,7 @@ class ControlCenter{
           }
           
           // Note that function only runs if both controls are in an unselected state
-          if(controls[i].selected == false && controls[u].selected == false){
+          if(controls[i].selection == false && controls[u].selection == false){
             boolean a1B = false; 
             boolean a2B = false;
             TrackControl c1 = controls[i];
@@ -147,26 +147,27 @@ class ControlCenter{
       }
   
   // Function to relay mousePress data to controls. Call within mousePressed();
-  void detectPress(float x_, float y_){ 
+  void passMousePress(float x_, float y_){ 
     for(int i = 0; i < nc; i++){
       controls[i].passMousePress(x_,y_);
     }
+    centerCircle.detectPress(x_,y_);
   }
   
   // Function to relay mouseDrag data to controls. Call within mouseDragged();
-  void detectDrag(float x_, float y_){
+  void passMouseDrag(float x_, float y_){
     for(int i = 0; i < nc; i++){
       controls[i].passMouseDrag(x_,y_);
     }
-    centerCircle.passMouseDrag(x_,y_);
+    centerCircle.detectDrag(x_,y_);
   }
   
   // Function to relay mouseRelease data to controls. Call within mouseReleased();
-  void detectRelease(){
+  void passMouseRelease(){
     for(int i = 0; i < nc; i++){
       controls[i].passMouseRelease();
     }
-    centerCircle.passMouseRelease();
+    centerCircle.detectRelease();
     outer.dragPause(false);
     inner.dragPause(false);
   }

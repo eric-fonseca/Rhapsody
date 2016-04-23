@@ -1,8 +1,8 @@
-ControlCenter cc;
+MainInterface cc;
 
 void setup(){
   size(1000,600);
-  cc = new ControlCenter(width/2,height/2, 250, 4);
+  cc = new MainInterface(width/2,height/2, 250, 4);
 }
 
 void draw(){
@@ -13,15 +13,15 @@ void draw(){
 }
 
 void mousePressed(){
- cc.detectPress(mouseX, mouseY); 
+ cc.passMousePress(mouseX, mouseY); 
 }
 
 void mouseDragged(){
-  cc.detectDrag(mouseX, mouseY);
+  cc.passMouseDrag(mouseX, mouseY);
 }
 
 void mouseReleased(){
- cc.detectRelease(); 
+ cc.passMouseRelease(); 
 }
 
 

@@ -1,16 +1,13 @@
 // The dotted circular line which rotates as a visual effect
-class DotPath {
-  float x, y, r;
+class DotPathControl extends Control{
   float dr;
   color dcolor;
   int numDots;
   float orientation, direction, rate;
   float angleBetween;
   
-  DotPath(float x_, float y_, float r_, float dr_, color dc_, int nd_, float dir_){
-    x = x_;
-    y = y_;
-    r = r_;
+  DotPathControl(float x_, float y_, float r_, float dr_, color dc_, int nd_, float dir_){
+    super(x_, y_, r_);
     dr = dr_;
     dcolor = dc_;
     numDots = nd_;

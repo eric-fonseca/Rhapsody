@@ -1,26 +1,26 @@
 // Dial knob for the user to change how effects are changing the audio track
-class ControlKnob{
-  float x, y, r, a, sw;
+class KnobControl extends Control{
+  float a, sw;
   float setAngle, knobAngle;
   color primary, secondary;
   Boolean active = false; // Use this var to state is knob is interact-able or drawn on sketch
-  Boolean selected = false;
   Boolean movable = false;
   Boolean block = false;
   PImage outerGlow = loadImage("knobGlow.png");
   
   // Constant Ratios
-  final color backgroundColor = #202020;
+  final color unpressedbackgroundColor = #202020;
+  final color pressedbackgroundColor = #404040;
+  final color unselectedCenterButtonColor = #C8C8C8;
+  final color selectedCenterButtonColor = #F866F3;
   final float hitboxSpread = 1.4;
   final float centerCircle = 0.7;
   final float scanPadding = 1.1;
   final int unselectedAlpha = 95;
   final int gradientParts = 20;
   
-  ControlKnob(float x_, float y_, float r_, float a_, float sw_, color ccolor1_, color ccolor2_, float setAngle_, float initValue){
-    x = x_; // x value that the knob is based on
-    y = y_; // y value that the knob is based on
-    r = r_; // radius/size value
+  KnobControl(float x_, float y_, float r_, float a_, float sw_, color ccolor1_, color ccolor2_, float setAngle_, float initValue){
+    super(x_, y_, r_);
     a = a_; // half the amount of angle that is not drawn of the knob arc
     sw = sw_; // arc width
     primary = ccolor1_;
@@ -34,6 +34,26 @@ class ControlKnob{
       y = y_;
       setAngle = setAngle_; // SetAngle should only be either 0 or PI
     }
+    
+    // Returns the value ratio of the current knob
+    float getValue(){
+      float value;
+      if(setAngle == 0){
+        if(knobAngle > a*1.1){
+         value = map(knobAngle, a, PI, 0, 0.5);
+         return value;
+        }
+        if(knobAngle < -1.1*a){
+         value = map(knobAngle, -PI, -a, 0.5, 1.0);
+         return value;
+        }
+      } else {
+       value = map(knobAngle, a - PI, PI - a, 0, 1.0);
+       return value;
+      }
+      // Ideally never returns zero
+      return 0;
+    }
   
   // Built to be ran every frame
   void drawKnob(){
@@ -41,7 +61,12 @@ class ControlKnob{
     pushMatrix();
     translate(x,y);
     noStroke();
-    fill(backgroundColor);
+    if(pressed){
+      fill(pressedbackgroundColor);
+    } else {
+      fill(unpressedbackgroundColor);
+    }
+    
     ellipse(0,0,r*hitboxSpread, r*hitboxSpread);
     popMatrix();
     
@@ -49,11 +74,11 @@ class ControlKnob{
     pushMatrix();
     translate(x,y);
     noStroke();
-    if(selected){
+    if(selection){
       image(outerGlow, -r/2, -r/2, r, r);
-      fill(#F866F3);
+      fill(selectedCenterButtonColor);
     } else {
-      fill(#C8C8C8);
+      fill(unselectedCenterButtonColor);
     }
     ellipse(0,0,r * centerCircle,r * centerCircle);
     popMatrix();
@@ -74,7 +99,7 @@ class ControlKnob{
     rotate(setAngle);
     noFill();
     strokeWeight(sw+1);
-    if(selected){
+    if(selection){
       float part = (PI - a)/gradientParts;
       for(int i = 1; i <= gradientParts; i++){
         stroke(map(i, 1, gradientParts, red(secondary), red(primary)),
@@ -116,22 +141,28 @@ class ControlKnob{
     popMatrix(); 
    }
    
-   boolean switchSelection(float x_, float y_){
-     if(dist(x_, y_, x, y) < (r/2 * centerCircle)){
-       if(selected){
-        selected = false; 
+   void detectPress(float x_, float y_){
+     float temp = dist(x_, y_, x, y);
+     
+     if(temp < (r/2 * centerCircle)){
+       pressed = true;
+       
+       // Toggling selection value
+       if(selection){
+        selection = false; 
        } else {
-        selected = true; 
+        selection = true; 
        }
-       return true;
+     } else if(temp < (r/2 * hitboxSpread)){
+       pressed = true;
      }
-     return false;
    }
    
    // In the future for multitouch, reference to the specific touch must be recorded at the top of the class
-   void isMouseOnKnob(float x_, float y_){
+   void detectDrag(float x_, float y_){
      float tdist = dist(x_, y_, x, y);
-     if(tdist < (r/2 * hitboxSpread) && tdist > r/2 * centerCircle){
+     //if(tdist < (r/2 * hitboxSpread) && tdist > r/2 * centerCircle){
+     if(pressed){
       float temp = atan2(y_ - y, x_ - x); // In the future of implementing multitouch, these would be the touch values instead of mouse values
       if(setAngle == 0){
         if(temp < a && temp > -a){
@@ -177,24 +208,9 @@ class ControlKnob{
          block = false;
        }
      }
-   
-   // Returns the value ratio of the current knob
-   float getValue(){
-     float value;
-     if(setAngle == 0){
-       if(knobAngle > a*1.1){
-        value = map(knobAngle, a, PI, 0, 0.5);
-        return value;
-       }
-       if(knobAngle < -1.1*a){
-        value = map(knobAngle, -PI, -a, 0.5, 1.0);
-        return value;
-       }
-     } else {
-      value = map(knobAngle, a - PI, PI - a, 0, 1.0);
-      return value;
-     }
-     // Ideally never returns zero
-     return 0;
+     
+   void detectRelease(){
+     movable = false;
+     pressed = false;
    }
 }
