@@ -28,11 +28,21 @@ class KnobControl extends Control{
     knobAngle = initValue;
   }
   
-    void setNewPosition(float x_, float y_, float setAngle_){
+    void setNewPosition(float x_, float y_, float sa_){
       x = x_;
       y = y_;
-      setAngle = setAngle_; // SetAngle should only be either 0 or PI
+      if(setAngle == 0 && sa_ == PI){
+        resetKnobAngle();
+      }
+      if(setAngle == PI && sa_ == 0){
+        resetKnobAngle();
+      }
+      setAngle = sa_; // SetAngle should only be either 0 or PI
     }
+    
+      void resetKnobAngle(){
+        knobAngle += PI;
+      }
     
     void setColorValues(color pri, color sec){
       primary = pri;
