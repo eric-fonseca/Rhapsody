@@ -12,7 +12,6 @@ class KnobControl extends Control{
   final color unpressedbackgroundColor = #202020;
   final color pressedbackgroundColor = #404040;
   final color unselectedCenterButtonColor = #C8C8C8;
-  final color selectedCenterButtonColor = #F866F3;
   final float hitboxSpread = 1.4;
   final float centerCircle = 0.7;
   final float scanPadding = 1.1;
@@ -33,6 +32,11 @@ class KnobControl extends Control{
       x = x_;
       y = y_;
       setAngle = setAngle_; // SetAngle should only be either 0 or PI
+    }
+    
+    void setColorValues(color pri, color sec){
+      primary = pri;
+      secondary = sec;
     }
     
     // Returns the value ratio of the current knob
@@ -76,7 +80,7 @@ class KnobControl extends Control{
     noStroke();
     if(selection){
       image(outerGlow, -r/2, -r/2, r, r);
-      fill(selectedCenterButtonColor);
+      fill(primary);
     } else {
       fill(unselectedCenterButtonColor);
     }
@@ -88,49 +92,57 @@ class KnobControl extends Control{
     translate(x, y);
     rotate(setAngle);
     noFill();
-    stroke(200);
+    stroke(unselectedCenterButtonColor);
     strokeWeight(sw);
-    arc(0, 0, r, r, a, 2*PI - a);
+    if(setAngle == 0){
+      if(knobAngle > 0){
+        arc(0, 0, r, r, knobAngle, PI);
+        arc(0, 0, r, r, -PI, -a);
+      } else {
+        arc(0, 0, r, r, knobAngle, -a);
+      }
+    } else {
+      arc(0, 0, r, r, knobAngle + PI, 2*PI - a);
+    }
     popMatrix();
     
-    // Highlighted gradient arc for selected status
+    // Highlight arc
     pushMatrix();
     translate(x,y);
     rotate(setAngle);
     noFill();
-    strokeWeight(sw+1);
     if(selection){
-      float part = (PI - a)/gradientParts;
-      for(int i = 1; i <= gradientParts; i++){
-        stroke(map(i, 1, gradientParts, red(secondary), red(primary)),
-               map(i, 1, gradientParts, green(secondary), green(primary)),
-               map(i, 1, gradientParts, blue(secondary), blue(primary)));
-        float temp;
-        /*
-        if(setAngle == 0){
-          temp = map((i - 1), 0, gradientParts, a, knobAngle);
-          if(knobAngle < a){
-            println(temp);
-            if(temp < 0){
-              arc(0, 0, r, r, temp, PI);
-            } else {
-              arc(0, 0, r, r, a, PI);
-            }
-            arc(0, 0, r, r, -PI, knobAngle);
-          } else {
-            arc(0, 0, r, r, temp, knobAngle);
-          }
-        } else {*/
-          temp = map((i - 1), 0, gradientParts, a, knobAngle + PI);
-        //}
-        arc(0, 0, r, r, temp, knobAngle + PI);
-      }
+      stroke(primary);
     } else {
-      stroke(primary, unselectedAlpha);
+      stroke(primary, 95);
+    }
+    strokeWeight(sw);
+    if(setAngle == 0){
+      arc(0, 0, r, r, a, knobAngle);
+    } else {
       arc(0, 0, r, r, a, knobAngle + PI);
     }
     popMatrix();
     
+    // Second hightlight arc, sometimes needed due to processing's rotation handling
+    if(setAngle == 0){
+      if(knobAngle < a){
+      pushMatrix();
+      translate(x,y);
+      rotate(setAngle);
+      noFill();
+      if(selection){
+        stroke(primary);
+      } else {
+        stroke(primary, 95);
+      }
+      strokeWeight(sw);
+      arc(0, 0, r, r, a, PI);
+      arc(0, 0, r, r, -PI + 0.06, knobAngle);
+      popMatrix();
+      }
+    }
+     
     // Small indication circle
     pushMatrix();
     translate(x,y);

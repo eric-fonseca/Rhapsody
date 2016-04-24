@@ -2,7 +2,6 @@
 class TrackControl extends Control{
   
   // Constants used to safely & quickly change aspects of the program, to act as an interface for Team Designers/Developers
-  final float increasedRotateRatio = 10; // The increased speed of rotation when center control is selected
   final float selectedControlRatio = 0.3; // Relative radius ratio of controls when they are selected
   final float unselectedControlRatio = 0.2; // Relative radius ratio of controls when they are selected
   final int numberOfKnobs = 3;
@@ -13,16 +12,16 @@ class TrackControl extends Control{
   float cx, cy, cr;
   float a, sw;
   float tx, ty, tr;
-  float rate;
+  float rate, increasedRate, heightSpacing;
   color cPrimary, cSecondary;
   boolean isDragging = false;
   DotPathControl inner, outer;
   CenterControl cc;
   ArrayList<Echo> echoes;
   KnobControl[] knobs = new KnobControl[numberOfKnobs];
-  float heightSpacing;
   
-  TrackControl(float cx_, float cy_, float r_, float a_, DotPathControl inner_, DotPathControl outer_, CenterControl cc_, float sw_, color c1_, color c2_){
+  
+  TrackControl(float cx_, float cy_, float r_, float a_, DotPathControl inner_, DotPathControl outer_, CenterControl cc_, float sw_, color c1_, color c2_, float irr_){
     super(cx_, cy_, 0);
     cx = cx_; // reference to x-value of center point of ControlCenter
     cy = cy_; // reference to y-value of center point of ControlCenter
@@ -33,6 +32,7 @@ class TrackControl extends Control{
     ty = cos(a) * outer_.r + cy; // the y-value where the track control move towards over time
     tr = 0; // For changes in radius over time
     rate = inner_.direction; // rate of rotation while in the inner dot path
+    increasedRate = irr_;
     cPrimary = c1_;
     cSecondary = c2_;
     inner = inner_; // Reference to dot path
@@ -59,18 +59,22 @@ class TrackControl extends Control{
   void update(){
     if(!isDragging){
       if(cc.selection){
-        rate = inner.direction * increasedRotateRatio;
+        rate = inner.direction * increasedRate;
       } else {
         rate = inner.direction;
       }
+      
       // Code to slowly rotate the track control while on the inner dot path
-      float tempAngle = a + rate;
-      if(tempAngle < -PI){
-        tempAngle += 2*PI; 
-      } else if(tempAngle > PI){
-        tempAngle -= 2*PI; 
+      if(!selection){
+        float tempAngle = a + rate;
+        if(tempAngle < -PI){
+          tempAngle += 2*PI; 
+        } else if(tempAngle > PI){
+          tempAngle -= 2*PI; 
+        }
+        a = tempAngle;
       }
-      a = tempAngle;
+      
       
       if(selection){
         tr = cr * selectedControlRatio;
@@ -82,6 +86,7 @@ class TrackControl extends Control{
           // Changes the knobs towards the left side
           for(int i = 0; i < numberOfKnobs; i++){
             knobs[i].setNewPosition(widthSpacing, heightSpacing * (i + 1), PI);
+            knobs[i].setColorValues(cPrimary, cSecondary);
           }
         } else { // If selection is right side
           widthSpacing = width - width * widthSpacingRatio;
@@ -89,7 +94,8 @@ class TrackControl extends Control{
           ty = sin(0) * outer.r + cy;
           // Changes the knobs towards the right side
           for(int i = 0; i < numberOfKnobs; i++){
-            knobs[i].setNewPosition(widthSpacing, heightSpacing * (i + 1), PI);
+            knobs[i].setNewPosition(widthSpacing, heightSpacing * (i + 1), 0);
+            knobs[i].setColorValues(cSecondary, cPrimary);
           }
         }
         rate = 0;

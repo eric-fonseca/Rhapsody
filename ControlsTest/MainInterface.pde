@@ -7,6 +7,7 @@ class MainInterface{
   final float outerRingRotate = -0.0010; // The speed of which the outer dot path rotates
   final float innerRingRatio = 0.5; // Relative radius ratio of the inner dot path
   final float innerRingRotate = 0.0015; // Relative radius ratio of the inner dot path
+  final float increasedRotateRatio = 10; // The increased speed of rotation when center control is selected
   
   CenterControl centerCircle;
   DotPathControl outer, inner;
@@ -26,11 +27,11 @@ class MainInterface{
     
     // Creating classes
     centerCircle = new CenterControl(x,y,r*CenterControlRatio, 8, color(247, 255, 58), color(255,46,135));
-    outer = new DotPathControl(x,y,r*outerRingRatio,5,color(255, 202), 30, outerRingRotate);
-    inner = new DotPathControl(x,y,r*innerRingRatio,5,color(255, 202), 20, innerRingRotate);
+    outer = new DotPathControl(x,y,r*outerRingRatio,5,color(255, 202), 30, outerRingRotate, increasedRotateRatio);
+    inner = new DotPathControl(x,y,r*innerRingRatio,5,color(255, 202), 20, innerRingRotate, increasedRotateRatio);
     for(int i = 0; i < nc; i++){
       float temp = 2 * PI / nc;
-      TrackControl c = new TrackControl(x,y,r,i * temp - PI,inner,outer,centerCircle,5,color(247, 255, 58),color(255,46,135));
+      TrackControl c = new TrackControl(x,y,r,i * temp - PI,inner,outer,centerCircle,5,color(247, 255, 58),color(255,46,135), increasedRotateRatio);
       controls[i] = c;
     }
   }
@@ -38,7 +39,6 @@ class MainInterface{
   // This function draws all of the classes, built intending it to be ran every frame. Call within Draw()
   void drawAll(){
     outer.drawDotPath(); 
-    inner.drawDotPath();
     centerCircle.drawCenterControl();
     
     splitControls();
@@ -152,6 +152,7 @@ class MainInterface{
       controls[i].passMousePress(x_,y_);
     }
     centerCircle.detectPress(x_,y_);
+    outer.selection = centerCircle.selection;
   }
   
   // Function to relay mouseDrag data to controls. Call within mouseDragged();
@@ -168,6 +169,7 @@ class MainInterface{
       controls[i].passMouseRelease();
     }
     centerCircle.detectRelease();
+    outer.selection = false;
     outer.dragPause(false);
     inner.dragPause(false);
   }

@@ -3,10 +3,10 @@ class DotPathControl extends Control{
   float dr;
   color dcolor;
   int numDots;
-  float orientation, direction, rate;
+  float orientation, direction, rate, increasedRate;
   float angleBetween;
   
-  DotPathControl(float x_, float y_, float r_, float dr_, color dc_, int nd_, float dir_){
+  DotPathControl(float x_, float y_, float r_, float dr_, color dc_, int nd_, float dir_, float irr_){
     super(x_, y_, r_);
     dr = dr_;
     dcolor = dc_;
@@ -14,10 +14,17 @@ class DotPathControl extends Control{
     orientation = 0;
     direction = dir_;
     rate = direction;
+    increasedRate = irr_;
   }
   
   void drawDotPath(){
     angleBetween = 2 * PI / numDots;
+    if(selection){
+      rate = direction * -increasedRate;
+    } else {
+      rate = direction;
+    }
+    
     orientation += rate;
     for(int i = 1; i <= numDots; i++){
       float tempAngle = angleBetween * i - PI + orientation;
