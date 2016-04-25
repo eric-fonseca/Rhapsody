@@ -7,6 +7,12 @@ class KnobControl extends Control{
   Boolean movable = false;
   Boolean block = false;
   PImage outerGlow = loadImage("knobGlow.png");
+  ArrayList<Echo> echoes;
+  
+  // Animation variables
+  float taa1 = 0;
+  float taa2 = 0;
+  float tar1, tar2, tar3;
   
   // Constant Ratios
   final color unpressedbackgroundColor = #202020;
@@ -18,14 +24,19 @@ class KnobControl extends Control{
   final int unselectedAlpha = 95;
   final int gradientParts = 20;
   
+  final float taa1Rate = PI/45; // Make taa1Rate always a third of taa2Rate
+  final float taa2Rate = PI/15;
+  final float tarFrames = 10;
+  
   KnobControl(float x_, float y_, float r_, float a_, float sw_, color ccolor1_, color ccolor2_, float setAngle_, float initValue){
-    super(x_, y_, r_);
+    super(x_, y_, r_, 3);
     a = a_; // half the amount of angle that is not drawn of the knob arc
     sw = sw_; // arc width
     primary = ccolor1_;
     secondary = ccolor2_;
     setAngle = setAngle_; // SetAngle should only be either 0 or PI
     knobAngle = initValue;
+    echoes = new ArrayList<Echo>(); // Echoes are for animations
   }
   
     void setNewPosition(float x_, float y_, float sa_){
@@ -69,98 +80,211 @@ class KnobControl extends Control{
       return 0;
     }
   
-  // Built to be ran every frame
-  void drawKnob(){
-    // Background draw
-    pushMatrix();
-    translate(x,y);
-    noStroke();
-    if(pressed){
-      fill(pressedbackgroundColor);
-    } else {
-      fill(unpressedbackgroundColor);
-    }
-    
-    ellipse(0,0,r*hitboxSpread, r*hitboxSpread);
-    popMatrix();
-    
-    // Center circle switch
-    pushMatrix();
-    translate(x,y);
-    noStroke();
-    if(selection){
-      image(outerGlow, -r/2, -r/2, r, r);
-      fill(primary);
-    } else {
-      fill(unselectedCenterButtonColor);
-    }
-    ellipse(0,0,r * centerCircle,r * centerCircle);
-    popMatrix();
-    
-    // Dull arc for unselected status
-    pushMatrix();
-    translate(x, y);
-    rotate(setAngle);
-    noFill();
-    stroke(unselectedCenterButtonColor);
-    strokeWeight(sw);
-    if(setAngle == 0){
-      if(knobAngle > 0){
-        arc(0, 0, r, r, knobAngle, PI);
-        arc(0, 0, r, r, -PI, -a);
-      } else {
-        arc(0, 0, r, r, knobAngle, -a);
-      }
-    } else {
-      arc(0, 0, r, r, knobAngle + PI, 2*PI - a);
-    }
-    popMatrix();
-    
-    // Highlight arc
-    pushMatrix();
-    translate(x,y);
-    rotate(setAngle);
-    noFill();
-    if(selection){
-      stroke(primary);
-    } else {
-      stroke(primary, 95);
-    }
-    strokeWeight(sw);
-    if(setAngle == 0){
-      arc(0, 0, r, r, a, knobAngle);
-    } else {
-      arc(0, 0, r, r, a, knobAngle + PI);
-    }
-    popMatrix();
-    
-    // Second hightlight arc, sometimes needed due to processing's rotation handling
-    if(setAngle == 0){
-      if(knobAngle < a){
-      pushMatrix();
-      translate(x,y);
-      rotate(setAngle);
-      noFill();
-      if(selection){
-        stroke(primary);
-      } else {
-        stroke(primary, 95);
-      }
-      strokeWeight(sw);
-      arc(0, 0, r, r, a, PI);
-      arc(0, 0, r, r, -PI + 0.06, knobAngle);
-      popMatrix();
-      }
-    }
+   // Built to be ran every frame
+   void animate(){
+     if(animating){
+       if(!phaseSwitch && !phases[0] && !phases[1] && !phases[2]){
+         phaseSwitch = true;
+         phases[0] = true; 
+       }
+       if(phases[0]){
+         if(phaseSwitch){
+           if(setAngle == PI){
+             taa1 = 0;
+             taa2 = 0;
+           } else {
+             taa1 = -PI;
+             taa2 = -PI;
+           }
+           phaseSwitch = false; 
+         } else { // phaseSwitch = false
+           taa1 += taa1Rate;
+           taa2 += taa2Rate;
+           pushMatrix();
+           translate(x,y);
+           noFill();
+           stroke(primary);
+           strokeWeight(sw);
+           arc(0, 0, r, r, taa1, taa2);
+           popMatrix(); 
+         }
+         
+         if(setAngle == PI){
+           if(taa1 > PI){
+             phaseSwitch = true;
+             phases[0] = false;
+             phases[1] = true;
+           }
+         } else { // If setAngle == 0
+           if(taa1 > 0){
+             phaseSwitch = true;
+             phases[0] = false;
+             phases[1] = true;
+           }
+         }
+       } else if(phases[1]){
+         if(phaseSwitch){
+           addEcho();
+           echoes.get(0).start = true;
+           phaseSwitch = false;
+           tar1 = 0;
+           tar2 = 0;
+           taa1 = 0;
+         } else {
+           drawEchoes();
+           
+           tar1 += (r * centerCircle - tar1)/tarFrames;
+           tar2 += (r - tar2)/tarFrames;
+           if((r * centerCircle - tar1)/tarFrames < 0.25){
+             phaseSwitch = true;
+             phases[1] = false;
+             phases[2] = true;
+           }
+           
+           drawCenterComponents(tar1);
+           drawArcComponents(tar2, true);
+         }
+       } else if(phases[2]){
+         if(phaseSwitch){
+           tar3 = 0;
+           phaseSwitch = false;
+         }
+         
+         tar3 += (r * hitboxSpread - tar3)/tarFrames*2;
+         if((r * hitboxSpread - tar3)/tarFrames*2 < 0.000000005){
+           animating = false;
+           phaseSwitch = false;
+           phases[2] = false;
+         }
+         
+         drawBackgroundComponents(tar3);
+         drawCenterComponents(tar1);
+         drawArcComponents(tar2, true);
+       }
+     } else {
+       drawKnob(); 
+     }
+   }
+   
+     // Drawing the functional Knob
+     void drawKnob(){
+       drawBackgroundComponents(r * hitboxSpread);
+       drawCenterComponents(r * centerCircle);
+       drawArcComponents(r, true);
+     }
      
-    // Small indication circle
-    pushMatrix();
-    translate(x,y);
-    rotate(knobAngle - PI/2);
-    noStroke();
-    fill(255);
-    ellipse(0,r/2,sw*2,sw*2);
-    popMatrix(); 
+     void drawBackgroundComponents(float r_){
+       // Background draw
+       pushMatrix();
+       translate(x,y);
+       noStroke();
+       if(pressed){
+         fill(pressedbackgroundColor);
+       } else {
+         fill(unpressedbackgroundColor);
+       }
+       ellipse(0,0,r_,r_);
+       popMatrix();
+     }
+   
+     void drawCenterComponents(float r_){
+       pushMatrix();
+       translate(x,y);
+       noStroke();
+       if(selection){
+         image(outerGlow, -r_/2, -r_/2, r_, r_);
+         fill(primary);
+       } else {
+         fill(unselectedCenterButtonColor);
+       }
+       ellipse(0,0,r_,r_);
+       popMatrix();
+     }
+   
+     void drawArcComponents(float r_, boolean isMouseActive){
+       // Dull Arc
+       pushMatrix();
+       translate(x,y);
+       noFill();
+       stroke(unselectedCenterButtonColor);
+       strokeWeight(sw);
+       if(setAngle == 0){
+         if(knobAngle > 0){
+           arc(0, 0, r_, r_, knobAngle, PI);
+           arc(0, 0, r_, r_, -PI, -a);
+         } else {
+           arc(0, 0, r_, r_, knobAngle, -a);
+         }
+       } else {
+         arc(0, 0, r_, r_, knobAngle, PI - a);
+       }
+       popMatrix();
+       
+       // First Highlight Arc
+       pushMatrix();
+       translate(x,y);
+       noFill();
+       if(selection){
+         stroke(primary);
+       } else {
+         stroke(primary, 95);
+       }
+       strokeWeight(sw);
+       if(setAngle == 0){
+         arc(0, 0, r_, r_, a, knobAngle);
+       } else {
+         arc(0, 0, r_, r_, a - PI, knobAngle);
+       }
+       popMatrix();
+      
+       // Second hightlight arc, sometimes needed due to processing's rotation handling
+       if(setAngle == 0){
+         if(knobAngle < a){
+         pushMatrix();
+         translate(x,y);
+         rotate(setAngle);
+         noFill();
+         if(selection){
+           stroke(primary);
+         } else {
+           stroke(primary, 95);
+         }
+         strokeWeight(sw);
+         arc(0, 0, r_, r_, a, PI);
+         arc(0, 0, r_, r_, -PI + 0.06, knobAngle);
+         popMatrix();
+         }
+       } 
+       
+       // Small indication circle
+       pushMatrix();
+       translate(x,y);
+       rotate(knobAngle - PI/2);
+       noStroke();
+       fill(255);
+       ellipse(0,r_/2,sw*2,sw*2);
+       popMatrix(); 
+     }
+     
+   void drawEchoes(){
+     for(int i = echoes.size() - 1; i >= 0; i--){
+       if(echoes.get(i).getOpacity() > 0){
+         echoes.get(i).update();
+       } else {
+         echoes.remove(i); 
+       }
+     } 
+   }
+     
+   void addEcho(){
+     color temp;
+     if(Math.abs(a) > PI/2){
+       temp = secondary;
+     } else {
+       temp = primary;
+     }
+     Echo ce = new Echo(x,y,r,sw,temp);
+     echoes.add(ce);
    }
    
    void detectPress(float x_, float y_){

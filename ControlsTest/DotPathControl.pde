@@ -7,7 +7,7 @@ class DotPathControl extends Control{
   float angleBetween;
   
   DotPathControl(float x_, float y_, float r_, float dr_, color dc_, int nd_, float dir_, float irr_){
-    super(x_, y_, r_);
+    super(x_, y_, r_, 0);
     dr = dr_;
     dcolor = dc_;
     numDots = nd_;

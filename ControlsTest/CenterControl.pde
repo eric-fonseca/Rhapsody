@@ -4,7 +4,7 @@ class CenterControl extends Control{
   color cPrimary, cSecondary;
   
   CenterControl(float x_, float y_, float r_, float sw_, color c1_, color c2_){
-    super(x_, y_, r_);
+    super(x_, y_, r_, 0);
     sw = sw_;
     cPrimary = c1_;
     cSecondary = c2_;
