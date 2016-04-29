@@ -6,7 +6,7 @@ class TrackControl extends Control{
   final float unselectedControlRatio = 0.2; // Relative radius ratio of Controls when they are selected
   final int numberOfKnobs = 3;
   final float widthSpacingRatio = 0.10; // Spacing of of far the knobs are drawn from the edges of the screen
-  final float knobRadius = 100;
+  final float knobRadius = 150;
   final float animationRate = 10; // Speed of how quickly this class snaps to new given positions
   
   float cx, cy, cr;

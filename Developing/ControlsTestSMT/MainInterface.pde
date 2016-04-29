@@ -8,10 +8,12 @@ class MainInterface{
   final float innerRingRatio = 0.5; // Relative radius ratio of the inner dot path
   final float innerRingRotate = 0.0015; // Relative radius ratio of the inner dot path
   final float increasedRotateRatio = 10; // The increased speed of rotation when center control is selected
+  final int numberOfKnobs = 3; // For each track control
   
   CenterControl centerCircle;
   DotPathControl outer, inner;
   TrackControl[] controls;
+  ArrayList<Zone> zones;
   
   float x, y, r; // x-value, y-value, class wide radius
   int nc; // number of controls
@@ -29,10 +31,12 @@ class MainInterface{
     centerCircle = new CenterControl(x,y,r*CenterControlRatio, 8, color(247, 255, 58), color(255,46,135));
     outer = new DotPathControl(x,y,r*outerRingRatio,5,color(255, 202), 30, outerRingRotate, increasedRotateRatio);
     inner = new DotPathControl(x,y,r*innerRingRatio,5,color(255, 202), 20, innerRingRotate, increasedRotateRatio);
+    zones = new ArrayList<Zone>();
     for(int i = 0; i < nc; i++){
       float temp = 2 * PI / nc;
-      TrackControl c = new TrackControl(x,y,r,i * temp - PI,inner,outer,centerCircle,5,color(247, 255, 58),color(255,46,135), increasedRotateRatio);
+      TrackControl c = new TrackControl(x,y,r,i * temp - PI,inner,outer,centerCircle,5,color(247, 255, 58),color(255,46,135), increasedRotateRatio, numberOfKnobs);
       controls[i] = c;
+      zones.add(c.TCzone);
     }
   }
   
@@ -46,7 +50,7 @@ class MainInterface{
     for(int i = 0; i < nc; i++){
       limitSelections(controls[i], i);
       controls[i].update();
-      controls[i].drawTrackControl();
+      //controls[i].drawTrackControl();
       controls[i].drawControlKnobs();
       controls[i].drawEchoes();
     }

@@ -1,12 +1,11 @@
-// tsrack selection UI component
+// track selection UI component
+
 class TrackControl extends Control{
   
   // Constants used to safely & quickly change aspects of the program, to act as an interface for Team Designers/Developers
   final float selectedControlRatio = 0.3; // Relative radius ratio of Controls when they are selected
   final float unselectedControlRatio = 0.2; // Relative radius ratio of Controls when they are selected
-  final int numberOfKnobs = 3;
   final float widthSpacingRatio = 0.10; // Spacing of of far the knobs are drawn from the edges of the screen
-  final float knobRadius = 100;
   final float animationRate = 10; // Speed of how quickly this class snaps to new given positions
   
   float cx, cy, cr;
@@ -18,9 +17,11 @@ class TrackControl extends Control{
   DotPathControl inner, outer;
   CenterControl cc;
   ArrayList<Echo> echoes;
-  KnobControl[] knobs = new KnobControl[numberOfKnobs];
+  int numberOfKnobs;
+  KnobControl[] knobs;
+  Zone TCzone;
   
-  TrackControl(float cx_, float cy_, float r_, float a_, DotPathControl inner_, DotPathControl outer_, CenterControl cc_, float sw_, color c1_, color c2_, float irr_){
+  TrackControl(float cx_, float cy_, float r_, float a_, DotPathControl inner_, DotPathControl outer_, CenterControl cc_, float sw_, color c1_, color c2_, float irr_, int nok_){
     super(cx_, cy_, 0, 0);
     cx = cx_; // reference to x-value of center point of ControlCenter
     cy = cy_; // reference to y-value of center point of ControlCenter
@@ -35,7 +36,7 @@ class TrackControl extends Control{
     
     rate = inner_.direction; // rate of rotation while in the inner dot path
     increasedRate = irr_;
-    heightSpacing = height/(numberOfKnobs + 1); // building variable
+    heightSpacing = height/(nok_ + 1); // building variable
     
     cPrimary = c1_; // Setting colors
     cSecondary = c2_;
@@ -44,11 +45,16 @@ class TrackControl extends Control{
     outer = outer_; // Reference to dot path
     cc = cc_; // Reference to center Control
     echoes = new ArrayList<Echo>(); // Echoes are for user feedback when an action is denied
+    numberOfKnobs = nok_;
+    knobs = new KnobControl[nok_];
     
     // Creating knobs
-    for (int i = 0; i < numberOfKnobs; i++){
-      knobs[i] = new KnobControl(0, 0, knobRadius, PI/8, 5, color(247, 255, 58), color(255,46,135), PI, 0);
+    for (int i = 0; i < nok_; i++){
+      knobs[i] = new KnobControl(0, 0, r_/2, PI/8, 5, color(247, 255, 58), color(255,46,135), PI, 0);
     }
+    
+    // Creating Zone
+    TCzone = new ShapeZone("TrackControl", round(x - r/2), round(y - r/2), round(r), round(r));
   }
   
     String getDirection(){
@@ -133,6 +139,27 @@ class TrackControl extends Control{
     fill(0);
     ellipse(x,y,r,r);
     popMatrix();
+  }
+  
+  void drawTrackControl(Zone zone){
+    pushMatrix();
+    if(selection){
+      if(Math.abs(a) > PI/2){
+        stroke(cSecondary);
+      } else {
+        stroke(cPrimary);
+      }
+    } else {
+      stroke(255);
+    }
+    strokeWeight(sw);
+    fill(0);
+    ellipse(x,y,r,r);
+    popMatrix();
+  }
+  
+  void touchDownTrackControl(Zone zone, Touch t){
+    println(t.getX() + " " + t.getY());
   }
   
     void animateIntro(){

@@ -251,7 +251,7 @@ class KnobControl extends Control{
          }
          strokeWeight(sw);
          arc(0, 0, r_, r_, a, PI);
-         arc(0, 0, r_, r_, -PI + 0.06, knobAngle);
+         arc(0, 0, r_, r_, -PI + 0.04, knobAngle);
          popMatrix();
          }
        } 

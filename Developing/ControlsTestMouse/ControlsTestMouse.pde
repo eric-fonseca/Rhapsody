@@ -1,8 +1,8 @@
 MainInterface cc;
 
 void setup(){
-  size(1000,600);
-  cc = new MainInterface(width/2,height/2, 250, 4);
+  size(displayWidth, displayHeight);
+  cc = new MainInterface(width/2,height/2, height/3, 4);
 }
 
 void draw(){
