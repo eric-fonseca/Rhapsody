@@ -23,10 +23,14 @@ class KnobControl extends Control{
   final float scanPadding = 1.1;
   final int unselectedAlpha = 95;
   final int gradientParts = 20;
+  final float splitArcRatio = 0.04;
   
+  // Intro animation ratios
   final float taa1Rate = PI/45; // Make taa1Rate always a third of taa2Rate
   final float taa2Rate = PI/15;
   final float tarFrames = 10;
+  final float phase1Cutoff = 0.25;
+  final float phase2Cutoff = 0.0005;
   
   KnobControl(float x_, float y_, float r_, float a_, float sw_, color ccolor1_, color ccolor2_, float setAngle_, float initValue){
     super(x_, y_, r_, 3);
@@ -135,7 +139,7 @@ class KnobControl extends Control{
            
            tar1 += (r * centerCircle - tar1)/tarFrames;
            tar2 += (r - tar2)/tarFrames;
-           if((r * centerCircle - tar1)/tarFrames < 0.25){
+           if((r * centerCircle - tar1)/tarFrames < phase1Cutoff){
              phaseSwitch = true;
              phases[1] = false;
              phases[2] = true;
@@ -151,7 +155,7 @@ class KnobControl extends Control{
          }
          
          tar3 += (r * hitboxSpread - tar3)/tarFrames*2;
-         if((r * hitboxSpread - tar3)/tarFrames*2 < 0.0005){
+         if((r * hitboxSpread - tar3)/tarFrames*2 < phase2Cutoff){
            animating = false;
            phaseSwitch = false;
            phases[2] = false;
@@ -251,7 +255,7 @@ class KnobControl extends Control{
          }
          strokeWeight(sw);
          arc(0, 0, r_, r_, a, PI);
-         arc(0, 0, r_, r_, -PI + 0.04, knobAngle);
+         arc(0, 0, r_, r_, -PI + splitArcRatio, knobAngle);
          popMatrix();
          }
        } 
@@ -283,7 +287,7 @@ class KnobControl extends Control{
      } else {
        temp = primary;
      }
-     Echo ce = new Echo(x,y,r,sw,temp);
+     Echo ce = new Echo(x,y,r,5,10,sw,temp);
      echoes.add(ce);
    }
    

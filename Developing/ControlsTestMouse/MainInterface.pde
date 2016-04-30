@@ -27,28 +27,41 @@ class MainInterface{
     
     // Creating classes
     centerCircle = new CenterControl(x,y,r*CenterControlRatio, 8, color(247, 255, 58), color(255,46,135));
+    centerCircle.animating = true;
+    
     outer = new DotPathControl(x,y,r*outerRingRatio,5,color(255, 202), 30, outerRingRotate, increasedRotateRatio);
+    outer.animating = true;
+    
     inner = new DotPathControl(x,y,r*innerRingRatio,5,color(255, 202), 20, innerRingRotate, increasedRotateRatio);
     for(int i = 0; i < nc; i++){
       float temp = 2 * PI / nc;
       TrackControl c = new TrackControl(x,y,r,i * temp - PI,inner,outer,centerCircle,5,color(247, 255, 58),color(255,46,135), increasedRotateRatio);
+      c.animating = true;
       controls[i] = c;
     }
   }
   
   // This function draws all of the classes, built intending it to be ran every frame. Call within Draw()
   void drawAll(){
-    outer.drawDotPath(); 
-    centerCircle.drawCenterControl();
+    outer.animate();
+    if(outer.phases[1]){
+      centerCircle.isDrawingIn = true;
+      centerCircle.animate();
+    } else if(centerCircle.isDrawingIn){
+      centerCircle.animate();
+    }
     
     splitControls();
     
-    for(int i = 0; i < nc; i++){
-      limitSelections(controls[i], i);
-      controls[i].update();
-      controls[i].drawTrackControl();
-      controls[i].drawControlKnobs();
-      controls[i].drawEchoes();
+    if(centerCircle.isDrawingOut){
+      for(int i = 0; i < nc; i++){
+        limitSelections(controls[i], i);
+        controls[i].update();
+        //controls[i].drawTrackControl(controls[i].r);
+        controls[i].animate();
+        controls[i].drawControlKnobs();
+        controls[i].drawEchoes();
+      }
     }
     
     if(!rsc){

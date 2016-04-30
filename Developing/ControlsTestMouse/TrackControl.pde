@@ -7,7 +7,14 @@ class TrackControl extends Control{
   final int numberOfKnobs = 3;
   final float widthSpacingRatio = 0.10; // Spacing of of far the knobs are drawn from the edges of the screen
   final float knobRadius = 150;
-  final float animationRate = 10; // Speed of how quickly this class snaps to new given positions
+  final float dynamicAnimationRate = 10; // Speed of how quickly this class snaps to new given positions
+  
+  // Animation constants
+  final float frameLength = 30;
+  final float animationCutoff = 1;
+  final float phase0_updateCutoff = 5;
+  final float echoesOpacityRate = 10;
+  final float echoesRadiusRate = 5;
   
   float cx, cy, cr;
   float a, sw;
@@ -19,9 +26,10 @@ class TrackControl extends Control{
   CenterControl cc;
   ArrayList<Echo> echoes;
   KnobControl[] knobs = new KnobControl[numberOfKnobs];
+  boolean isDrawing = false;
   
   TrackControl(float cx_, float cy_, float r_, float a_, DotPathControl inner_, DotPathControl outer_, CenterControl cc_, float sw_, color c1_, color c2_, float irr_){
-    super(cx_, cy_, 0, 0);
+    super(cx_, cy_, 0, 3);
     cx = cx_; // reference to x-value of center point of ControlCenter
     cy = cy_; // reference to y-value of center point of ControlCenter
     cr = r_; // reference to the distance of this object from the center point of ControlCenter
@@ -58,7 +66,7 @@ class TrackControl extends Control{
         return "right"; 
       }
     }
-  
+    
   // Built to be ran every frame
   void update(){
     if(!isDragging){
@@ -113,12 +121,46 @@ class TrackControl extends Control{
     }
     
     // Rate of change is higher when objects are farther away from objective location
-    r += (tsr - r)/animationRate;
-    x += (tsx - x)/animationRate;
-    y += (tsy - y)/animationRate; 
+    r += (tsr - r)/dynamicAnimationRate;
+    x += (tsx - x)/dynamicAnimationRate;
+    y += (tsy - y)/dynamicAnimationRate; 
   }
   
-  void drawTrackControl(){
+  void animate(){
+    if(animating){
+      if(!phaseSwitch && !phases[0] && !phases[1] && !phases[2]){
+        phaseSwitch = true;
+        phases[0] = true; 
+      } else if(phases[0]){
+        tsr += (r * unselectedControlRatio - tsr) / frameLength;
+        drawTrackControl(tsr);
+        
+        if(tsr - r < animationCutoff){
+          phases[0] = false;
+          phases[1] = true; 
+        }
+      } else if(phases[1]){
+        drawTrackControl(tsr);
+        if(tsx - x < phase0_updateCutoff && tsy - y < phase0_updateCutoff){
+          phases[1] = false;
+          phases[2] = true;
+          phaseSwitch = true;
+        }
+      } else if(phases[2]){
+        if(phaseSwitch){
+          Echo ce = new Echo(x,y,r,echoesRadiusRate,echoesOpacityRate,sw,cPrimary);
+          ce.start = true;
+          echoes.add(ce);
+          animating = false;
+          phaseSwitch = false; 
+        }
+      }
+    } else {
+      drawTrackControl(r); 
+    }
+  }
+  
+  void drawTrackControl(float r_){
     pushMatrix();
     if(selection){
       if(Math.abs(a) > PI/2){
@@ -131,13 +173,9 @@ class TrackControl extends Control{
     }
     strokeWeight(sw);
     fill(0);
-    ellipse(x,y,r,r);
+    ellipse(x,y,r_,r_);
     popMatrix();
   }
-  
-    void animateIntro(){
-
-    }
   
   void drawControlKnobs(){
    // pushing and popping occurs inside the ControlKnob class
@@ -167,17 +205,13 @@ class TrackControl extends Control{
   }
 
   void addEcho(){// Only one echo per Control for the moment
-    if(echoes.size() > 0){
-      return; 
-    }
-    
     color temp;
     if(Math.abs(a) > PI/2){
       temp = cSecondary;
     } else {
       temp = cPrimary;
     }
-    Echo ce = new Echo(x,y,tsr,sw,temp);
+    Echo ce = new Echo(x,y,tsr,echoesRadiusRate,echoesOpacityRate,sw,temp);
     echoes.add(ce);
   }
   
