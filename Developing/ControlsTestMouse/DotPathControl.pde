@@ -8,10 +8,10 @@ class DotPathControl extends Control{
   ArrayList<Echo> echoes;
   
   final float animationStrokeWidth = 2.5;
-  final float frameLengthForT1 = 20;
-  final float frameLengthForT2 = 25;
+  final float frameLengthForT1 = 30;
+  final float frameLengthForT2 = 40;
   final float frameLengthForT3 = 15;
-  final float phase0_SecondEllipseRatio = 0.5;
+  final float phase0_SecondEllipseRatio = 1;
   final float phase0_OpacityDecay = 5;
   final float animationCutoff = 10;
   
@@ -56,7 +56,7 @@ class DotPathControl extends Control{
         echoes.get(0).dynamicUpdate(phase0_OpacityDecay, t2r);
         echoes.get(1).dynamicUpdate(phase0_OpacityDecay, t1r);
         
-        if((r*2 - t1r) < r/2){
+        if((r*2 - t1r) < r*2/3){
           phases[1] = true;
           phaseSwitch = true;
         }

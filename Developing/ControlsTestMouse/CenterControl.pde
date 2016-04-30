@@ -5,7 +5,7 @@ class CenterControl extends Control{
   boolean isDrawingIn = false;
   boolean isDrawingOut = false;
   
-  final float frameLength = 20;
+  final float frameLength = 25;
   final float animationCutoff = 2.5;
   
   CenterControl(float x_, float y_, float r_, float sw_, color c1_, color c2_){
