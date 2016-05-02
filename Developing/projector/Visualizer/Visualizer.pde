@@ -13,7 +13,9 @@ int r = 200;
 boolean runOnce = true;
 
 void setup() {
-  size(800, 800);
+  size(1940, 1240);
+  //frame.removeNotify();
+  //frame.setUndecorated(true);
   
   // Create the Client, connect to server at 127.0.0.1 (localhost), port 5204
   client = new Client(this, "127.0.0.1", 5204);
@@ -23,9 +25,14 @@ void setup() {
 }
 
 void draw() {
+  image(musicVideo, width/2 - 400, height/2 - 300, 800, 600);
+  stroke(#262626); //must match background color
+  strokeWeight(200);
+  ellipse(width/2, height/2, 800, 800);
+  
   pushMatrix();
   
-  fill(#1A1F18, 20);
+  fill(#1A1F18, 10);
   noStroke();
   rect(0,0,width,height);
   translate(width/2, height/2);
@@ -56,22 +63,22 @@ void draw() {
           case 1:
           case 2:
             trackColor = #FD756D;
-            r = 175;
+            r = 400;
             break;
           // Lead-Guitar
           case 3:
             trackColor = #F7FF3A;
-            r = 275;
+            r = 500;
             break;
           // Rhythm-Guitar
           case 4:
             trackColor = #FF2E87;
-            r = 125;
+            r = 350;
             break;
           // Vocals
           case 5:
             trackColor = #FABA54;
-            r = 225;
+            r = 450;
             break;
         }
         
@@ -110,7 +117,6 @@ void draw() {
    }
    
    popMatrix();
-   image(musicVideo, 0, 0, 220, 165);
 }
 
 void movieEvent(Movie m) {
