@@ -12,6 +12,11 @@ void setup(){
   
   mainInterfaceScene = new MainInterface(0, 0);
   mainInterfaceScene.active = false;
+  
+  //allowing resizing of screen
+  /*if (frame != null) {
+    frame.setResizable(true);
+  }*/
 }
 
 void draw(){

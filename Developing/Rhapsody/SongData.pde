@@ -10,17 +10,24 @@ class SongData{
   
   PGraphics mask;
   PImage img;
-  PImage glow = loadImage("knobGlow.png");
+  PImage imgBW;
+  PImage imgCO;
+  PImage glow = loadImage("knobGlow2.png");
+  
   public String musicVideo;
   String name;
+  String artist;
+  String song;
 
   boolean hide;
   boolean selected = false;
 
-  SongData(String title) {
-     name = title;
-     img = loadImage(title + ".png");
-     musicVideo = title + ".mp4";
+  SongData(String title, String name) {
+     artist = title;
+       song = name;
+       imgBW = loadImage(title + "_BlackAndWhite.png");
+       imgCO = loadImage(title + "_Color.png");
+       musicVideo = title + ".mp4";
   }
   
   void drawSong() {
@@ -29,8 +36,12 @@ class SongData{
       ypos = lerp(ypos, targetypos, 0.05f);
       size = lerp(size, targetsize, 0.05f);
       
-      if(selected) image(glow,xpos-size*.725,ypos-size*.725,size*1.45,size*1.45);
-      image(img,xpos-size/2,ypos-size/2,size,size);
+        if(selected){
+        image(glow,xpos-size*.725,ypos-size*.725,size*1.45,size*1.45);
+        image(imgCO,xpos-size/2,ypos-size/2,size,size);
+      }else{
+        image(imgBW,xpos-size/2,ypos-size/2,size,size);
+      }
     }
   }
   

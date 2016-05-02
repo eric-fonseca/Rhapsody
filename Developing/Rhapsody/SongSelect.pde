@@ -3,16 +3,12 @@ class SongSelect extends Scene{
   PApplet sketchReference;
   int selectedSong = 0;
   ArrayList<SongData> songList = new ArrayList<SongData>(); //This list holds all of the song objects
-  String[] songNames = {"The Beatles - Hello Goodbye", 
-                        "ACDC - Thunderstruck", 
-                        "Metallica - Enter Sandman", 
-                        "Michael Jackson - Smooth Criminal", 
-                        "The Beatles - Hello Goodbye", 
-                        "ACDC - Thunderstruck", 
-                        "Metallica - Enter Sandman", 
-                        "Michael Jackson - Smooth Criminal"};
+  String[] artistNames = {"The Killers","The Rolling Stones","Weezer","The Beatles","Queen","Ok Go","Nirvana"};
+  String[] songNames = {"Mr. Brightside","Paint it Black","Say it Aint So","Hello Goodbye","Somebody to Love","Here it Goes Again","Come As You Are"};           
                         
   PImage bg;
+  PImage bgOverlay;
+  PImage logo = loadImage("data/logo.png");
   Movie musicVideo;
   boolean playingVideo;
                      
@@ -24,10 +20,11 @@ class SongSelect extends Scene{
   // Overriding init(), acting as setup()
   void init(){
     super.init();
-    bg = loadImage("background.jpg");
+    bg = loadImage("background.png");
+    bgOverlay = loadImage("shadowOverlay.png");
   
     for(int i = 0; i < songNames.length; i++){
-      songList.add(new SongData(songNames[i]));
+      songList.add(new SongData(artistNames[i],songNames[i]));
     }
     positionSongs();
     
@@ -35,7 +32,6 @@ class SongSelect extends Scene{
     
     textSize(30);
     textAlign(CENTER);
-    strokeWeight(3);
   }
   
     //Position and scale all of the songs
@@ -44,11 +40,11 @@ class SongSelect extends Scene{
         if (i == selectedSong){  //This is the currently selected song
           musicVideo = new Movie(sketchReference,  songList.get((int)i).musicVideo);
           songList.get((int)i).setPos(width/2,height/2);
-          songList.get((int)i).setSize(500);
+          songList.get((int)i).setSize(550);
         }
         else{  //scale unselected songs
-          songList.get((int)i).setPos((width/2)+(i-selectedSong)*175,height/2);
-          songList.get((int)i).setSize(300);
+          songList.get((int)i).setPos((width/2)+(i-selectedSong)*220,height/2);
+          songList.get((int)i).setSize(400);
         }
       }
     }
@@ -59,16 +55,23 @@ class SongSelect extends Scene{
     clear();
   
     image(bg, 0, 0, width, height);
-    text("SELECT A SONG", width/2, height/10);
     
     if (playingVideo){
-      image(musicVideo, width/6, height/6, width/1.5, height/1.5);
+      fill(#F7FF3A);
+      textSize(50);      
+      text(songList.get(selectedSong).song.toUpperCase(), width/2, height/8);
+      textSize(20);
+      fill(#FFFFFF);
+      text(songList.get(selectedSong).artist.toUpperCase(), width/2, height/8 + 40);
+      image(musicVideo, width/4, height/4, width/2, height/2);
       noFill();
       stroke(#FFFFFF);
-      rect(width/2 - 182, height * 0.88, 160, 60);
-      rect(width/2 + 18, height * 0.88, 160, 60);
-      text("BACK", width/2 - 100, height * 0.88 + 41);
-      text("JAM OUT", width/2 + 100, height * 0.88 + 41);
+      textSize(30);
+      strokeWeight(3);
+      rect(width/2 - 212, height * 0.83, 180, 80);
+      rect(width/2 + 28, height * 0.83, 180, 80);
+      text("BACK", width/2 - 120, height * 0.84 + 41);
+      text("JAM OUT", width/2 + 120, height * 0.84 + 41);
     } else {
       for(int i = 0; i < selectedSong; i++){
           songList.get(i).drawSong();
@@ -76,11 +79,28 @@ class SongSelect extends Scene{
       for(int i = songList.size()-1; i >= selectedSong; i--){
           songList.get(i).drawSong();
       }
-      stroke(#000000);
-      fill(#FFFFFF);
+      //stroke(#000000);
+      fill(#FF2E87);
+      noStroke();
+      image(bgOverlay, 0, 0, width, height);
       triangle(width*0.1, height/2-50, width*0.1, height/2+50, width*0.05, height/2);
       triangle(width*0.9, height/2-50, width*0.9, height/2+50, width*0.95, height/2);
-      text(songList.get(selectedSong).name, width/2, height*0.9);
+     
+      
+      //triangle(width*0.32, height*0.9-30, width*0.32, height*0.9+30, width*0.29, height*0.9);
+      //triangle(width*0.67, height*0.9-30, width*0.67, height*0.9+30, width*0.70, height*0.9);
+      fill(#FFFFFF);
+      textSize(30);
+      text("SELECT A SONG", width/2, height/10);
+      image(logo, width/2- 40, height/10, height/10, height/10);
+      fill(#F7FF3A);
+      
+      textSize(50);      
+      text(songList.get(selectedSong).song.toUpperCase(), width/2, height*0.9);
+      textSize(20);
+      fill(#FFFFFF);
+      text(songList.get(selectedSong).artist.toUpperCase(), width/2, height*0.9 + 40);
+
     }
   }
   
@@ -89,12 +109,12 @@ class SongSelect extends Scene{
     super.handlePress();
     if(playingVideo){
       //back button
-      if(x_ > width/2 - 182 && x_ < width/2 - 22 && y_ > height * 0.88 && y_ < height * 0.88 + 60){
+      if(x_ > width/2 - 212 && x_ < width/2 - 32 && y_ > height * 0.83 && y_ < height * 0.83 + 80){
         playingVideo = false;
         musicVideo.stop();
       }
       //jam out button
-      else if(x_ > width/2 + 18 && x_ < width/2 + 178 && y_ > height * 0.88 && y_ < height * 0.88 + 60){
+       else if(x_ > width/2 + 28 && x_ < width/2 + 208 && y_ > height * 0.83 && y_ < height * 0.83 + 80){
         active = false;
         playingVideo = false;
         musicVideo.stop();
@@ -108,7 +128,7 @@ class SongSelect extends Scene{
         musicVideo.loop();
       }
       //left arrow
-      else if(x_ > width*0.05 && x_ < width*0.1 && y_ > height/2-50 && y_ < height/2+50){
+      else if(mouseX > width*0.05 && mouseX < width*0.1 && mouseY > height/2-50 && mouseY < height/2+50){
         songList.get(selectedSong).selected = false;
         selectedSong--;
        
@@ -119,7 +139,7 @@ class SongSelect extends Scene{
         positionSongs();
       }
       //right arrow
-      else if(x_ > width*0.9 && x_ < width*0.95 && y_ > height/2-50 && y_ < height/2+50){
+       else if(mouseX > width*0.9 && mouseX < width*0.95 && mouseY > height/2-50 && mouseY < height/2+50){
         songList.get(selectedSong).selected = false;
         selectedSong++;
         
