@@ -14,17 +14,17 @@ class Scene{
   }
   
   // To handle mousePressed()
-  void handleMousePress(){
+  void handlePress(){
     
   }
   
   // To handle mouseDragged()
-  void handleMouseDrag(){
+  void handleDrag(){
     
   }
   
   // To handle mouseReleased()
-  void handleMouseRelease(){
+  void handleRelease(){
     
   }
 }

@@ -1,11 +1,11 @@
 // Non-control class that merely acts as visual feedback
 class Echo{
   float x, y, r, o, rr, or, sw;
-  color primary;
+  color cPrimary;
   boolean start = false;
   boolean isDynamic;
 
-  Echo(float x_, float y_, float r_, float rr_, float or_, float sw_, color primary_){
+  Echo(float x_, float y_, float r_, float rr_, float or_, float sw_, color c_){
     x = x_;
     y = y_;
     r = r_;
@@ -13,17 +13,17 @@ class Echo{
     rr = rr_;
     or = or_;
     sw = sw_;
-    primary = primary_;
+    cPrimary = c_;
     isDynamic = false;
   }
   
-  Echo(float x_, float y_, float r_, float sw_, color primary_){
+  Echo(float x_, float y_, float r_, float sw_, color c_){
     x = x_;
     y = y_;
     r = r_;
     o = 255;
     sw = sw_;
-    primary = primary_;
+    cPrimary = c_;
     isDynamic = true;
   }
     
@@ -37,7 +37,7 @@ class Echo{
       r += rr;
       if(o > 0){
         pushMatrix();
-        stroke(primary, o);
+        stroke(cPrimary, o);
         strokeWeight(sw);
         noFill();
         ellipse(x,y,r,r);
@@ -52,7 +52,7 @@ class Echo{
       r = rr_;
       if(o > 0){
         pushMatrix();
-        stroke(primary, o);
+        stroke(cPrimary, o);
         strokeWeight(sw);
         noFill();
         ellipse(x,y,r,r);

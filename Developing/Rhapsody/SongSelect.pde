@@ -85,8 +85,8 @@ class SongSelect extends Scene{
   }
   
   //Overriding mousePressed()
-  void handleMousePress(float x_, float y_){
-    super.handleMousePress();
+  void handlePress(float x_, float y_){
+    super.handlePress();
     if(playingVideo){
       //back button
       if(x_ > width/2 - 182 && x_ < width/2 - 22 && y_ > height * 0.88 && y_ < height * 0.88 + 60){

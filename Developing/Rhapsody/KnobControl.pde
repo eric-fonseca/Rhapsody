@@ -1,20 +1,13 @@
 // Dial knob for the user to change how effects are changing the audio track
 class KnobControl extends Control{
-  float a, sw;
   float setAngle, knobAngle;
-  color primary, secondary;
-  Boolean active = false; // Use this var to state is knob is interact-able or drawn on sketch
-  Boolean movable = false;
+  Boolean movable = false; // Use this var to state is knob is interact-able or drawn on sketch
   Boolean block = false;
+  color cPrimary, cSecondary;
   PImage outerGlow = loadImage("knobGlow.png");
-  ArrayList<Echo> echoes;
-  
-  // Animation variables
-  float taa1 = 0;
-  float taa2 = 0;
-  float tar1, tar2, tar3;
   
   // Constant Ratios
+  final float a = PI/8;
   final color unpressedbackgroundColor = #202020;
   final color pressedbackgroundColor = #404040;
   final color unselectedCenterButtonColor = #C8C8C8;
@@ -25,22 +18,24 @@ class KnobControl extends Control{
   final int gradientParts = 20;
   final float splitArcRatio = 0.04;
   
-  // Intro animation ratios
+  // Animation variables
+  float taa1 = 0;
+  float taa2 = 0;
+  float tar1, tar2, tar3;
+  
+  // Animation constants
   final float taa1Rate = PI/45; // Make taa1Rate always a third of taa2Rate
   final float taa2Rate = PI/15;
   final float tarFrames = 10;
   final float phase1Cutoff = 0.25;
   final float phase2Cutoff = 0.0005;
   
-  KnobControl(float x_, float y_, float r_, float a_, float sw_, color ccolor1_, color ccolor2_, float setAngle_, float initValue){
-    super(x_, y_, r_, 3);
-    a = a_; // half the amount of angle that is not drawn of the knob arc
-    sw = sw_; // arc width
-    primary = ccolor1_;
-    secondary = ccolor2_;
+  KnobControl(float x_, float y_, float r_, float sw_, float a_, float setAngle_, float initValue, color ccolor1_, color ccolor2_){
+    super(x_, y_, r_, sw_, 3);
     setAngle = setAngle_; // SetAngle should only be either 0 or PI
     knobAngle = initValue;
-    echoes = new ArrayList<Echo>(); // Echoes are for animations
+    cPrimary = ccolor1_;
+    cSecondary = ccolor2_;
   }
   
     void setNewPosition(float x_, float y_, float sa_){
@@ -60,8 +55,8 @@ class KnobControl extends Control{
       }
     
     void setColorValues(color pri, color sec){
-      primary = pri;
-      secondary = sec;
+      cPrimary = pri;
+      cSecondary = sec;
     }
     
     // Returns the value ratio of the current knob
@@ -86,6 +81,7 @@ class KnobControl extends Control{
   
    // Built to be ran every frame
    void animate(){
+     super.animate();
      if(animating){
        if(!phaseSwitch && !phases[0] && !phases[1] && !phases[2]){
          phaseSwitch = true;
@@ -107,7 +103,7 @@ class KnobControl extends Control{
            pushMatrix();
            translate(x,y);
            noFill();
-           stroke(primary);
+           stroke(cPrimary);
            strokeWeight(sw);
            arc(0, 0, r, r, taa1, taa2);
            popMatrix(); 
@@ -166,132 +162,125 @@ class KnobControl extends Control{
          drawArcComponents(tar2, true);
        }
      } else { // If animating = false
-       drawKnob(); 
+       drawControl(); 
      }
    }
    
      // Drawing the functional Knob
-     void drawKnob(){
+     void drawControl(){
+       super.drawControl();
        drawBackgroundComponents(r * hitboxSpread);
        drawCenterComponents(r * centerCircle);
        drawArcComponents(r, true);
      }
      
-     void drawBackgroundComponents(float r_){
-       // Background draw
-       pushMatrix();
-       translate(x,y);
-       noStroke();
-       if(pressed){
-         fill(pressedbackgroundColor);
-       } else {
-         fill(unpressedbackgroundColor);
-       }
-       ellipse(0,0,r_,r_);
-       popMatrix();
-     }
-   
-     void drawCenterComponents(float r_){
-       pushMatrix();
-       translate(x,y);
-       noStroke();
-       if(selection){
-         image(outerGlow, -r_/2, -r_/2, r_, r_);
-         fill(primary);
-       } else {
-         fill(unselectedCenterButtonColor);
-       }
-       ellipse(0,0,r_,r_);
-       popMatrix();
-     }
-   
-     void drawArcComponents(float r_, boolean isMouseActive){
-       // Dull Arc
-       pushMatrix();
-       translate(x,y);
-       noFill();
-       stroke(unselectedCenterButtonColor);
-       strokeWeight(sw);
-       if(setAngle == 0){
-         if(knobAngle > 0){
-           arc(0, 0, r_, r_, knobAngle, PI);
-           arc(0, 0, r_, r_, -PI, -a);
-         } else {
-           arc(0, 0, r_, r_, knobAngle, -a);
-         }
-       } else {
-         arc(0, 0, r_, r_, knobAngle, PI - a);
-       }
-       popMatrix();
-       
-       // First Highlight Arc
-       pushMatrix();
-       translate(x,y);
-       noFill();
-       if(selection){
-         stroke(primary);
-       } else {
-         stroke(primary, 95);
-       }
-       strokeWeight(sw);
-       if(setAngle == 0){
-         arc(0, 0, r_, r_, a, knobAngle);
-       } else {
-         arc(0, 0, r_, r_, a - PI, knobAngle);
-       }
-       popMatrix();
-      
-       // Second hightlight arc, sometimes needed due to processing's rotation handling
-       if(setAngle == 0){
-         if(knobAngle < a){
+       void drawBackgroundComponents(float r_){
+         // Background draw
          pushMatrix();
          translate(x,y);
-         rotate(setAngle);
+         noStroke();
+         if(pressed){
+           fill(pressedbackgroundColor);
+         } else {
+           fill(unpressedbackgroundColor);
+         }
+         ellipse(0,0,r_,r_);
+         popMatrix();
+       }
+     
+       void drawCenterComponents(float r_){
+         pushMatrix();
+         translate(x,y);
+         noStroke();
+         if(selection){
+           image(outerGlow, -r_/2, -r_/2, r_, r_);
+           fill(cPrimary);
+         } else {
+           fill(unselectedCenterButtonColor);
+         }
+         ellipse(0,0,r_,r_);
+         popMatrix();
+       }
+     
+       void drawArcComponents(float r_, boolean isMouseActive){
+         // Dull Arc
+         pushMatrix();
+         translate(x,y);
+         noFill();
+         stroke(unselectedCenterButtonColor);
+         strokeWeight(sw);
+         if(setAngle == 0){
+           if(knobAngle > 0){
+             arc(0, 0, r_, r_, knobAngle, PI);
+             arc(0, 0, r_, r_, -PI, -a);
+           } else {
+             arc(0, 0, r_, r_, knobAngle, -a);
+           }
+         } else {
+           arc(0, 0, r_, r_, knobAngle, PI - a);
+         }
+         popMatrix();
+         
+         // First Highlight Arc
+         pushMatrix();
+         translate(x,y);
          noFill();
          if(selection){
-           stroke(primary);
+           stroke(cPrimary);
          } else {
-           stroke(primary, 95);
+           stroke(cPrimary, 95);
          }
          strokeWeight(sw);
-         arc(0, 0, r_, r_, a, PI);
-         arc(0, 0, r_, r_, -PI + splitArcRatio, knobAngle);
-         popMatrix();
+         if(setAngle == 0){
+           arc(0, 0, r_, r_, a, knobAngle);
+         } else {
+           arc(0, 0, r_, r_, a - PI, knobAngle);
          }
-       } 
-       
-       // Small indication circle
-       pushMatrix();
-       translate(x,y);
-       rotate(knobAngle - PI/2);
-       noStroke();
-       fill(255);
-       ellipse(0,r_/2,sw*2,sw*2);
-       popMatrix(); 
-     }
-     
-   void drawEchoes(){
-     for(int i = echoes.size() - 1; i >= 0; i--){
-       if(echoes.get(i).getOpacity() > 0){
-         echoes.get(i).update();
-       } else {
-         echoes.remove(i); 
+         popMatrix();
+        
+         // Second hightlight arc, sometimes needed due to processing's rotation handling
+         if(setAngle == 0){
+           if(knobAngle < a){
+           pushMatrix();
+           translate(x,y);
+           rotate(setAngle);
+           noFill();
+           if(selection){
+             stroke(cPrimary);
+           } else {
+             stroke(cPrimary, 95);
+           }
+           strokeWeight(sw);
+           arc(0, 0, r_, r_, a, PI);
+           arc(0, 0, r_, r_, -PI + splitArcRatio, knobAngle);
+           popMatrix();
+           }
+         } 
+         
+         // Small indication circle
+         pushMatrix();
+         translate(x,y);
+         rotate(knobAngle - PI/2);
+         noStroke();
+         fill(255);
+         ellipse(0,r_/2,sw*2,sw*2);
+         popMatrix(); 
        }
-     } 
-   }
      
+   
    void addEcho(){
      color temp;
      if(Math.abs(a) > PI/2){
-       temp = secondary;
+       temp = cSecondary;
      } else {
-       temp = primary;
+       temp = cPrimary;
      }
      Echo ce = new Echo(x,y,r,5,10,sw,temp);
      echoes.add(ce);
    }
    
-   void detectPress(float x_, float y_){
+   // This class doens't use the Control class detectPress() method
+   void passPress(float x_, float y_){
      float temp = dist(x_, y_, x, y);
      
      if(temp < (r/2 * centerCircle)){
@@ -308,8 +297,9 @@ class KnobControl extends Control{
      }
    }
    
+   // This class doens't use the Control class detectDrag() method
    // In the future for multitouch, reference to the specific touch must be recorded at the top of the class
-   void detectDrag(float x_, float y_){
+   void passDrag(float x_, float y_){
      float tdist = dist(x_, y_, x, y);
      //if(tdist < (r/2 * hitboxSpread) && tdist > r/2 * centerCircle){
      if(pressed){
@@ -359,7 +349,8 @@ class KnobControl extends Control{
        }
      }
      
-   void detectRelease(){
+   // This class doens't use the Control class detectRelease() method
+   void passRelease(){
      movable = false;
      pressed = false;
    }

@@ -1,5 +1,13 @@
 // Merging Point for all UI components, handles intra-control behaviors
 class MainInterface extends Scene{
+  float x, y, r; // x-value, y-value, class wide radius
+  int nc; // number of controls
+  int cri, cli; // current right index, current left index
+  boolean rsc, lsc; // right selection check, left selection check
+  
+  CenterControl centerCircle;
+  DotPathControl outer, inner;
+  TrackControl[] controls;
   
   // Constants used to safely & quickly change aspects of the program, to act as an interface for Team Designers/Developers
   final float CenterControlRatio = 0.5; // Relative radius ratio of the colored circle within the center of the class
@@ -8,15 +16,6 @@ class MainInterface extends Scene{
   final float innerRingRatio = 0.5; // Relative radius ratio of the inner dot path
   final float innerRingRotate = 0.0015; // Relative radius ratio of the inner dot path
   final float increasedRotateRatio = 10; // The increased speed of rotation when center control is selected
-  
-  CenterControl centerCircle;
-  DotPathControl outer, inner;
-  TrackControl[] controls;
-  
-  float x, y, r; // x-value, y-value, class wide radius
-  int nc; // number of controls
-  int cri, cli; // current right index, current left index
-  boolean rsc, lsc; // right selection check, left selection check
 
   MainInterface(float r_, int nc_){
     x = width/2; // x value of the center of the class
@@ -31,18 +30,18 @@ class MainInterface extends Scene{
     super.init();
     
     // Creating classes
-    centerCircle = new CenterControl(x,y,r*CenterControlRatio, 8, color(247, 255, 58), color(255,46,135));
+    centerCircle = new CenterControl(x,y,r*CenterControlRatio,8,color(247, 255, 58),color(255,46,135));
     centerCircle.animating = true;
     
-    outer = new DotPathControl(x,y,r*outerRingRatio,5,color(255, 202), 30, outerRingRotate, increasedRotateRatio);
+    outer = new DotPathControl(x,y,r*outerRingRatio,30,outerRingRotate,increasedRotateRatio,5,color(255, 202));
     outer.animating = true;
     
-    inner = new DotPathControl(x,y,r*innerRingRatio,5,color(255, 202), 20, innerRingRotate, increasedRotateRatio);
+    inner = new DotPathControl(x,y,r*innerRingRatio,20,innerRingRotate,increasedRotateRatio,5,color(255, 202));
    
     controls = new TrackControl[nc];
     float temp = 2 * PI / nc;
     for(int i = 0; i < nc; i++){
-      TrackControl c = new TrackControl(x,y,r,i * temp - PI,inner,outer,centerCircle,5,color(247, 255, 58),color(255,46,135), increasedRotateRatio);
+      TrackControl c = new TrackControl(x,y,r,5,i * temp - PI,increasedRotateRatio,inner,outer,centerCircle,color(247, 255, 58),color(255,46,135));
       c.animating = true;
       controls[i] = c;
     }
@@ -68,7 +67,7 @@ class MainInterface extends Scene{
         limitSelections(controls[i], i);
         controls[i].update();
         controls[i].animate();
-        controls[i].drawControlKnobs();
+        controls[i].drawInnerControls();
         controls[i].drawEchoes();
       }
     }
@@ -169,29 +168,32 @@ class MainInterface extends Scene{
       }
   
   // Function to relay mousePress data to controls. Call within mousePressed();
-  void handleMousePress(float x_, float y_){ 
-    super.handleMousePress();
+  void handlePress(float x_, float y_){ 
+    super.handlePress();
     for(int i = 0; i < nc; i++){
-      controls[i].passMousePress(x_,y_);
+      controls[i].passPress(x_,y_);
     }
-    centerCircle.detectPress(x_,y_);
+    centerCircle.detectPress(x_,y_,centerCircle.r/2);
     outer.selection = centerCircle.selection;
   }
   
   // Function to relay mouseDrag data to controls. Call within mouseDragged();
-  void handleMouseDrag(float x_, float y_){
-    super.handleMouseDrag();
+  void handleDrag(float x_, float y_){
+    super.handleDrag();
     for(int i = 0; i < nc; i++){
-      controls[i].passMouseDrag(x_,y_);
+      controls[i].passDrag(x_,y_);
     }
-    centerCircle.detectDrag(x_,y_);
+    
+    if(centerCircle.pressed){
+      centerCircle.detectDrag(x_,y_,centerCircle.r/2);
+    }
   }
   
   // Function to relay mouseRelease data to controls. Call within mouseReleased();
-  void handleMouseRelease(){
-    super.handleMouseRelease();
+  void handleRelease(){
+    super.handleRelease();
     for(int i = 0; i < nc; i++){
-      controls[i].passMouseRelease();
+      controls[i].passRelease();
     }
     centerCircle.detectRelease();
     outer.selection = false;

@@ -1,6 +1,7 @@
 import processing.video.*;
 
-SongSelect songSelectScene;
+// Screen Objects are static
+static SongSelect songSelectScene;
 static MainInterface mainInterfaceScene;
 
 void setup(){
@@ -9,7 +10,8 @@ void setup(){
   songSelectScene.init();
   songSelectScene.active = true;
   
-  mainInterfaceScene = new MainInterface(0,0);
+  mainInterfaceScene = new MainInterface(0, 0);
+  mainInterfaceScene.active = false;
 }
 
 void draw(){
@@ -23,22 +25,22 @@ void draw(){
 
 void mousePressed(){
   if(songSelectScene.active){
-    songSelectScene.handleMousePress(mouseX,mouseY);
+    songSelectScene.handlePress(mouseX,mouseY);
   }
   if(mainInterfaceScene.active){
-    mainInterfaceScene.handleMousePress(mouseX,mouseY);
+    mainInterfaceScene.handlePress(mouseX,mouseY);
   }
 }
 
 void mouseDragged(){
   if(mainInterfaceScene.active){
-    mainInterfaceScene.handleMouseDrag(mouseX,mouseY);
+    mainInterfaceScene.handleDrag(mouseX,mouseY);
   }
 }
 
 void mouseReleased(){
   if(mainInterfaceScene.active){
-    mainInterfaceScene.handleMouseRelease();
+    mainInterfaceScene.handleRelease();
   }
 }
 

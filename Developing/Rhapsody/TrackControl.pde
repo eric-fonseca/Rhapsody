@@ -1,12 +1,22 @@
-// tsrack selection UI component
+// track selection UI component
 class TrackControl extends Control{
+  float a;
+  float cx, cy, cr;
+  float tsx, tsy, tsr;
+  float rate, increasedRate, heightSpacing;
+  color cPrimary, cSecondary;
+  boolean isDragging = false;
+  
+  // Object References
+  DotPathControl inner, outer;
+  CenterControl cc;
   
   // Constants used to safely & quickly change aspects of the program, to act as an interface for Team Designers/Developers
+  final int numberOfKnobs = 3;
   final float selectedControlRatio = 0.3; // Relative radius ratio of Controls when they are selected
   final float unselectedControlRatio = 0.2; // Relative radius ratio of Controls when they are selected
-  final int numberOfKnobs = 3;
-  final float widthSpacingRatio = 0.10; // Spacing of of far the knobs are drawn from the edges of the screen
-  final float knobRadius = 150;
+   final float widthSpacingRatio = 0.15; // Spacing of of far the knobs are drawn from the edges of the screen
+  final float knobRadius = 125;
   final float dynamicAnimationRate = 10; // Speed of how quickly this class snaps to new given positions
   
   // Animation constants
@@ -16,47 +26,38 @@ class TrackControl extends Control{
   final float echoesOpacityRate = 10;
   final float echoesRadiusRate = 5;
   
-  float cx, cy, cr;
-  float a, sw;
-  float tsx, tsy, tsr;
-  float rate, increasedRate, heightSpacing;
-  color cPrimary, cSecondary;
-  boolean isDragging = false;
-  DotPathControl inner, outer;
-  CenterControl cc;
-  ArrayList<Echo> echoes;
+  // Objects to populate within class
   KnobControl[] knobs = new KnobControl[numberOfKnobs];
-  boolean isDrawing = false;
+  DoubleBarControl doubleBar;
   
-  TrackControl(float cx_, float cy_, float r_, float a_, DotPathControl inner_, DotPathControl outer_, CenterControl cc_, float sw_, color c1_, color c2_, float irr_){
-    super(cx_, cy_, 0, 3);
+  TrackControl(float cx_, float cy_, float r_, float sw_, float a_, float irr_, DotPathControl inner_, DotPathControl outer_, CenterControl cc_, color c1_, color c2_){
+    super(cx_, cy_, 0, sw_, 3);
+    a = a_; // angle away from center point of ControlCenter
+    rate = inner_.direction; // rate of rotation while in the inner dot path
+    increasedRate = irr_;
+    heightSpacing = height/(numberOfKnobs + 1); // building variable
+    
+    inner = inner_; // Reference to dot path
+    outer = outer_; // Reference to dot path
+    cc = cc_; // Reference to center Control
+    
+    cPrimary = c1_; // Setting colors
+    cSecondary = c2_;
+    
     cx = cx_; // reference to x-value of center point of ControlCenter
     cy = cy_; // reference to y-value of center point of ControlCenter
     cr = r_; // reference to the distance of this object from the center point of ControlCenter
-    
-    a = a_; // angle away from center point of ControlCenter
-    sw = sw_; // stsroke width
     
     tsx = sin(a) * inner_.r + cx; // the x-value where the tsrack Control move towards over time
     tsy = cos(a) * outer_.r + cy; // the y-value where the tsrack Control move towards over time
     tsr = 0; // For changes in radius over time
     
-    rate = inner_.direction; // rate of rotation while in the inner dot path
-    increasedRate = irr_;
-    heightSpacing = height/(numberOfKnobs + 1); // building variable
-    
-    cPrimary = c1_; // Setting colors
-    cSecondary = c2_;
-
-    inner = inner_; // Reference to dot path
-    outer = outer_; // Reference to dot path
-    cc = cc_; // Reference to center Control
-    echoes = new ArrayList<Echo>(); // Echoes are for user feedback when an action is denied
-    
-    // Creating knobs
+    // Creating controls
     for (int i = 0; i < numberOfKnobs; i++){
-      knobs[i] = new KnobControl(0, 0, knobRadius, PI/8, 5, color(247, 255, 58), color(255,46,135), PI, 0);
+      knobs[i] = new KnobControl(0, 0, knobRadius, 5, PI/8, PI, 0, color(247, 255, 58), color(255,46,135));
     }
+    
+    doubleBar = new DoubleBarControl(-50, -50, sw*2, color(247, 255, 58), height/3);
   }
   
     String getDirection(){
@@ -69,6 +70,7 @@ class TrackControl extends Control{
     
   // Built to be ran every frame
   void update(){
+    super.update();
     if(!isDragging){
       if(cc.selection){
         rate = inner.direction * increasedRate;
@@ -89,24 +91,32 @@ class TrackControl extends Control{
       
       if(selection){
         tsr = cr * selectedControlRatio;
-        float widthSpacing;
+        float widthSpacing = width * widthSpacingRatio;
         if(Math.abs(a) > PI/2){ // If selection is left side
-          widthSpacing = width * widthSpacingRatio;
           tsx = cos(PI) * outer.r + cx;
           tsy = sin(PI) * outer.r + cy;
           // Changes the knobs towards the left side
           for(int i = 0; i < numberOfKnobs; i++){
             knobs[i].setNewPosition(widthSpacing, heightSpacing * (i + 1), PI);
             knobs[i].setColorValues(cSecondary, cPrimary);
+            if(doubleBar.orientRight){
+              doubleBar.flipValues(); 
+            }
+            doubleBar.setNewPosition(widthSpacing/3, height/2);
+            doubleBar.setColorValues(cSecondary);
           }
         } else { // If selection is right side
-          widthSpacing = width - width * widthSpacingRatio;
           tsx = cos(0) * outer.r + cx;
           tsy = sin(0) * outer.r + cy;
           // Changes the knobs towards the right side
           for(int i = 0; i < numberOfKnobs; i++){
-            knobs[i].setNewPosition(widthSpacing, heightSpacing * (i + 1), 0);
+            knobs[i].setNewPosition(width - widthSpacing, heightSpacing * (i + 1), 0);
             knobs[i].setColorValues(cPrimary, cSecondary);
+            if(!doubleBar.orientRight){
+              doubleBar.flipValues(); 
+            }
+            doubleBar.setNewPosition(width - widthSpacing/3, height/2);
+            doubleBar.setColorValues(cPrimary);
           }
         }
         rate = 0;
@@ -127,20 +137,21 @@ class TrackControl extends Control{
   }
   
   void animate(){
+    super.animate();
     if(animating){
       if(!phaseSwitch && !phases[0] && !phases[1] && !phases[2]){
         phaseSwitch = true;
         phases[0] = true; 
       } else if(phases[0]){
         tsr += (r * unselectedControlRatio - tsr) / frameLength;
-        drawTrackControl(tsr);
+        drawControl(tsr);
         
         if(tsr - r < animationCutoff){
           phases[0] = false;
           phases[1] = true; 
         }
       } else if(phases[1]){
-        drawTrackControl(tsr);
+        drawControl(tsr);
         if(tsx - x < phase0_updateCutoff && tsy - y < phase0_updateCutoff){
           phases[1] = false;
           phases[2] = true;
@@ -156,11 +167,12 @@ class TrackControl extends Control{
         }
       }
     } else {
-      drawTrackControl(r); 
+      drawControl(r); 
     }
   }
   
-  void drawTrackControl(float r_){
+  void drawControl(float r_){
+    super.drawControl();
     pushMatrix();
     if(selection){
       if(Math.abs(a) > PI/2){
@@ -177,34 +189,26 @@ class TrackControl extends Control{
     popMatrix();
   }
   
-  void drawControlKnobs(){
+  // Drawing classes assoicated within this class
+  void drawInnerControls(){
    // pushing and popping occurs inside the ControlKnob class
    if(selection && !isDragging){
       for(int i = 0; i < numberOfKnobs; i++){
         if(knobs[i].x != 0 && knobs[i].y != 0){
-          knobs[i].active = true;
           knobs[i].animate();
         }
       }
+      doubleBar.animate();
     } else { // Doesn't draw the knobs
       for(int i = 0; i < numberOfKnobs; i++){
-        knobs[i].active = false;
         knobs[i].animating = true;
       }
+      doubleBar.animating = true;
     }
   }
   
-  void drawEchoes(){
-    for(int i = echoes.size() - 1; i >= 0; i--){
-      if(echoes.get(i).getOpacity() > 0){
-        echoes.get(i).update();
-      } else {
-        echoes.remove(i); 
-      }
-    } 
-  }
-
-  void addEcho(){// Only one echo per Control for the moment
+  // Method to add echo object to this class, in the MainInterface
+  void addEcho(){
     color temp;
     if(Math.abs(a) > PI/2){
       temp = cSecondary;
@@ -214,21 +218,23 @@ class TrackControl extends Control{
     Echo ce = new Echo(x,y,tsr,echoesRadiusRate,echoesOpacityRate,sw,temp);
     echoes.add(ce);
   }
-  
-  // Mouse Event Functions
-  void passMousePress(float x_, float y_){
+
+  // This class doens't use the Control class detectPress() method
+  void passPress(float x_, float y_){
     if(dist(x_,y_,x,y) < r){
       pressed = true;
     }
     
     if(selection){
       for(int i = 0; i < numberOfKnobs; i++){
-        knobs[i].detectPress(x_, y_);
+        knobs[i].passPress(x_, y_);
       }
+      doubleBar.detectPress(x_,y_);
     }
   }
   
-  void passMouseDrag(float x_, float y_){
+  // This class doens't use the Control class detectDrag() method
+  void passDrag(float x_, float y_){
     if(pressed){
       isDragging = true;
       rate = 0;
@@ -249,19 +255,22 @@ class TrackControl extends Control{
     
     if(selection){
       for(int i = 0; i < numberOfKnobs; i++){
-        knobs[i].detectDrag(x_, y_);
+        knobs[i].passDrag(x_, y_);
       }
+      doubleBar.detectDrag(x_,y_);
     }
   }
   
-  void passMouseRelease(){
+  // This class doens't use the Control class detectRelease() method
+  void passRelease(){
     isDragging = false;
     pressed = false;
     a = atan2(y - cy,x - cx);
     
     for(int i = 0; i < numberOfKnobs; i++){
-      knobs[i].detectRelease();
+      knobs[i].passRelease();
     }
+    doubleBar.detectRelease();
     
     for(int i = 0; i < echoes.size(); i++){
       echoes.get(i).start = true;
