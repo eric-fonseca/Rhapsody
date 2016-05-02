@@ -40,11 +40,11 @@ class MainInterface extends Scene{
     inner = new DotPathControl(x,y,r*innerRingRatio,20,innerRingRotate,increasedRotateRatio,5,color(255, 202));
     
     // loading assets
-    trackControlIcons[0] = loadImage("DRUM-ICON.png");
-    trackControlIcons[1] = loadImage("GUITAR-ICON.png");
-    trackControlIcons[2] = loadImage("GUITAR-ACOUSTIC-ICON.png");
-    trackControlIcons[3] = loadImage("MIC-ICON.png");
-    trackControlIcons[4] = loadImage("PIANO-ICON.png");
+    trackControlIcons[0] = loadImage("DRUMS.png");
+    trackControlIcons[1] = loadImage("GUITAR.png");
+    trackControlIcons[2] = loadImage("GUITAR-ELECTRIC.png");
+    trackControlIcons[3] = loadImage("VOCALS.png");
+    trackControlIcons[4] = loadImage("PIANO.png");
    
     controls = new TrackControl[nc];
     float temp = 2 * PI / nc;
