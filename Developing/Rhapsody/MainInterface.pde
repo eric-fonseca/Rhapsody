@@ -4,6 +4,7 @@ class MainInterface extends Scene{
   int nc; // number of controls
   int cri, cli; // current right index, current left index
   boolean rsc, lsc; // right selection check, left selection check
+  PImage[] trackControlIcons = new PImage[5];
   
   CenterControl centerCircle;
   DotPathControl outer, inner;
@@ -37,11 +38,19 @@ class MainInterface extends Scene{
     outer.animating = true;
     
     inner = new DotPathControl(x,y,r*innerRingRatio,20,innerRingRotate,increasedRotateRatio,5,color(255, 202));
+    
+    // loading assets
+    trackControlIcons[0] = loadImage("DRUM-ICON.png");
+    trackControlIcons[1] = loadImage("GUITAR-ICON.png");
+    trackControlIcons[2] = loadImage("GUITAR-ACOUSTIC-ICON.png");
+    trackControlIcons[3] = loadImage("MIC-ICON.png");
+    trackControlIcons[4] = loadImage("PIANO-ICON.png");
    
     controls = new TrackControl[nc];
     float temp = 2 * PI / nc;
     for(int i = 0; i < nc; i++){
       TrackControl c = new TrackControl(x,y,r,5,i * temp - PI,increasedRotateRatio,inner,outer,centerCircle,color(247, 255, 58),color(255,46,135));
+      c.setIcon(trackControlIcons[i]);
       c.animating = true;
       controls[i] = c;
     }

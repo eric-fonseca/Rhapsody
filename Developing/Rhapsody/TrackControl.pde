@@ -6,6 +6,8 @@ class TrackControl extends Control{
   float rate, increasedRate, heightSpacing;
   color cPrimary, cSecondary;
   boolean isDragging = false;
+  PImage icon;
+  float iconSize = 48;
   
   // Object References
   DotPathControl inner, outer;
@@ -15,9 +17,11 @@ class TrackControl extends Control{
   final int numberOfKnobs = 3;
   final float selectedControlRatio = 0.3; // Relative radius ratio of Controls when they are selected
   final float unselectedControlRatio = 0.2; // Relative radius ratio of Controls when they are selected
-   final float widthSpacingRatio = 0.15; // Spacing of of far the knobs are drawn from the edges of the screen
+  final float widthSpacingRatio = 0.15; // Spacing of of far the knobs are drawn from the edges of the screen
   final float knobRadius = 125;
   final float dynamicAnimationRate = 10; // Speed of how quickly this class snaps to new given positions
+  final float maxIconSize = 64;
+  final float minIconSize = 48;
   
   // Animation constants
   final float frameLength = 30;
@@ -59,6 +63,11 @@ class TrackControl extends Control{
     
     doubleBar = new DoubleBarControl(-50, -50, sw*2, color(247, 255, 58), height/3);
   }
+  
+    void setIcon(PImage p_){
+      iconSize = 48;
+      icon = p_;
+    }
   
     String getDirection(){
       if(Math.abs(a) > PI/2){
@@ -125,9 +134,16 @@ class TrackControl extends Control{
         tsx = cos(a) * inner.r + cx;
         tsy = sin(a) * inner.r + cy;
         rate = inner.direction;
+        
       }
     } else { // If is currently being dragged
       a = atan2(y - cy,x - cx);
+    }
+    
+    if(selection || isDragging){
+      iconSize += (maxIconSize - iconSize)/dynamicAnimationRate;
+    } else {
+      iconSize += (minIconSize - iconSize)/dynamicAnimationRate;
     }
     
     // Rate of change is higher when objects are farther away from objective location
@@ -186,6 +202,12 @@ class TrackControl extends Control{
     strokeWeight(sw);
     fill(0);
     ellipse(x,y,r_,r_);
+    popMatrix();
+    
+    pushMatrix();
+    translate(x,y);
+    rotate(a);
+    image(icon,-iconSize/2,-iconSize/2,iconSize,iconSize);
     popMatrix();
   }
   

@@ -118,7 +118,7 @@ class SongSelect extends Scene{
         active = false;
         playingVideo = false;
         musicVideo.stop();
-        mainInterfaceScene = new MainInterface(height/3, 4);
+        mainInterfaceScene = new MainInterface(height/3, 5);
         mainInterfaceScene.active = true;
       }
     } else {
