@@ -17,24 +17,24 @@ class SongData{
   public String musicVideo;
   String name;
   String artist;
-  String song;
+  String title;
 
   boolean hide;
   boolean selected = false;
 
-  SongData(String title, String name) {
-     artist = title;
-       song = name;
-       imgBW = loadImage(title + "_BlackAndWhite.png");
-       imgCO = loadImage(title + "_Color.png");
-       musicVideo = title + ".mp4";
+  SongData(String artist_, String title_) {
+       artist = artist_;
+       title = title_;
+       imgBW = loadImage(artist_ + "_BlackAndWhite.png");
+       imgCO = loadImage(artist_ + "_Color.png");
+       musicVideo = artist_ + ".mp4";
   }
   
   void drawSong() {
     if (!hide){
-      xpos = lerp(xpos, targetxpos, 0.05f);
-      ypos = lerp(ypos, targetypos, 0.05f);
-      size = lerp(size, targetsize, 0.05f);
+      xpos = lerp(xpos, targetxpos, 0.15f);
+      ypos = lerp(ypos, targetypos, 0.15f);
+      size = lerp(size, targetsize, 0.15f);
       
         if(selected){
         image(glow,xpos-size*.725,ypos-size*.725,size*1.45,size*1.45);

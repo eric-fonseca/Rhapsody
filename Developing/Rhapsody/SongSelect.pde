@@ -1,10 +1,11 @@
+import java.io.FilenameFilter;
 
 class SongSelect extends Scene{
   PApplet sketchReference;
   int selectedSong = 0;
   ArrayList<SongData> songList = new ArrayList<SongData>(); //This list holds all of the song objects
-  String[] artistNames = {"The Killers","The Rolling Stones","Weezer","The Beatles","Queen","Ok Go","Nirvana"};
-  String[] songNames = {"Mr. Brightside","Paint it Black","Say it Aint So","Hello Goodbye","Somebody to Love","Here it Goes Again","Come As You Are"};           
+  String[] artistNames;
+  String[] songNames;           
                         
   PImage bg;
   PImage bgOverlay;
@@ -22,9 +23,22 @@ class SongSelect extends Scene{
     super.init();
     bg = loadImage("background.png");
     bgOverlay = loadImage("shadowOverlay.png");
+    
+    File audioDirectory = new File(sketchPath("") + "audio");
+    String[] songDirectories = audioDirectory.list(new FilenameFilter(){ //get all files from audio directory minus .DS_Store
+      public boolean accept(File dir, String name){
+          return !name.equals(".DS_Store");
+      }
+    });
+    songNames = songDirectories.clone();
+    artistNames = songDirectories.clone();
+    for(int i = 0; i < songDirectories.length; i++){
+      artistNames[i] = songDirectories[i].split("-")[0];
+      songNames[i] = songDirectories[i].split("-")[1];
+    }
   
     for(int i = 0; i < songNames.length; i++){
-      songList.add(new SongData(artistNames[i],songNames[i]));
+      songList.add(new SongData(artistNames[i], songNames[i]));
     }
     positionSongs();
     
@@ -38,7 +52,7 @@ class SongSelect extends Scene{
     void positionSongs(){
       for(float i = songList.size()-1; i > -1; i--){
         if (i == selectedSong){  //This is the currently selected song
-          musicVideo = new Movie(sketchReference,  songList.get((int)i).musicVideo);
+          musicVideo = new Movie(sketchReference, songList.get((int)i).musicVideo);
           songList.get((int)i).setPos(width/2,height/2);
           songList.get((int)i).setSize(550);
         }
@@ -59,7 +73,7 @@ class SongSelect extends Scene{
     if (playingVideo){
       fill(#F7FF3A);
       textSize(50);      
-      text(songList.get(selectedSong).song.toUpperCase(), width/2, height/8);
+      text(songList.get(selectedSong).title.toUpperCase(), width/2, height/8);
       textSize(20);
       fill(#FFFFFF);
       text(songList.get(selectedSong).artist.toUpperCase(), width/2, height/8 + 40);
@@ -86,7 +100,6 @@ class SongSelect extends Scene{
       triangle(width*0.1, height/2-50, width*0.1, height/2+50, width*0.05, height/2);
       triangle(width*0.9, height/2-50, width*0.9, height/2+50, width*0.95, height/2);
      
-      
       //triangle(width*0.32, height*0.9-30, width*0.32, height*0.9+30, width*0.29, height*0.9);
       //triangle(width*0.67, height*0.9-30, width*0.67, height*0.9+30, width*0.70, height*0.9);
       fill(#FFFFFF);
@@ -96,7 +109,7 @@ class SongSelect extends Scene{
       fill(#F7FF3A);
       
       textSize(50);      
-      text(songList.get(selectedSong).song.toUpperCase(), width/2, height*0.9);
+      text(songList.get(selectedSong).title.toUpperCase(), width/2, height*0.9);
       textSize(20);
       fill(#FFFFFF);
       text(songList.get(selectedSong).artist.toUpperCase(), width/2, height*0.9 + 40);
@@ -118,7 +131,17 @@ class SongSelect extends Scene{
         active = false;
         playingVideo = false;
         musicVideo.stop();
-        mainInterfaceScene = new MainInterface(height/3, 5);
+        
+        File songDirectory = new File(sketchPath("") + "audio/" + songList.get(selectedSong).artist + "-" + songList.get(selectedSong).title);
+        String[] songTracks = songDirectory.list(new FilenameFilter(){ //get all files from song directory minus .DS_Store
+          public boolean accept(File dir, String name){
+              return !name.equals(".DS_Store");
+          }
+        });
+        audioControl = new AudioControl(songList.get(selectedSong).artist + "-" + songList.get(selectedSong).title, songTracks);
+        audioControl.init();
+        
+        mainInterfaceScene = new MainInterface(height/3, songTracks.length);
         mainInterfaceScene.active = true;
       }
     } else {
