@@ -50,7 +50,7 @@ class MainInterface extends Scene{
     float temp = 2 * PI / nc;
     for(int i = 0; i < nc; i++){
       TrackControl c = new TrackControl(x,y,r,5,i * temp - PI,increasedRotateRatio,inner,outer,centerCircle,color(247, 255, 58),color(255,46,135));
-      c.setIcon(trackControlIcons[i]);
+      c.setIcon(trackControlIcons[i%5]); //%5 is temporary
       c.animating = true;
       controls[i] = c;
     }

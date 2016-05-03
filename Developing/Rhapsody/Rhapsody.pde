@@ -1,10 +1,22 @@
+import ddf.minim.spi.*;
+import ddf.minim.signals.*;
+import ddf.minim.*;
+import ddf.minim.analysis.*;
+import ddf.minim.ugens.*;
+import ddf.minim.effects.*;
 import processing.video.*;
 
 // Screen Objects are static
 static SongSelect songSelectScene;
 static MainInterface mainInterfaceScene;
+  
+AudioControl audioControl;
+Visualizer visualizer;
+Minim minim;
 
 void setup(){
+  minim = new Minim(this);
+  
   size(displayWidth, displayHeight);
   songSelectScene = new SongSelect(this);
   songSelectScene.init();
@@ -25,6 +37,7 @@ void draw(){
   }
   if(mainInterfaceScene.active){
     mainInterfaceScene.update();
+    visualizer.update();
   }
 }
 
