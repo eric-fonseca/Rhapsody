@@ -13,7 +13,6 @@ class Visualizer{
   void update(){
     fill(#1A1F18, 20);
     noStroke();
-    rect(0,0,width,height);
     translate(width/2, height/2);
     
     for(int i = 0; i < audioControl.audioTracks.length; i++){

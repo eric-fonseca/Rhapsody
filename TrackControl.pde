@@ -8,6 +8,8 @@ class TrackControl extends Control{
   boolean isDragging = false;
   PImage icon;
   float iconSize = 48;
+  String zoneName;
+  Zone zone;
   
   // Object References
   DotPathControl inner, outer;
@@ -20,7 +22,7 @@ class TrackControl extends Control{
   final float widthSpacingRatio = 0.15; // Spacing of of far the knobs are drawn from the edges of the screen
   final float knobRadius = 125;
   final float dynamicAnimationRate = 10; // Speed of how quickly this class snaps to new given positions
-  final float maxIconSize = 64;
+  final float maxIconSize = 96;
   final float minIconSize = 48;
   
   // Animation constants
@@ -34,7 +36,7 @@ class TrackControl extends Control{
   KnobControl[] knobs = new KnobControl[numberOfKnobs];
   DoubleBarControl doubleBar;
   
-  TrackControl(float cx_, float cy_, float r_, float sw_, float a_, float irr_, DotPathControl inner_, DotPathControl outer_, CenterControl cc_, color c1_, color c2_){
+  TrackControl(float cx_, float cy_, float r_, float sw_, float a_, float irr_, DotPathControl inner_, DotPathControl outer_, CenterControl cc_, color c1_, color c2_, String zn_){
     super(cx_, cy_, 0, sw_, 3);
     a = a_; // angle away from center point of ControlCenter
     rate = inner_.direction; // rate of rotation while in the inner dot path
@@ -56,12 +58,17 @@ class TrackControl extends Control{
     tsy = cos(a) * outer_.r + cy; // the y-value where the tsrack Control move towards over time
     tsr = 0; // For changes in radius over time
     
+    zoneName = zn_;
+    
     // Creating controls
     for (int i = 0; i < numberOfKnobs; i++){
       knobs[i] = new KnobControl(0, 0, knobRadius, 5, PI/8, PI, 0, color(247, 255, 58), color(255,46,135));
     }
     
     doubleBar = new DoubleBarControl(-50, -50, sw*2, color(247, 255, 58), height/3);
+    
+    zone = new ShapeZone(zoneName,round(x-r/2),round(y-r/2),round(r),round(r));
+    SMT.add(zone);
   }
   
     void setIcon(PImage p_){
@@ -150,6 +157,11 @@ class TrackControl extends Control{
     r += (tsr - r)/dynamicAnimationRate;
     x += (tsx - x)/dynamicAnimationRate;
     y += (tsy - y)/dynamicAnimationRate; 
+    
+    SMT.get(zoneName).setX(round(x - r/2));
+    SMT.get(zoneName).setY(round(y - r/2));
+    SMT.get(zoneName).setWidth(round(r));
+    SMT.get(zoneName).setHeight(round(r));
   }
   
   void animate(){
