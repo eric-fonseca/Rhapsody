@@ -16,14 +16,14 @@ public SongSelect songSelectScene;
 public MainInterface mainInterfaceScene;
 
 // Zone names have to be hardcoded - pretty icky looking
-String[] zoneNames0 = {"TrackControl0", "KnobControl0-0", "KnobControl0-1", "KnobControl0-2", "DoubleControl0"};
-String[] zoneNames1 = {"TrackControl1", "KnobControl1-0", "KnobControl1-1", "KnobControl1-2", "DoubleControl1"};
-String[] zoneNames2 = {"TrackControl2", "KnobControl2-0", "KnobControl2-1", "KnobControl2-2", "DoubleControl2"};
-String[] zoneNames3 = {"TrackControl3", "KnobControl3-0", "KnobControl3-1", "KnobControl3-2", "DoubleControl3"};
-String[] zoneNames4 = {"TrackControl4", "KnobControl4-0", "KnobControl4-1", "KnobControl4-2", "DoubleControl4"};
-String[] zoneNames5 = {"TrackControl5", "KnobControl5-0", "KnobControl5-1", "KnobControl5-2", "DoubleControl5"};
-String[] zoneNames6 = {"TrackControl6", "KnobControl6-0", "KnobControl6-1", "KnobControl6-2", "DoubleControl6"};
-String[][] zoneNames = {zoneNames0, zoneNames1, zoneNames2, zoneNames3, zoneNames4, zoneNames5, zoneNames6};
+private String[] zoneNames0 = {"TrackControl0", "KnobControl00", "KnobControl01", "KnobControl02", "DoubleControl0"};
+private String[] zoneNames1 = {"TrackControl1", "KnobControl10", "KnobControl11", "KnobControl12", "DoubleControl1"};
+private String[] zoneNames2 = {"TrackControl2", "KnobControl20", "KnobControl21", "KnobControl22", "DoubleControl2"};
+private String[] zoneNames3 = {"TrackControl3", "KnobControl30", "KnobControl31", "KnobControl32", "DoubleControl3"};
+private String[] zoneNames4 = {"TrackControl4", "KnobControl40", "KnobControl41", "KnobControl42", "DoubleControl4"};
+private String[] zoneNames5 = {"TrackControl5", "KnobControl50", "KnobControl51", "KnobControl52", "DoubleControl5"};
+private String[] zoneNames6 = {"TrackControl6", "KnobControl60", "KnobControl61", "KnobControl62", "DoubleControl6"};
+public String[][] zoneNames = {zoneNames0, zoneNames1, zoneNames2, zoneNames3, zoneNames4, zoneNames5, zoneNames6};
 
   
 AudioControl audioControl;
@@ -94,107 +94,379 @@ void movieEvent(Movie m) {
     mainInterfaceScene.controls[0].passRelease();
   }
   
+    void drawKnobControl00(Zone zone){}
+    void touchDownKnobControl00(Zone zone, Touch t){
+      mainInterfaceScene.controls[0].knobs[0].passPress(t.getX(), t.getY());
+    }
+    void touchMovedKnobControl00(Zone zone, Touch t){
+      mainInterfaceScene.controls[0].knobs[0].passDrag(t.getX(), t.getY());
+    }
+    void touchUpKnobControl00(Zone zone, Touch t){
+      mainInterfaceScene.controls[0].knobs[0].passRelease();
+    }
+    
+    void drawKnobControl01(Zone zone){}
+    void touchDownKnobControl01(Zone zone, Touch t){
+      mainInterfaceScene.controls[0].knobs[1].passPress(t.getX(), t.getY());
+    }
+    void touchMovedKnobControl01(Zone zone, Touch t){
+      mainInterfaceScene.controls[0].knobs[1].passDrag(t.getX(), t.getY());
+    }
+    void touchUpKnobControl01(Zone zone, Touch t){
+      mainInterfaceScene.controls[0].knobs[1].passRelease();
+    }
+    
+    void drawKnobControl02(Zone zone){}
+    void touchDownKnobControl02(Zone zone, Touch t){
+      mainInterfaceScene.controls[0].knobs[2].passPress(t.getX(), t.getY());
+    }
+    void touchMovedKnobControl02(Zone zone, Touch t){
+      mainInterfaceScene.controls[0].knobs[2].passDrag(t.getX(), t.getY());
+    }
+    void touchUpKnobControl02(Zone zone, Touch t){
+      mainInterfaceScene.controls[0].knobs[2].passRelease();
+    }
+    
+    void drawDoubleControl0(){}
+    void touchDownDoubleControl0(Zone zone, Touch t){
+      mainInterfaceScene.controls[0].doubleBar.detectPress(t.getX(), t.getY());
+    }
+    void touchMovedDoubleControl0(Zone zone, Touch t){
+      mainInterfaceScene.controls[0].doubleBar.detectDrag(t.getX(), t.getY());
+    }
+    void touchUpDoubleControl0(Zone zone, Touch t){
+      mainInterfaceScene.controls[0].doubleBar.detectRelease();
+    }
+  
   void drawTrackControl1(Zone zone){}
   void touchDownTrackControl1(Zone zone, Touch t){
-    if(mainInterfaceScene.nc >= 1){
-      mainInterfaceScene.controls[1].passPress(t.getX(), t.getY());
-    }
+    mainInterfaceScene.controls[1].passPress(t.getX(), t.getY());
   }
   void touchMovedTrackControl1(Zone zone, Touch t){
-    if(mainInterfaceScene.nc >= 1){
-      mainInterfaceScene.controls[1].passDrag(t.getX(), t.getY());
-    }
+    mainInterfaceScene.controls[1].passDrag(t.getX(), t.getY());
   }
   void touchUpTrackControl1(Zone zone){
-    if(mainInterfaceScene.nc >= 1){
-      mainInterfaceScene.controls[1].passRelease();
-    }
+    mainInterfaceScene.controls[1].passRelease();
   }
+  
+    void drawKnobControl10(Zone zone){}
+    void touchDownKnobControl10(Zone zone, Touch t){
+      mainInterfaceScene.controls[1].knobs[0].passPress(t.getX(), t.getY());
+    }
+    void touchMovedKnobControl10(Zone zone, Touch t){
+      mainInterfaceScene.controls[1].knobs[0].passDrag(t.getX(), t.getY());
+    }
+    void touchUpKnobControl10(Zone zone, Touch t){
+      mainInterfaceScene.controls[1].knobs[0].passRelease();
+    }
+    
+    void drawKnobControl11(Zone zone){}
+    void touchDownKnobControl11(Zone zone, Touch t){
+      mainInterfaceScene.controls[1].knobs[1].passPress(t.getX(), t.getY());
+    }
+    void touchMovedKnobControl11(Zone zone, Touch t){
+      mainInterfaceScene.controls[1].knobs[1].passDrag(t.getX(), t.getY());
+    }
+    void touchUpKnobControl11(Zone zone, Touch t){
+      mainInterfaceScene.controls[1].knobs[1].passRelease();
+    }
+    
+    void drawKnobControl12(Zone zone){}
+    void touchDownKnobControl12(Zone zone, Touch t){
+      mainInterfaceScene.controls[1].knobs[2].passPress(t.getX(), t.getY());
+    }
+    void touchMovedKnobControl12(Zone zone, Touch t){
+      mainInterfaceScene.controls[1].knobs[2].passDrag(t.getX(), t.getY());
+    }
+    void touchUpKnobControl12(Zone zone, Touch t){
+      mainInterfaceScene.controls[1].knobs[2].passRelease();
+    }
+    
+    void drawDoubleControl1(){}
+    void touchDownDoubleControl1(Zone zone, Touch t){
+      mainInterfaceScene.controls[1].doubleBar.detectPress(t.getX(), t.getY());
+    }
+    void touchMovedDoubleControl1(Zone zone, Touch t){
+      mainInterfaceScene.controls[1].doubleBar.detectDrag(t.getX(), t.getY());
+    }
+    void touchUpDoubleControl1(Zone zone, Touch t){
+      mainInterfaceScene.controls[1].doubleBar.detectRelease();
+    }
   
   void drawTrackControl2(Zone zone){}
   void touchDownTrackControl2(Zone zone, Touch t){
-    if(mainInterfaceScene.nc >= 2){
-      mainInterfaceScene.controls[2].passPress(t.getX(), t.getY());
-    }
+    mainInterfaceScene.controls[2].passPress(t.getX(), t.getY());
   }
   void touchMovedTrackControl2(Zone zone, Touch t){
-    if(mainInterfaceScene.nc >= 2){
-      mainInterfaceScene.controls[2].passDrag(t.getX(), t.getY());
-    }
+    mainInterfaceScene.controls[2].passDrag(t.getX(), t.getY());
   }
   void touchUpTrackControl2(Zone zone){
-    if(mainInterfaceScene.nc >= 2){
-      mainInterfaceScene.controls[2].passRelease();
-    }
+    mainInterfaceScene.controls[2].passRelease();
   }
+  
+    void drawKnobControl20(Zone zone){}
+    void touchDownKnobControl20(Zone zone, Touch t){
+      mainInterfaceScene.controls[2].knobs[0].passPress(t.getX(), t.getY());
+    }
+    void touchMovedKnobControl20(Zone zone, Touch t){
+      mainInterfaceScene.controls[2].knobs[0].passDrag(t.getX(), t.getY());
+    }
+    void touchUpKnobControl20(Zone zone, Touch t){
+      mainInterfaceScene.controls[2].knobs[0].passRelease();
+    }
+    
+    void drawKnobControl21(Zone zone){}
+    void touchDownKnobControl21(Zone zone, Touch t){
+      mainInterfaceScene.controls[2].knobs[1].passPress(t.getX(), t.getY());
+    }
+    void touchMovedKnobControl21(Zone zone, Touch t){
+      mainInterfaceScene.controls[2].knobs[1].passDrag(t.getX(), t.getY());
+    }
+    void touchUpKnobControl21(Zone zone, Touch t){
+      mainInterfaceScene.controls[2].knobs[1].passRelease();
+    }
+    
+    void drawKnobControl22(Zone zone){}
+    void touchDownKnobControl22(Zone zone, Touch t){
+      mainInterfaceScene.controls[2].knobs[2].passPress(t.getX(), t.getY());
+    }
+    void touchMovedKnobControl22(Zone zone, Touch t){
+      mainInterfaceScene.controls[2].knobs[2].passDrag(t.getX(), t.getY());
+    }
+    void touchUpKnobControl22(Zone zone, Touch t){
+      mainInterfaceScene.controls[2].knobs[2].passRelease();
+    }
+    
+    void drawDoubleControl2(){}
+    void touchDownDoubleControl2(Zone zone, Touch t){
+      mainInterfaceScene.controls[2].doubleBar.detectPress(t.getX(), t.getY());
+    }
+    void touchMovedDoubleControl2(Zone zone, Touch t){
+      mainInterfaceScene.controls[2].doubleBar.detectDrag(t.getX(), t.getY());
+    }
+    void touchUpDoubleControl2(Zone zone, Touch t){
+      mainInterfaceScene.controls[2].doubleBar.detectRelease();
+    }
   
   void drawTrackControl3(Zone zone){}
   void touchDownTrackControl3(Zone zone, Touch t){
-    if(mainInterfaceScene.nc >= 3){
-      mainInterfaceScene.controls[3].passPress(t.getX(), t.getY());
-    }
+    mainInterfaceScene.controls[3].passPress(t.getX(), t.getY());
   }
   void touchMovedTrackControl3(Zone zone, Touch t){
-    if(mainInterfaceScene.nc >= 3){
-      mainInterfaceScene.controls[3].passDrag(t.getX(), t.getY());
-    }
+    mainInterfaceScene.controls[3].passDrag(t.getX(), t.getY());
   }
   
   void touchUpTrackControl3(Zone zone){
-    if(mainInterfaceScene.nc >= 3){
-      mainInterfaceScene.controls[3].passRelease();
-    }
+    mainInterfaceScene.controls[3].passRelease();
   }
+  
+      void drawKnobControl30(Zone zone){}
+    void touchDownKnobControl30(Zone zone, Touch t){
+      mainInterfaceScene.controls[3].knobs[0].passPress(t.getX(), t.getY());
+    }
+    void touchMovedKnobControl30(Zone zone, Touch t){
+      mainInterfaceScene.controls[3].knobs[0].passDrag(t.getX(), t.getY());
+    }
+    void touchUpKnobControl30(Zone zone, Touch t){
+      mainInterfaceScene.controls[3].knobs[0].passRelease();
+    }
+    
+    void drawKnobControl31(Zone zone){}
+    void touchDownKnobControl31(Zone zone, Touch t){
+      mainInterfaceScene.controls[3].knobs[1].passPress(t.getX(), t.getY());
+    }
+    void touchMovedKnobControl31(Zone zone, Touch t){
+      mainInterfaceScene.controls[3].knobs[1].passDrag(t.getX(), t.getY());
+    }
+    void touchUpKnobControl31(Zone zone, Touch t){
+      mainInterfaceScene.controls[3].knobs[1].passRelease();
+    }
+    
+    void drawKnobControl32(Zone zone){}
+    void touchDownKnobControl32(Zone zone, Touch t){
+      mainInterfaceScene.controls[3].knobs[2].passPress(t.getX(), t.getY());
+    }
+    void touchMovedKnobControl32(Zone zone, Touch t){
+      mainInterfaceScene.controls[3].knobs[2].passDrag(t.getX(), t.getY());
+    }
+    void touchUpKnobControl32(Zone zone, Touch t){
+      mainInterfaceScene.controls[3].knobs[2].passRelease();
+    }
+    
+    void drawDoubleControl3(){}
+    void touchDownDoubleControl3(Zone zone, Touch t){
+      mainInterfaceScene.controls[3].doubleBar.detectPress(t.getX(), t.getY());
+    }
+    void touchMovedDoubleControl3(Zone zone, Touch t){
+      mainInterfaceScene.controls[3].doubleBar.detectDrag(t.getX(), t.getY());
+    }
+    void touchUpDoubleControl3(Zone zone, Touch t){
+      mainInterfaceScene.controls[3].doubleBar.detectRelease();
+    }
   
   void drawTrackControl4(Zone zone){}
   void touchDownTrackControl4(Zone zone, Touch t){
-    if(mainInterfaceScene.nc >= 4){
-      mainInterfaceScene.controls[4].passPress(t.getX(), t.getY());
-    }
+    mainInterfaceScene.controls[4].passPress(t.getX(), t.getY());
   }
   void touchMovedTrackControl4(Zone zone, Touch t){
-    if(mainInterfaceScene.nc >= 4){
-      mainInterfaceScene.controls[4].passDrag(t.getX(), t.getY());
-    }
+    mainInterfaceScene.controls[4].passDrag(t.getX(), t.getY());
   }
   void touchUpTrackControl4(Zone zone){
-    if(mainInterfaceScene.nc >= 4){
-      mainInterfaceScene.controls[4].passRelease();
-    }
+    mainInterfaceScene.controls[4].passRelease();
   }
+  
+    void drawKnobControl40(Zone zone){}
+    void touchDownKnobControl40(Zone zone, Touch t){
+      mainInterfaceScene.controls[4].knobs[0].passPress(t.getX(), t.getY());
+    }
+    void touchMovedKnobControl40(Zone zone, Touch t){
+      mainInterfaceScene.controls[4].knobs[0].passDrag(t.getX(), t.getY());
+    }
+    void touchUpKnobControl40(Zone zone, Touch t){
+      mainInterfaceScene.controls[4].knobs[0].passRelease();
+    }
+    
+    void drawKnobControl41(Zone zone){}
+    void touchDownKnobControl41(Zone zone, Touch t){
+      mainInterfaceScene.controls[4].knobs[1].passPress(t.getX(), t.getY());
+    }
+    void touchMovedKnobControl41(Zone zone, Touch t){
+      mainInterfaceScene.controls[4].knobs[1].passDrag(t.getX(), t.getY());
+    }
+    void touchUpKnobControl41(Zone zone, Touch t){
+      mainInterfaceScene.controls[4].knobs[1].passRelease();
+    }
+    
+    void drawKnobControl42(Zone zone){}
+    void touchDownKnobControl42(Zone zone, Touch t){
+      mainInterfaceScene.controls[4].knobs[2].passPress(t.getX(), t.getY());
+    }
+    void touchMovedKnobControl42(Zone zone, Touch t){
+      mainInterfaceScene.controls[4].knobs[2].passDrag(t.getX(), t.getY());
+    }
+    void touchUpKnobControl42(Zone zone, Touch t){
+      mainInterfaceScene.controls[4].knobs[2].passRelease();
+    }
+    
+    void drawDoubleControl4(){}
+    void touchDownDoubleControl4(Zone zone, Touch t){
+      mainInterfaceScene.controls[4].doubleBar.detectPress(t.getX(), t.getY());
+    }
+    void touchMovedDoubleControl4(Zone zone, Touch t){
+      mainInterfaceScene.controls[4].doubleBar.detectDrag(t.getX(), t.getY());
+    }
+    void touchUpDoubleControl4(Zone zone, Touch t){
+      mainInterfaceScene.controls[4].doubleBar.detectRelease();
+    }
   
   void drawTrackControl5(Zone zone){}
   void touchDownTrackControl5(Zone zone, Touch t){
-    if(mainInterfaceScene.nc >= 5){
-      mainInterfaceScene.controls[5].passPress(t.getX(), t.getY());
-    }
+    mainInterfaceScene.controls[5].passPress(t.getX(), t.getY());
   }
   void touchMovedTrackControl5(Zone zone, Touch t){
-    if(mainInterfaceScene.nc >= 5){
     mainInterfaceScene.controls[5].passDrag(t.getX(), t.getY());
-    }
   }
   void touchUpTrackControl5(Zone zone){
-    if(mainInterfaceScene.nc >= 5){
-      mainInterfaceScene.controls[5].passRelease();
-    }
+    mainInterfaceScene.controls[5].passRelease();
   }
+  
+    void drawKnobControl50(Zone zone){}
+    void touchDownKnobControl50(Zone zone, Touch t){
+      mainInterfaceScene.controls[5].knobs[0].passPress(t.getX(), t.getY());
+    }
+    void touchMovedKnobControl50(Zone zone, Touch t){
+      mainInterfaceScene.controls[5].knobs[0].passDrag(t.getX(), t.getY());
+    }
+    void touchUpKnobControl50(Zone zone, Touch t){
+      mainInterfaceScene.controls[5].knobs[0].passRelease();
+    }
+    
+    void drawKnobControl51(Zone zone){}
+    void touchDownKnobControl51(Zone zone, Touch t){
+      mainInterfaceScene.controls[5].knobs[1].passPress(t.getX(), t.getY());
+    }
+    void touchMovedKnobControl51(Zone zone, Touch t){
+      mainInterfaceScene.controls[5].knobs[1].passDrag(t.getX(), t.getY());
+    }
+    void touchUpKnobControl51(Zone zone, Touch t){
+      mainInterfaceScene.controls[5].knobs[1].passRelease();
+    }
+    
+    void drawKnobControl52(Zone zone){}
+    void touchDownKnobControl52(Zone zone, Touch t){
+      mainInterfaceScene.controls[5].knobs[2].passPress(t.getX(), t.getY());
+    }
+    void touchMovedKnobControl52(Zone zone, Touch t){
+      mainInterfaceScene.controls[5].knobs[2].passDrag(t.getX(), t.getY());
+    }
+    void touchUpKnobControl52(Zone zone, Touch t){
+      mainInterfaceScene.controls[5].knobs[2].passRelease();
+    }
+    
+    void drawDoubleControl5(){}
+    void touchDownDoubleControl5(Zone zone, Touch t){
+      mainInterfaceScene.controls[5].doubleBar.detectPress(t.getX(), t.getY());
+    }
+    void touchMovedDoubleControl5(Zone zone, Touch t){
+      mainInterfaceScene.controls[5].doubleBar.detectDrag(t.getX(), t.getY());
+    }
+    void touchUpDoubleControl5(Zone zone, Touch t){
+      mainInterfaceScene.controls[5].doubleBar.detectRelease();
+    }
   
   void drawTrackControl6(Zone zone){}
   void touchDownTrackControl6(Zone zone, Touch t){
-    if(mainInterfaceScene.nc >= 6){
-      mainInterfaceScene.controls[0].passPress(t.getX(), t.getY());
-    }
+    mainInterfaceScene.controls[0].passPress(t.getX(), t.getY());
   }
   void touchMovedTrackControl6(Zone zone, Touch t){
-    if(mainInterfaceScene.nc >= 6){
-      mainInterfaceScene.controls[0].passDrag(t.getX(), t.getY());
-    }
+    mainInterfaceScene.controls[0].passDrag(t.getX(), t.getY());
   }
   void touchUpTrackControl6(Zone zone){
-    if(mainInterfaceScene.nc >= 6){
-      mainInterfaceScene.controls[0].passRelease();
-    }
+    mainInterfaceScene.controls[0].passRelease();
   }
+  
+    void drawKnobControl60(Zone zone){}
+    void touchDownKnobControl60(Zone zone, Touch t){
+      mainInterfaceScene.controls[6].knobs[0].passPress(t.getX(), t.getY());
+    }
+    void touchMovedKnobControl60(Zone zone, Touch t){
+      mainInterfaceScene.controls[6].knobs[0].passDrag(t.getX(), t.getY());
+    }
+    void touchUpKnobControl60(Zone zone, Touch t){
+      mainInterfaceScene.controls[6].knobs[0].passRelease();
+    }
+    
+    void drawKnobControl61(Zone zone){}
+    void touchDownKnobControl61(Zone zone, Touch t){
+      mainInterfaceScene.controls[6].knobs[1].passPress(t.getX(), t.getY());
+    }
+    void touchMovedKnobControl61(Zone zone, Touch t){
+      mainInterfaceScene.controls[6].knobs[1].passDrag(t.getX(), t.getY());
+    }
+    void touchUpKnobControl61(Zone zone, Touch t){
+      mainInterfaceScene.controls[6].knobs[1].passRelease();
+    }
+    
+    void drawKnobControl62(Zone zone){}
+    void touchDownKnobControl62(Zone zone, Touch t){
+      mainInterfaceScene.controls[6].knobs[2].passPress(t.getX(), t.getY());
+    }
+    void touchMovedKnobControl62(Zone zone, Touch t){
+      mainInterfaceScene.controls[6].knobs[2].passDrag(t.getX(), t.getY());
+    }
+    void touchUpKnobControl62(Zone zone, Touch t){
+      mainInterfaceScene.controls[6].knobs[2].passRelease();
+    }
+    
+    void drawDoubleControl6(){}
+    void touchDownDoubleControl6(Zone zone, Touch t){
+      mainInterfaceScene.controls[6].doubleBar.detectPress(t.getX(), t.getY());
+    }
+    void touchMovedDoubleControl6(Zone zone, Touch t){
+      mainInterfaceScene.controls[6].doubleBar.detectDrag(t.getX(), t.getY());
+    }
+    void touchUpDoubleControl6(Zone zone, Touch t){
+      mainInterfaceScene.controls[6].doubleBar.detectRelease();
+    }
     
 

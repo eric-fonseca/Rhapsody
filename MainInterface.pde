@@ -50,7 +50,7 @@ class MainInterface extends Scene{
     float temp = 2 * PI / nc;
     for(int i = 0; i < nc; i++){
       println(zoneNames[i][0]);
-      TrackControl c = new TrackControl(x,y,r,5,i * temp - PI,increasedRotateRatio,inner,outer,centerCircle,color(247, 255, 58),color(255,46,135),zoneNames[i][0]);
+      TrackControl c = new TrackControl(x,y,r,5,i * temp - PI,increasedRotateRatio,inner,outer,centerCircle,color(247, 255, 58),color(255,46,135),zoneNames[i]);
       c.setIcon(trackControlIcons[i%5]); //%5 is temporary
       c.animating = true;
       controls[i] = c;
@@ -180,11 +180,6 @@ class MainInterface extends Scene{
   // Function to relay mousePress data to controls. Call within mousePressed();
   void handlePress(float x_, float y_){ 
     super.handlePress();
-    /*
-    for(int i = 0; i < nc; i++){
-      controls[i].passPress(x_,y_);
-    }
-    */
     centerCircle.detectPress(x_,y_,centerCircle.r/2);
     outer.selection = centerCircle.selection;
   }
@@ -192,12 +187,6 @@ class MainInterface extends Scene{
   // Function to relay mouseDrag data to controls. Call within mouseDragged();
   void handleDrag(float x_, float y_){
     super.handleDrag();
-    /*
-    for(int i = 0; i < nc; i++){
-      controls[i].passDrag(x_,y_);
-    }
-    */
-    
     if(centerCircle.pressed){
       centerCircle.detectDrag(x_,y_,centerCircle.r/2);
     }
@@ -206,11 +195,6 @@ class MainInterface extends Scene{
   // Function to relay mouseRelease data to controls. Call within mouseReleased();
   void handleRelease(){
     super.handleRelease();
-    /*
-    for(int i = 0; i < nc; i++){
-      controls[i].passRelease();
-    }
-    */
     centerCircle.detectRelease();
     outer.selection = false;
     outer.dragPause(false);

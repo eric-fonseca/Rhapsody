@@ -4,6 +4,9 @@ class DoubleBarControl extends Control{
   float value1, value2;
   color cPrimary;
   boolean orientRight = true;
+  TrackControl parent;
+  String zoneName;
+  Zone zone;
   
   // Animation variables
   float th, tr, tsw;
@@ -20,7 +23,7 @@ class DoubleBarControl extends Control{
   final float phase1Cutoff = 1;
   final float phase2Cutoff = 2;
   
-  DoubleBarControl(float x_, float y_, float sw_, color c_, float h_){
+  DoubleBarControl(float x_, float y_, float sw_, color c_, float h_,TrackControl tc_, String zn_){
     super(x_,y_,0,sw_,3);
     h = h_;
     sw = sw_;
@@ -29,6 +32,10 @@ class DoubleBarControl extends Control{
     value2 = h;
     tv1 = 0;
     tv2 = 0;
+    parent = tc_;
+    zoneName = zn_;
+    zone = new Zone(zoneName,round(x-sw*hitboxSpread),round(y-h-sw*hitboxSpread*2),round(sw*hitboxSpread*2),round(h*2+sw*hitboxSpread*4));
+    SMT.add(zone);
   }
   
     void setNewPosition(float x_, float y_){
@@ -53,6 +60,17 @@ class DoubleBarControl extends Control{
       }
     }
   
+  void update(){
+    super.update();
+
+    // Updating zone properties
+    SMT.get(zoneName).setX(round(x-sw*hitboxSpread));
+    SMT.get(zoneName).setY(round(y-h-sw*hitboxSpread*2));
+    SMT.get(zoneName).setWidth(round(sw*hitboxSpread*2));
+    SMT.get(zoneName).setHeight(round(h*2+sw*hitboxSpread*4));
+    
+  }
+
   void animate(){
     super.animate();
     if(animating){
@@ -179,6 +197,10 @@ class DoubleBarControl extends Control{
     }
   
   void detectPress(float x_, float y_){
+    if(!parent.selection){
+       return; 
+    }
+    
     // rectangular detection
     if(x_ > x - sw*hitboxSpread && 
        x_ < x + sw*hitboxSpread &&
@@ -191,6 +213,10 @@ class DoubleBarControl extends Control{
   }
   
   void detectDrag(float x_, float y_){
+    if(!parent.selection){
+       return; 
+    }
+    
     if(pressed){
       if (dist(x_,y_,x,y + value1) < sw*hitboxSpread*2){
         if(y_ > y - h && y_ < y + h && y_ < y + value2){

@@ -5,6 +5,9 @@ class KnobControl extends Control{
   Boolean block = false;
   color cPrimary, cSecondary;
   PImage outerGlow = loadImage("knobGlow.png");
+  TrackControl parent;
+  String zoneName;
+  Zone zone;
   
   // Constant Ratios
   final float a = PI/8;
@@ -30,12 +33,16 @@ class KnobControl extends Control{
   final float phase1Cutoff = 0.25;
   final float phase2Cutoff = 0.0005;
   
-  KnobControl(float x_, float y_, float r_, float sw_, float a_, float setAngle_, float initValue, color ccolor1_, color ccolor2_){
+  KnobControl(float x_, float y_, float r_, float sw_, float a_, float setAngle_, float initValue, color ccolor1_, color ccolor2_, TrackControl tc_, String zn_){
     super(x_, y_, r_, sw_, 3);
     setAngle = setAngle_; // SetAngle should only be either 0 or PI
     knobAngle = initValue;
     cPrimary = ccolor1_;
     cSecondary = ccolor2_;
+    parent = tc_;
+    zoneName = zn_;
+    Zone zone = new Zone(zoneName,round(x-r*hitboxSpread/2),round(y-r*hitboxSpread/2),round(r*hitboxSpread),round(r*hitboxSpread));
+    SMT.add(zone);
   }
   
     void setNewPosition(float x_, float y_, float sa_){
@@ -78,6 +85,16 @@ class KnobControl extends Control{
       // Ideally never returns zero
       return 0;
     }
+    
+   void update(){
+     super.update();
+     
+    // Updating zone properties
+    SMT.get(zoneName).setX(round(x - r*hitboxSpread/2));
+    SMT.get(zoneName).setY(round(y - r*hitboxSpread/2));
+    SMT.get(zoneName).setWidth(round(r*hitboxSpread));
+    SMT.get(zoneName).setHeight(round(r*hitboxSpread));
+   }
   
    // Built to be ran every frame
    void animate(){
@@ -281,6 +298,9 @@ class KnobControl extends Control{
    
    // This class doens't use the Control class detectPress() method
    void passPress(float x_, float y_){
+     if(!parent.selection){
+       return; 
+     }
      float temp = dist(x_, y_, x, y);
      
      if(temp < (r/2 * centerCircle)){
@@ -300,6 +320,9 @@ class KnobControl extends Control{
    // This class doens't use the Control class detectDrag() method
    // In the future for multitouch, reference to the specific touch must be recorded at the top of the class
    void passDrag(float x_, float y_){
+     if(!parent.selection){
+       return; 
+     }
      float tdist = dist(x_, y_, x, y);
      //if(tdist < (r/2 * hitboxSpread) && tdist > r/2 * centerCircle){
      if(pressed){

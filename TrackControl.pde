@@ -8,7 +8,7 @@ class TrackControl extends Control{
   boolean isDragging = false;
   PImage icon;
   float iconSize = 48;
-  String zoneName;
+  String[] zoneNames;
   Zone zone;
   
   // Object References
@@ -36,7 +36,7 @@ class TrackControl extends Control{
   KnobControl[] knobs = new KnobControl[numberOfKnobs];
   DoubleBarControl doubleBar;
   
-  TrackControl(float cx_, float cy_, float r_, float sw_, float a_, float irr_, DotPathControl inner_, DotPathControl outer_, CenterControl cc_, color c1_, color c2_, String zn_){
+  TrackControl(float cx_, float cy_, float r_, float sw_, float a_, float irr_, DotPathControl inner_, DotPathControl outer_, CenterControl cc_, color c1_, color c2_, String[] zn_){
     super(cx_, cy_, 0, sw_, 3);
     a = a_; // angle away from center point of ControlCenter
     rate = inner_.direction; // rate of rotation while in the inner dot path
@@ -58,16 +58,16 @@ class TrackControl extends Control{
     tsy = cos(a) * outer_.r + cy; // the y-value where the tsrack Control move towards over time
     tsr = 0; // For changes in radius over time
     
-    zoneName = zn_;
+    zoneNames = zn_;
     
     // Creating controls
     for (int i = 0; i < numberOfKnobs; i++){
-      knobs[i] = new KnobControl(0, 0, knobRadius, 5, PI/8, PI, 0, color(247, 255, 58), color(255,46,135));
+      knobs[i] = new KnobControl(0, 0, knobRadius, 5, PI/8, PI, 0, color(247, 255, 58), color(255,46,135),this,zoneNames[i+1]);
     }
     
-    doubleBar = new DoubleBarControl(-50, -50, sw*2, color(247, 255, 58), height/3);
+    doubleBar = new DoubleBarControl(-50, -50, sw*2, color(247, 255, 58), height/3,this,zoneNames[4]);
     
-    zone = new ShapeZone(zoneName,round(x-r/2),round(y-r/2),round(r),round(r));
+    zone = new ShapeZone(zoneNames[0],round(x-r/2),round(y-r/2),round(r),round(r));
     SMT.add(zone);
   }
   
@@ -115,11 +115,13 @@ class TrackControl extends Control{
           for(int i = 0; i < numberOfKnobs; i++){
             knobs[i].setNewPosition(widthSpacing, heightSpacing * (i + 1), PI);
             knobs[i].setColorValues(cSecondary, cPrimary);
+            knobs[i].update();
             if(doubleBar.orientRight){
               doubleBar.flipValues(); 
             }
             doubleBar.setNewPosition(widthSpacing/3, height/2);
             doubleBar.setColorValues(cSecondary);
+            doubleBar.update();
           }
         } else { // If selection is right side
           tsx = cos(0) * outer.r + cx;
@@ -128,11 +130,13 @@ class TrackControl extends Control{
           for(int i = 0; i < numberOfKnobs; i++){
             knobs[i].setNewPosition(width - widthSpacing, heightSpacing * (i + 1), 0);
             knobs[i].setColorValues(cPrimary, cSecondary);
+            knobs[i].update();
             if(!doubleBar.orientRight){
               doubleBar.flipValues(); 
             }
             doubleBar.setNewPosition(width - widthSpacing/3, height/2);
             doubleBar.setColorValues(cPrimary);
+            doubleBar.update();
           }
         }
         rate = 0;
@@ -158,10 +162,11 @@ class TrackControl extends Control{
     x += (tsx - x)/dynamicAnimationRate;
     y += (tsy - y)/dynamicAnimationRate; 
     
-    SMT.get(zoneName).setX(round(x - r/2));
-    SMT.get(zoneName).setY(round(y - r/2));
-    SMT.get(zoneName).setWidth(round(r));
-    SMT.get(zoneName).setHeight(round(r));
+    // Updating zone properties
+    SMT.get(zoneNames[0]).setX(round(x - r/2));
+    SMT.get(zoneNames[0]).setY(round(y - r/2));
+    SMT.get(zoneNames[0]).setWidth(round(r));
+    SMT.get(zoneNames[0]).setHeight(round(r));
   }
   
   void animate(){
@@ -258,13 +263,14 @@ class TrackControl extends Control{
     if(dist(x_,y_,x,y) < r){
       pressed = true;
     }
-    
+    /*
     if(selection){
       for(int i = 0; i < numberOfKnobs; i++){
         knobs[i].passPress(x_, y_);
       }
       doubleBar.detectPress(x_,y_);
     }
+    */
   }
   
   // This class doens't use the Control class detectDrag() method
@@ -278,7 +284,7 @@ class TrackControl extends Control{
       outer.dragPause(isDragging);
       inner.dragPause(isDragging);
       if(dist(x,y,cx,cy) > cr){
-        selection = true; 
+        selection = true;
         for(int i = 0; i < numberOfKnobs; i++){
           knobs[i].animating = true;
         }
@@ -286,13 +292,14 @@ class TrackControl extends Control{
         selection = false; 
       }
     }
-    
+    /*
     if(selection){
       for(int i = 0; i < numberOfKnobs; i++){
         knobs[i].passDrag(x_, y_);
       }
       doubleBar.detectDrag(x_,y_);
     }
+    */
   }
   
   // This class doens't use the Control class detectRelease() method
@@ -301,10 +308,12 @@ class TrackControl extends Control{
     pressed = false;
     a = atan2(y - cy,x - cx);
     
+    /*
     for(int i = 0; i < numberOfKnobs; i++){
       knobs[i].passRelease();
     }
     doubleBar.detectRelease();
+    */
     
     for(int i = 0; i < echoes.size(); i++){
       echoes.get(i).start = true;
