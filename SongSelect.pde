@@ -21,7 +21,7 @@ class SongSelect extends Scene{
   // Overriding init(), acting as setup()
   void init(){
     super.init();
-    bg = loadImage("background.png");
+    bg = loadImage("purpleGradient.png");
     bgOverlay = loadImage("shadowOverlay.png");
     
     File audioDirectory = new File(sketchPath("") + "audio");
@@ -138,11 +138,12 @@ class SongSelect extends Scene{
               return !name.equals(".DS_Store");
           }
         });
-        audioControl = new AudioControl(songList.get(selectedSong).artist + "-" + songList.get(selectedSong).title, songTracks);
-        audioControl.init();
+        audioControl = new AudioControl(songList.get(selectedSong).artist, songList.get(selectedSong).title, songTracks);
         
         mainInterfaceScene = new MainInterface(height/3, songTracks.length);
         mainInterfaceScene.active = true;
+        
+        audioControl.init();
       }
     } else {
       //current album

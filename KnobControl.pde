@@ -3,6 +3,7 @@ class KnobControl extends Control{
   float setAngle, knobAngle;
   Boolean movable = false; // Use this var to state is knob is interact-able or drawn on sketch
   Boolean block = false;
+  Boolean centerPressed = false;
   color cPrimary, cSecondary;
   PImage outerGlow = loadImage("knobGlow.png");
   TrackControl parent;
@@ -305,6 +306,7 @@ class KnobControl extends Control{
      
      if(temp < (r/2 * centerCircle)){
        pressed = true;
+       centerPressed = true;
        
        // Toggling selection value
        if(selection){
@@ -376,5 +378,6 @@ class KnobControl extends Control{
    void passRelease(){
      movable = false;
      pressed = false;
+     centerPressed = false;
    }
 }

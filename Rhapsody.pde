@@ -10,6 +10,7 @@ import vialab.SMT.event.*;
 import vialab.SMT.renderer.*;
 import vialab.SMT.swipekeyboard.*;
 import processing.video.*;
+import processing.net.*;
 
 // Screen Objects are globally accessible
 public SongSelect songSelectScene;
@@ -24,16 +25,22 @@ private String[] zoneNames4 = {"TrackControl4", "KnobControl40", "KnobControl41"
 private String[] zoneNames5 = {"TrackControl5", "KnobControl50", "KnobControl51", "KnobControl52", "DoubleControl5"};
 private String[] zoneNames6 = {"TrackControl6", "KnobControl60", "KnobControl61", "KnobControl62", "DoubleControl6"};
 public String[][] zoneNames = {zoneNames0, zoneNames1, zoneNames2, zoneNames3, zoneNames4, zoneNames5, zoneNames6};
-
   
 AudioControl audioControl;
 Visualizer visualizer;
 Minim minim;
 
+Server server;
+String songData = "";
+
 void setup(){
-  size(displayWidth, displayHeight,SMT.RENDERER);
+  minim = new Minim(this);
+  println(dataPath(""));
   
-  minim = new Minim(this);  
+  server = new Server(this, 5204); 
+  
+  size(displayWidth, displayHeight, SMT.RENDERER);
+  
   SMT.smt_tempdir = new File(sketchPath("")+"/SMT");
   SMT.init(this, TouchSource.AUTOMATIC);
   SMT.setTouchDraw(TouchDraw.NONE);
@@ -52,7 +59,6 @@ void draw(){
   }
   if(mainInterfaceScene.active){
     mainInterfaceScene.update();
-    //visualizer.update();
   }
 }
 
@@ -62,12 +68,14 @@ void mousePressed(){
   }
   if(mainInterfaceScene.active){
     mainInterfaceScene.handlePress(mouseX,mouseY);
+    audioControl.handlePress();
   }
 }
 
 void mouseDragged(){
   if(mainInterfaceScene.active){
     mainInterfaceScene.handleDrag(mouseX,mouseY);
+    audioControl.handleDrag();
   }
 }
 
