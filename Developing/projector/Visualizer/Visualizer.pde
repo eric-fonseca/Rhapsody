@@ -22,6 +22,7 @@ void setup() {
   
   musicVideo = new Movie(this, "RHCPsnow.mp4"); //music videos should be placed in the data directory
   musicVideo.play();
+  musicVideo.volume(0);
 }
 
 void draw() {
