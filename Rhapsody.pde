@@ -37,8 +37,6 @@ void setup(){
   minim = new Minim(this);
   println(dataPath(""));
   
-  server = new Server(this, 5204); 
-  
   size(displayWidth, displayHeight, SMT.RENDERER);
   
   SMT.smt_tempdir = new File(sketchPath("")+"/SMT");
@@ -51,6 +49,8 @@ void setup(){
   
   mainInterfaceScene = new MainInterface(0, 0);
   mainInterfaceScene.active = false;
+  
+   server = new Server(this, 5204);
 }
 
 void draw(){
@@ -66,17 +66,21 @@ void mousePressed(){
   if(songSelectScene.active){
     songSelectScene.handlePress(mouseX,mouseY);
   }
+  /*
   if(mainInterfaceScene.active){
     mainInterfaceScene.handlePress(mouseX,mouseY);
     audioControl.handlePress();
   }
+  */
 }
 
 void mouseDragged(){
+  /*
   if(mainInterfaceScene.active){
     mainInterfaceScene.handleDrag(mouseX,mouseY);
     audioControl.handleDrag();
   }
+  */
 }
 
 void mouseReleased(){

@@ -5,6 +5,7 @@ class DoubleBarControl extends Control{
   color cPrimary;
   boolean orientRight = true;
   TrackControl parent;
+  String label;
   String zoneName;
   Zone zone;
   
@@ -16,6 +17,7 @@ class DoubleBarControl extends Control{
   final color pressedbackgroundColor = #404040;
   final color unselectedSpaceColor = #C8C8C8;
   final float hitboxSpread = 2.0;
+  final float labelSpread = 80;
   
   // Animation constants
   final float animationFrames = 15;
@@ -23,7 +25,7 @@ class DoubleBarControl extends Control{
   final float phase1Cutoff = 1;
   final float phase2Cutoff = 2;
   
-  DoubleBarControl(float x_, float y_, float sw_, color c_, float h_,TrackControl tc_, String zn_){
+  DoubleBarControl(float x_, float y_, float sw_, color c_, float h_,TrackControl tc_, String l_, String zn_){
     super(x_,y_,0,sw_,3);
     h = h_;
     sw = sw_;
@@ -33,6 +35,7 @@ class DoubleBarControl extends Control{
     tv1 = 0;
     tv2 = 0;
     parent = tc_;
+    label = l_;
     zoneName = zn_;
     zone = new Zone(zoneName,round(x-sw*hitboxSpread),round(y-h-sw*hitboxSpread*2),round(sw*hitboxSpread*2),round(h*2+sw*hitboxSpread*4));
     SMT.add(zone);
@@ -136,6 +139,7 @@ class DoubleBarControl extends Control{
       drawBackground(sw*hitboxSpread*2);
       drawBar(h,value1,value2);
       drawCircles(sw*2);
+      drawLabel();
     }
     drawEchoes();
   }
@@ -193,6 +197,23 @@ class DoubleBarControl extends Control{
       noStroke();
       fill(255);
       ellipse(0,value2,sw_,sw_);
+      popMatrix(); 
+    }
+    
+    void drawLabel(){
+      // Label
+      pushMatrix();
+      if(parent.getDirection() == "right"){
+        translate(x + labelSpread,y);
+        rotate(-PI/2);
+      } else if(parent.getDirection() == "left"){
+        translate(x - labelSpread,y);
+        rotate(PI/2);
+      }
+       
+      fill(255);
+      textSize(32);
+      text(label,0, 0);
       popMatrix(); 
     }
   

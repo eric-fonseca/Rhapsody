@@ -6,6 +6,7 @@ class KnobControl extends Control{
   Boolean centerPressed = false;
   color cPrimary, cSecondary;
   PImage outerGlow = loadImage("knobGlow.png");
+  String label;
   TrackControl parent;
   String zoneName;
   Zone zone;
@@ -16,6 +17,7 @@ class KnobControl extends Control{
   final color pressedbackgroundColor = #404040;
   final color unselectedCenterButtonColor = #C8C8C8;
   final float hitboxSpread = 1.4;
+  final float labelSpread = 1.15;
   final float centerCircle = 0.7;
   final float scanPadding = 1.1;
   final int unselectedAlpha = 95;
@@ -34,13 +36,14 @@ class KnobControl extends Control{
   final float phase1Cutoff = 0.25;
   final float phase2Cutoff = 0.0005;
   
-  KnobControl(float x_, float y_, float r_, float sw_, float a_, float setAngle_, float initValue, color ccolor1_, color ccolor2_, TrackControl tc_, String zn_){
+  KnobControl(float x_, float y_, float r_, float sw_, float a_, float setAngle_, float initValue, color ccolor1_, color ccolor2_, TrackControl tc_, String l_, String zn_){
     super(x_, y_, r_, sw_, 3);
     setAngle = setAngle_; // SetAngle should only be either 0 or PI
     knobAngle = initValue;
     cPrimary = ccolor1_;
     cSecondary = ccolor2_;
     parent = tc_;
+    label = l_;
     zoneName = zn_;
     Zone zone = new Zone(zoneName,round(x-r*hitboxSpread/2),round(y-r*hitboxSpread/2),round(r*hitboxSpread),round(r*hitboxSpread));
     SMT.add(zone);
@@ -56,6 +59,7 @@ class KnobControl extends Control{
         resetKnobAngle();
       }
       setAngle = sa_; // SetAngle should only be either 0 or PI
+      update();
     }
     
       void resetKnobAngle(){
@@ -89,7 +93,6 @@ class KnobControl extends Control{
     
    void update(){
      super.update();
-     
     // Updating zone properties
     SMT.get(zoneName).setX(round(x - r*hitboxSpread/2));
     SMT.get(zoneName).setY(round(y - r*hitboxSpread/2));
@@ -281,8 +284,23 @@ class KnobControl extends Control{
          rotate(knobAngle - PI/2);
          noStroke();
          fill(255);
-         ellipse(0,r_/2,sw*2,sw*2);
-         popMatrix(); 
+         ellipse(0,r_/2,sw*4,sw*4);
+         popMatrix();
+         
+         // Label
+         pushMatrix();
+         if(parent.getDirection() == "right"){
+           translate(x + r * labelSpread,y);
+           rotate(-PI/2);
+         } else if(parent.getDirection() == "left"){
+           translate(x - r * labelSpread,y);
+           rotate(PI/2);
+         }
+         
+         fill(255);
+         textSize(32);
+         text(label,0, 0);
+         popMatrix();
        }
      
    
@@ -376,6 +394,11 @@ class KnobControl extends Control{
      
    // This class doens't use the Control class detectRelease() method
    void passRelease(){
+     /*
+     if(!parent.selection){
+       return;
+     }
+     */
      movable = false;
      pressed = false;
      centerPressed = false;

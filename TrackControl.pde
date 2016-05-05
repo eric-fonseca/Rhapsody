@@ -19,7 +19,7 @@ class TrackControl extends Control{
   final int numberOfKnobs = 3;
   final float selectedControlRatio = 0.3; // Relative radius ratio of Controls when they are selected
   final float unselectedControlRatio = 0.2; // Relative radius ratio of Controls when they are selected
-  final float widthSpacingRatio = 0.15; // Spacing of of far the knobs are drawn from the edges of the screen
+  final float widthSpacingRatio = 0.20; // Spacing of of far the knobs are drawn from the edges of the screen
   final float knobRadius = 125;
   final float dynamicAnimationRate = 10; // Speed of how quickly this class snaps to new given positions
   final float maxIconSize = 96;
@@ -62,10 +62,10 @@ class TrackControl extends Control{
     
     // Creating controls
     for (int i = 0; i < numberOfKnobs; i++){
-      knobs[i] = new KnobControl(0, 0, knobRadius, 5, PI/8, PI, 0, color(247, 255, 58), color(255,46,135),this,zoneNames[i+1]);
+      knobs[i] = new KnobControl(0, 0, knobRadius, 5, PI/8, PI, 0, color(247, 255, 58), color(255,46,135),this,"Test",zoneNames[i+1]);
     }
     
-    doubleBar = new DoubleBarControl(-50, -50, sw*2, color(247, 255, 58), height/3,this,zoneNames[4]);
+    doubleBar = new DoubleBarControl(-50, -50, sw*2, color(247, 255, 58), height/3,this,"Test",zoneNames[4]);
     
     zone = new ShapeZone(zoneNames[0],round(x-r/2),round(y-r/2),round(r),round(r));
     SMT.add(zone);
@@ -286,10 +286,21 @@ class TrackControl extends Control{
       if(dist(x,y,cx,cy) > cr){
         selection = true;
         for(int i = 0; i < numberOfKnobs; i++){
+          SMT.get(knobs[i].zoneName).setTouchable(true);
+          SMT.get(knobs[i].zoneName).setPickable(true);
           knobs[i].animating = true;
         }
+        SMT.get(doubleBar.zoneName).setTouchable(true);
+        SMT.get(doubleBar.zoneName).setPickable(true);
+        
       } else {
-        selection = false; 
+        selection = false;
+        for(int i = 0; i < numberOfKnobs; i++){
+          SMT.get(knobs[i].zoneName).setTouchable(false);
+          SMT.get(knobs[i].zoneName).setPickable(false);
+        }
+        SMT.get(doubleBar.zoneName).setTouchable(false);
+        SMT.get(doubleBar.zoneName).setPickable(false);
       }
     }
     /*
