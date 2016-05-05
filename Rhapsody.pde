@@ -47,7 +47,7 @@ void setup(){
   songSelectScene.init();
   songSelectScene.active = true;
   
-  mainInterfaceScene = new MainInterface(0, 0);
+  mainInterfaceScene = new MainInterface(0, zoneNames0); //this is unused, we just need a dummy array
   mainInterfaceScene.active = false;
   
    server = new Server(this, 5204);

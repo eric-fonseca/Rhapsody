@@ -4,7 +4,7 @@ class MainInterface extends Scene{
   int nc; // number of controls
   int cri, cli; // current right index, current left index
   boolean rsc, lsc; // right selection check, left selection check
-  PImage[] trackControlIcons = new PImage[5];
+  String[] tracks;
   
   CenterControl centerCircle;
   DotPathControl outer, inner;
@@ -18,11 +18,12 @@ class MainInterface extends Scene{
   final float innerRingRotate = 0.0015; // Relative radius ratio of the inner dot path
   final float increasedRotateRatio = 10; // The increased speed of rotation when center control is selected
 
-  MainInterface(float r_, int nc_){
+  MainInterface(float r_, String[] tracks_){
     x = width/2; // x value of the center of the class
     y = height/2; // y value of the center of the class
     r = r_; // radius value for the class
-    nc = nc_; // Number of controls for the class
+    tracks = tracks_; //track names to load images
+    nc = tracks_.length; // Number of controls for the class
     init();
   }
   
@@ -38,20 +39,38 @@ class MainInterface extends Scene{
     outer.animating = true;
     
     inner = new DotPathControl(x,y,r*innerRingRatio,20,innerRingRotate,increasedRotateRatio,5,color(255, 202));
-    
-    // loading assets
-    trackControlIcons[0] = loadImage("DRUMS.png");
-    trackControlIcons[1] = loadImage("GUITAR.png");
-    trackControlIcons[2] = loadImage("GUITAR-ELECTRIC.png");
-    trackControlIcons[3] = loadImage("VOCALS.png");
-    trackControlIcons[4] = loadImage("PIANO.png");
    
     controls = new TrackControl[nc];
     float temp = 2 * PI / nc;
     for(int i = 0; i < nc; i++){
       println(zoneNames[i][0]);
       TrackControl c = new TrackControl(x,y,r,5,i * temp - PI,increasedRotateRatio,inner,outer,centerCircle,color(247, 255, 58),color(255,46,135),zoneNames[i]);
-      c.setIcon(trackControlIcons[i%5]); //%5 is temporary
+      
+      if(tracks[i].equals("bass.mp3")){
+        c.setIcon(loadImage("GUITAR.png"));
+      }
+      else if(tracks[i].equals("drums.mp3")){
+        c.setIcon(loadImage("DRUMS.png"));
+      }
+      else if(tracks[i].equals("guitar.mp3")){
+        c.setIcon(loadImage("GUITAR-ELECTRIC.png"));
+      }
+      else if(tracks[i].equals("vocals.mp3")){
+        c.setIcon(loadImage("VOCALS.png"));
+      }
+      else if(tracks[i].equals("synth.mp3")){
+        c.setIcon(loadImage("DRUMS.png")); //replace with new image
+      }
+      else if(tracks[i].equals("keyboard.mp3")){
+        c.setIcon(loadImage("PIANO.png"));
+      }
+      else if(tracks[i].equals("strings.mp3")){
+        c.setIcon(loadImage("DRUMS.png")); //replace with new image
+      }
+      else if(tracks[i].equals("misc.mp3")){
+        c.setIcon(loadImage("DRUMS.png")); //replace with new image
+      }
+      
       c.animating = true;
       controls[i] = c;
     }

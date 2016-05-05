@@ -140,7 +140,7 @@ class SongSelect extends Scene{
         });
         audioControl = new AudioControl(songList.get(selectedSong).artist, songList.get(selectedSong).title, songTracks);
         
-        mainInterfaceScene = new MainInterface(height/3, songTracks.length);
+        mainInterfaceScene = new MainInterface(height/3, songTracks);
         mainInterfaceScene.active = true;
         
         audioControl.init();
