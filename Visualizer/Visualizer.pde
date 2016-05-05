@@ -8,11 +8,12 @@ String messageFromServer = "";
 String songData = "";
 float[] visualizerData;
 boolean dataReceived = false;
+boolean runOnce = true;
 color trackColor = #FFFFFF;
 int r = 200;
-boolean runOnce = true;
 int numTracks;
 boolean videoPlaying = false;
+String artistName = "";
 
 void setup() {
   size(1940, 1240);
@@ -28,11 +29,11 @@ void draw() {
   if(dataReceived) image(musicVideo, width/2 - 400, height/2 - 300, 800, 600);
   stroke(#262626); //must match background color
   strokeWeight(200);
+  fill(#1A1F18, 10);
   ellipse(width/2, height/2, 800, 800);
   
   pushMatrix();
   
-  fill(#1A1F18, 10);
   noStroke();
   rect(0,0,width,height);
   translate(width/2, height/2);
@@ -48,7 +49,8 @@ void draw() {
       visualizerData = float(songData.substring(0, songData.indexOf("@")).split("/")); //split the data into an array of floats
       numTracks = floor(visualizerData.length/103);
       if(runOnce){
-        String artistName = songData.substring(songData.lastIndexOf("@") + 1, songData.lastIndexOf("*"));
+        println("Starting music video");
+        artistName = songData.substring(songData.lastIndexOf("@") + 1, songData.lastIndexOf("*"));
         musicVideo = new Movie(this, System.getProperty("user.home") + "/Desktop/Rhapsody-NMTP/Rhapsody/data/" + artistName + ".mp4"); //music videos should be placed in the data directory
         musicVideo.play();
         musicVideo.volume(0);
@@ -62,6 +64,7 @@ void draw() {
   else{
     if(dataReceived) background(#262626);
     dataReceived = false;
+    runOnce = true;
   }
   
   if(dataReceived){
