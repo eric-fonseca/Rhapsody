@@ -62,6 +62,9 @@ class MainInterface extends Scene{
   void update(){
     super.update();
     clear();
+    
+    visualizer.update();
+    
     outer.animate();
     if(outer.phases[1]){
       centerCircle.isDrawingIn = true;
