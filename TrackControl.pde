@@ -65,9 +65,9 @@ class TrackControl extends Control{
       knobs[i] = new KnobControl(0, 0, knobRadius, 5, PI/8, PI, 0, color(247, 255, 58), color(255,46,135),this,"Test",zoneNames[i+1]);
     }
     
-    doubleBar = new DoubleBarControl(-50, -50, sw*2, color(247, 255, 58), height/3,this,"Test",zoneNames[4]);
+    doubleBar = new DoubleBarControl(-50, -50, sw*2, color(247, 255, 58), height/3,this,"Frequency Filter",zoneNames[4]);
     
-    zone = new ShapeZone(zoneNames[0],round(x-r/2),round(y-r/2),round(r),round(r));
+    zone = new Zone(zoneNames[0],round(x-r/2),round(y-r/2),round(r),round(r));
     SMT.add(zone);
   }
   

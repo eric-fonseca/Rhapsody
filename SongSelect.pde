@@ -5,17 +5,24 @@ class SongSelect extends Scene{
   int selectedSong = 0;
   ArrayList<SongData> songList = new ArrayList<SongData>(); //This list holds all of the song objects
   String[] artistNames;
-  String[] songNames;           
+  String[] songNames;
                         
   PImage bg;
   PImage bgOverlay;
   PImage logo = loadImage("data/logo.png");
   Movie musicVideo;
   boolean playingVideo;
+  
+  String[] zoneNames = {"AlbumCircle","RightTriangle", "LeftTriangle", "ExitButton", "JamButton"};
+  Zone aC, rT, lT, eB, jB;
                      
-  // This class is for the most part preset, so a constructor can be basic.   
   SongSelect(PApplet pa_){
     sketchReference = pa_;
+    aC = new Zone(zoneNames[0],round(width/4), round(height/4), round(width/2), round(height/2));
+    rT = new Zone(zoneNames[1],round(width*0.05),round(height/2-50),round(width*0.05),100);
+    lT = new Zone(zoneNames[2],round(width*0.90),round(height/2-50),round(width*0.05),100);
+    eB = new Zone(zoneNames[3],round(width/2 - 212), round(height * 0.83), 180, 80);
+    jB = new Zone(zoneNames[4],round(width/2 + 28), round(height * 0.83), 180, 80);
   }
                         
   // Overriding init(), acting as setup()
@@ -46,6 +53,12 @@ class SongSelect extends Scene{
     
     textSize(30);
     textAlign(CENTER);
+    
+    SMT.add(aC);
+    SMT.add(rT);
+    SMT.add(lT);
+    SMT.add(eB);
+    SMT.add(jB);
   }
   
     //Position and scale all of the songs
@@ -68,16 +81,25 @@ class SongSelect extends Scene{
     super.update();
     clear();
   
+    // Background texture
     image(bg, 0, 0, width, height);
     
     if (playingVideo){
+      pushStyle();
       fill(#F7FF3A);
       textSize(50);      
       text(songList.get(selectedSong).title.toUpperCase(), width/2, height/8);
-      textSize(20);
+      popStyle();
+      
+      pushStyle();
       fill(#FFFFFF);
+      textSize(20);
       text(songList.get(selectedSong).artist.toUpperCase(), width/2, height/8 + 40);
+      popStyle();
+
       image(musicVideo, width/4, height/4, width/2, height/2);
+      
+      pushStyle();
       noFill();
       stroke(#FFFFFF);
       textSize(30);
@@ -86,6 +108,7 @@ class SongSelect extends Scene{
       rect(width/2 + 28, height * 0.83, 180, 80);
       text("BACK", width/2 - 120, height * 0.84 + 41);
       text("JAM OUT", width/2 + 120, height * 0.84 + 41);
+      popStyle();
     } else {
       for(int i = 0; i < selectedSong; i++){
           songList.get(i).drawSong();
@@ -94,32 +117,42 @@ class SongSelect extends Scene{
           songList.get(i).drawSong();
       }
       //stroke(#000000);
+      pushStyle();
       fill(#FF2E87);
       noStroke();
       image(bgOverlay, 0, 0, width, height);
       triangle(width*0.1, height/2-50, width*0.1, height/2+50, width*0.05, height/2);
       triangle(width*0.9, height/2-50, width*0.9, height/2+50, width*0.95, height/2);
+      popStyle();
      
       //triangle(width*0.32, height*0.9-30, width*0.32, height*0.9+30, width*0.29, height*0.9);
       //triangle(width*0.67, height*0.9-30, width*0.67, height*0.9+30, width*0.70, height*0.9);
+      pushStyle();
       fill(#FFFFFF);
       textSize(30);
       text("SELECT A SONG", width/2, height/10);
-      image(logo, width/2- 40, height/10, height/10, height/10);
-      fill(#F7FF3A);
+      popStyle();
       
+      image(logo, width/2- 40, height/10, height/10, height/10);
+      
+      pushStyle();
+      fill(#F7FF3A);
       textSize(50);      
       text(songList.get(selectedSong).title.toUpperCase(), width/2, height*0.9);
-      textSize(20);
+      popStyle();
+      
+      pushStyle();
       fill(#FFFFFF);
+      textSize(20);
       text(songList.get(selectedSong).artist.toUpperCase(), width/2, height*0.9 + 40);
-
+      popStyle();
     }
   }
   
   //Overriding mousePressed()
   void handlePress(float x_, float y_){
     super.handlePress();
+    /*
     if(playingVideo){
       //back button
       if(x_ > width/2 - 212 && x_ < width/2 - 32 && y_ > height * 0.83 && y_ < height * 0.83 + 80){
@@ -144,6 +177,12 @@ class SongSelect extends Scene{
         mainInterfaceScene.active = true;
         
         audioControl.init();
+        
+        SMT.remove(zoneNames[0]);
+        SMT.remove(zoneNames[1]);
+        SMT.remove(zoneNames[2]);
+        SMT.remove(zoneNames[3]);
+        SMT.remove(zoneNames[4]);
       }
     } else {
       //current album
@@ -151,6 +190,7 @@ class SongSelect extends Scene{
         playingVideo = true;
         musicVideo.loop();
       }
+     
       //left arrow
       else if(mouseX > width*0.05 && mouseX < width*0.1 && mouseY > height/2-50 && mouseY < height/2+50){
         songList.get(selectedSong).selected = false;
@@ -172,6 +212,82 @@ class SongSelect extends Scene{
         }
         songList.get(selectedSong).selected = true;
         positionSongs();
+      }
+    }
+    */
+  }
+  
+  void handleAlbumCirclePress(float x_, float y_){
+    if(!playingVideo){
+      if(dist(x_, y_, width/2, height/2) < 250){
+          playingVideo = true;
+          musicVideo.loop();
+      }
+    }
+  }
+  
+  void handleLeftArrowPress(){
+    if(!playingVideo){
+      songList.get(selectedSong).selected = false;
+      selectedSong++;
+      
+      if(selectedSong > songNames.length-1){
+        selectedSong = 0;
+      }
+      songList.get(selectedSong).selected = true;
+      positionSongs();
+    }
+  }
+  
+  void handleRightArrowPress(){
+    if(!playingVideo){
+       songList.get(selectedSong).selected = false;
+      selectedSong--;
+     
+      if(selectedSong < 0){
+        selectedSong = songNames.length-1;
+      }
+      songList.get(selectedSong).selected = true;
+      positionSongs();
+    }
+  }
+  
+  void handleExitButtonPress(float x_, float y_){
+    if(playingVideo){
+      if(x_ > width/2 - 212 && x_ < width/2 - 32 && y_ > height * 0.83 && y_ < height * 0.83 + 80){
+        println("hitbox");
+        playingVideo = false;
+        musicVideo.stop();
+      }
+    } 
+  }
+  
+  void handleJamButtonPress(float x_, float y_){
+    if(playingVideo){
+      if(x_ > width/2 + 28 && x_ < width/2 + 208 && y_ > height * 0.83 && y_ < height * 0.83 + 80){
+        println("hitbox");
+        active = false;
+        playingVideo = false;
+        musicVideo.stop();
+        
+        File songDirectory = new File(sketchPath("") + "audio/" + songList.get(selectedSong).artist + "-" + songList.get(selectedSong).title);
+        String[] songTracks = songDirectory.list(new FilenameFilter(){ //get all files from song directory minus .DS_Store
+          public boolean accept(File dir, String name){
+              return !name.equals(".DS_Store");
+          }
+        });
+        audioControl = new AudioControl(songList.get(selectedSong).artist, songList.get(selectedSong).title, songTracks);
+        
+        mainInterfaceScene = new MainInterface(height/3, songTracks);
+        mainInterfaceScene.active = true;
+        
+        audioControl.init();
+        
+        SMT.remove(zoneNames[0]);
+        SMT.remove(zoneNames[1]);
+        SMT.remove(zoneNames[2]);
+        SMT.remove(zoneNames[3]);
+        SMT.remove(zoneNames[4]); 
       }
     }
   }

@@ -64,6 +64,9 @@ class KnobControl extends Control{
     
       void resetKnobAngle(){
         knobAngle += PI;
+        if(knobAngle > PI){
+          knobAngle -= 2*PI; 
+        }
       }
     
     void setColorValues(color pri, color sec){

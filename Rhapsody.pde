@@ -95,6 +95,40 @@ void movieEvent(Movie m) {
 
 // These functions cannot be modular, so welcome to my function hell
 // I blame the library, and this is not because I am bad at programming
+
+  // Functions for Song Selection Screen
+  void drawAlbumCircle(Zone zone){
+    zone.drag(false,false); 
+  }
+  void touchDownAlbumCircle(Zone zone, Touch t){
+     songSelectScene.handleAlbumCirclePress(t.getX(), t.getY());
+  }
+  void drawRightTriangle(Zone zone){
+    zone.drag(false,false);
+  }
+  void touchDownRightTriangle(Zone zone, Touch t){
+    songSelectScene.handleRightArrowPress();
+  }
+  void drawLeftTriangle(Zone zone){
+    zone.drag(false,false);
+  }
+  void touchDownLeftTriangle(Zone zone, Touch t){
+    songSelectScene.handleLeftArrowPress();
+  }
+  void drawExitButton(Zone zone){
+    zone.drag(false,false); 
+  }
+  void touchDownExitButton(Zone zone, Touch t){
+    songSelectScene.handleExitButtonPress(t.getX(), t.getY()); 
+  }
+  void drawJamButton(Zone zone){
+    zone.drag(false,false); 
+  }
+  void touchDownJamButton(Zone zone, Touch t){
+    songSelectScene.handleJamButtonPress(t.getX(), t.getY()); 
+  }
+   
+  // Functions for Main Interface
   void drawTrackControl0(Zone zone){}
   void touchDownTrackControl0(Zone zone, Touch t){
     mainInterfaceScene.controls[0].passPress(t.getX(), t.getY());
