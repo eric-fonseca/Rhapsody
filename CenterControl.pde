@@ -1,6 +1,7 @@
 // UI component at the center of the ControlCenter
 class CenterControl extends Control{
   color cPrimary;
+  PImage logo = loadImage("logo.png");
   
   // Animation variables
   float tr;
@@ -50,6 +51,7 @@ class CenterControl extends Control{
       fill(0);
     }
     ellipse(0,0,r_*2,r_*2);
-    popMatrix(); 
+    popMatrix();
+    image(logo, width/2 - 75, height/2 - 75, 150, 150); 
   }
 }

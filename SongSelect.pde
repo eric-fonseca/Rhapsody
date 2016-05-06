@@ -9,7 +9,7 @@ class SongSelect extends Scene{
                         
   PImage bg;
   PImage bgOverlay;
-  PImage logo = loadImage("data/logo.png");
+  PImage logo = loadImage("logo.png");
   Movie musicVideo;
   boolean playingVideo;
   
@@ -143,7 +143,7 @@ class SongSelect extends Scene{
       text("SELECT A SONG", width/2, height/10);
       popStyle();
       
-      image(logo, width/2- 40, height/10, height/10, height/10);
+      image(logo, width/2 - 40, height/10, 80, 80);
       
       pushStyle();
       fill(#F7FF3A);
