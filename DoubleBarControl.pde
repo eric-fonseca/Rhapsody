@@ -252,6 +252,7 @@ class DoubleBarControl extends Control{
         }
       }
     }
+    audioControl.handleDrag();
   }
   
   void detectRelease(){

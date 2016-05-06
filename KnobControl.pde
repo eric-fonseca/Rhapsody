@@ -341,6 +341,7 @@ class KnobControl extends Control{
      } else if(temp < (r/2 * hitboxSpread)){
        pressed = true;
      }
+     audioControl.handlePress();
    }
    
    // This class doens't use the Control class detectDrag() method
@@ -382,6 +383,7 @@ class KnobControl extends Control{
         }
       }
     }
+    audioControl.handleDrag();
    }
    
      // support function
