@@ -56,15 +56,14 @@ class SongSelect extends Scene{
     positionSongs();
     
     songList.get(0).selected = true;
-    
-    textSize(30);
-    textAlign(CENTER);
-
-    for(int i = 0; i < zoneNames.length; i++){
-      SMT.get(zoneNames[i]).setTouchable(true);
-      SMT.get(zoneNames[i]).setPickable(true);
-    }
   }
+  
+    void resetZones(){
+      for(int i = 0; i < zoneNames.length; i++){
+        SMT.get(zoneNames[i]).setTouchable(true);
+        SMT.get(zoneNames[i]).setPickable(true);
+      }
+    }
   
     //Position and scale all of the songs
     void positionSongs(){
@@ -89,6 +88,8 @@ class SongSelect extends Scene{
     // Background texture
     image(bg, 0, 0, width, height);
     
+    pushStyle();
+    textAlign(CENTER);
     if (playingVideo){
       pushStyle();
       fill(#F7FF3A);
@@ -107,13 +108,19 @@ class SongSelect extends Scene{
       pushStyle();
       noFill();
       stroke(#FFFFFF);
-      textSize(30);
       strokeWeight(3);
       rect(width/2 - 212, height * 0.83, 180, 80);
       rect(width/2 + 28, height * 0.83, 180, 80);
+      popStyle();
+      
+      pushStyle();
+      fill(#FFFFFF);
+      textSize(30);
+      noStroke();
       text("BACK", width/2 - 120, height * 0.84 + 41);
       text("JAM OUT", width/2 + 120, height * 0.84 + 41);
       popStyle();
+      
     } else {
       for(int i = 0; i < selectedSong; i++){
           songList.get(i).drawSong();
@@ -121,7 +128,7 @@ class SongSelect extends Scene{
       for(int i = songList.size()-1; i >= selectedSong; i--){
           songList.get(i).drawSong();
       }
-      //stroke(#000000);
+
       pushStyle();
       fill(#FF2E87);
       noStroke();
@@ -130,8 +137,6 @@ class SongSelect extends Scene{
       triangle(width*0.9, height/2-50, width*0.9, height/2+50, width*0.95, height/2);
       popStyle();
      
-      //triangle(width*0.32, height*0.9-30, width*0.32, height*0.9+30, width*0.29, height*0.9);
-      //triangle(width*0.67, height*0.9-30, width*0.67, height*0.9+30, width*0.70, height*0.9);
       pushStyle();
       fill(#FFFFFF);
       textSize(30);
@@ -152,6 +157,7 @@ class SongSelect extends Scene{
       text(songList.get(selectedSong).artist.toUpperCase(), width/2, height*0.9 + 40);
       popStyle();
     }
+    popStyle();
   }
   
   //Overriding mousePressed()
@@ -210,7 +216,7 @@ class SongSelect extends Scene{
       if(dist(x_, y_, width/2, height/2) < 250){
           playingVideo = true;
           musicVideo.loop();
-          musicVideo.jump(20);
+          //musicVideo.jump(20);
       }
     }
   }
@@ -230,7 +236,7 @@ class SongSelect extends Scene{
   
   void handleRightArrowPress(){
     if(!playingVideo){
-       songList.get(selectedSong).selected = false;
+      songList.get(selectedSong).selected = false;
       selectedSong--;
      
       if(selectedSong < 0){

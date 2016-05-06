@@ -35,6 +35,7 @@ class KnobControl extends Control{
   final float tarFrames = 10;
   final float phase1Cutoff = 0.25;
   final float phase2Cutoff = 0.0005;
+  final int numDragDots = 5;
   
   KnobControl(float x_, float y_, float r_, float sw_, float a_, float setAngle_, float initValue, color ccolor1_, color ccolor2_, TrackControl tc_, String l_, String zn_){
     super(x_, y_, r_, sw_, 3);
@@ -345,46 +346,69 @@ class KnobControl extends Control{
    }
    
    // This class doens't use the Control class detectDrag() method
-   // In the future for multitouch, reference to the specific touch must be recorded at the top of the class
    void passDrag(float x_, float y_){
      if(!parent.selection){
        return; 
      }
-     float tdist = dist(x_, y_, x, y);
-     //if(tdist < (r/2 * hitboxSpread) && tdist > r/2 * centerCircle){
+     
+     float tDist = dist(x_, y_, x, y);
+     if(tDist < r/2 * centerCircle){
+       return;
+     }
+     
+     float tAngle = atan2(y_ - y, x_ - x);
      if(pressed){
-      float temp = atan2(y_ - y, x_ - x); // In the future of implementing multitouch, these would be the touch values instead of mouse values
+      
       if(setAngle == 0){
-        if(temp < a && temp > -a){
-          if(temp + a >= a){
-            temp = a;
+        if(tAngle < a && tAngle > -a){
+          if(tAngle + a >= a){
+            tAngle = a;
             block = true;
           }
-          if(temp - a <= -a){
-            temp = -a;
+          if(tAngle - a <= -a){
+            tAngle = -a;
             block = true;
           }
          }
        else{
-         moveToMouseAngle(temp);
+         moveToMouseAngle(tAngle);
        }
-      } else {
-        if(temp > PI - a || temp < a - PI){
-          if(temp + a >= 0){
-            temp = PI - a;
+      } else { // setAngle = PI
+        if(tAngle > PI - a || tAngle < a - PI){
+          if(tAngle + a >= 0){
+            tAngle = PI - a;
             block = true;
           }
-          if(temp - a <= 0){
-            temp = a - PI;
+          if(tAngle - a <= 0){
+            tAngle = a - PI;
            block = true; 
           }
         } else {
-          moveToMouseAngle(temp);
+          moveToMouseAngle(tAngle);
         }
       }
     }
+    drawDragDots(tDist, tAngle);
     audioControl.handleDrag();
-   }
+  }
+   
+     void drawDragDots(float t_, float a_){
+       float dPadding = (t_ - r/2 * hitboxSpread)/numDragDots;
+       for(int i = 0; i < numDragDots; i++){
+         pushMatrix();
+         translate(cos(a_) * (r/2 * hitboxSpread + dPadding * (i + 1)),sin(a_) * (r/2 * hitboxSpread + dPadding * (i + 1)));
+         noStroke();
+         fill(#FFFFFF, 100);
+         float tCircleRadius = 0;
+         if(i != numDragDots - 1){
+           tCircleRadius = sw*2;
+         } else {
+           tCircleRadius = sw*4;
+         }
+         ellipse(r/2 + 20,r/2 + 20,tCircleRadius,tCircleRadius);
+         popMatrix();
+       }
+     }
    
      // support function
      void moveToMouseAngle(float temp){
@@ -402,11 +426,6 @@ class KnobControl extends Control{
      
    // This class doens't use the Control class detectRelease() method
    void passRelease(){
-     /*
-     if(!parent.selection){
-       return;
-     }
-     */
      movable = false;
      pressed = false;
      centerPressed = false;
