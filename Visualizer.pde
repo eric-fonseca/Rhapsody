@@ -110,6 +110,7 @@ class Visualizer{
       }
       minim.stop();
       songSelectScene.active = true;
+      songSelectScene.init();
     }
   }
 }

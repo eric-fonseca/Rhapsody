@@ -23,6 +23,12 @@ class SongSelect extends Scene{
     lT = new Zone(zoneNames[2],round(width*0.90),round(height/2-50),round(width*0.05),100);
     eB = new Zone(zoneNames[3],round(width/2 - 212), round(height * 0.83), 180, 80);
     jB = new Zone(zoneNames[4],round(width/2 + 28), round(height * 0.83), 180, 80);
+        
+    SMT.add(aC);
+    SMT.add(rT);
+    SMT.add(lT);
+    SMT.add(eB);
+    SMT.add(jB);
   }
                         
   // Overriding init(), acting as setup()
@@ -53,12 +59,11 @@ class SongSelect extends Scene{
     
     textSize(30);
     textAlign(CENTER);
-    
-    SMT.add(aC);
-    SMT.add(rT);
-    SMT.add(lT);
-    SMT.add(eB);
-    SMT.add(jB);
+
+    for(int i = 0; i < zoneNames.length; i++){
+      SMT.get(zoneNames[i]).setTouchable(true);
+      SMT.get(zoneNames[i]).setPickable(true);
+    }
   }
   
     //Position and scale all of the songs
@@ -192,11 +197,10 @@ class SongSelect extends Scene{
         audioControl = new AudioControl(songList.get(selectedSong).artist, songList.get(selectedSong).title, songTracks);
         audioControl.init();
         
-        SMT.remove(zoneNames[0]);
-        SMT.remove(zoneNames[1]);
-        SMT.remove(zoneNames[2]);
-        SMT.remove(zoneNames[3]);
-        SMT.remove(zoneNames[4]); 
+        for(int i = 0; i < zoneNames.length; i++){
+          SMT.get(zoneNames[i]).setTouchable(false);
+          SMT.get(zoneNames[i]).setPickable(false);
+        } 
       }
     }
   }
