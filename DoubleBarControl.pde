@@ -39,6 +39,7 @@ class DoubleBarControl extends Control{
     zoneName = zn_;
     zone = new Zone(zoneName,round(x-sw*hitboxSpread),round(y-h-sw*hitboxSpread*2),round(sw*hitboxSpread*2),round(h*2+sw*hitboxSpread*4));
     SMT.add(zone);
+    resizeZones();
   }
   
     void setNewPosition(float x_, float y_){
@@ -61,17 +62,19 @@ class DoubleBarControl extends Control{
         value2 = -temp;
         orientRight = true;
       }
+      resizeZones();
     }
   
-  void update(){
-    super.update();
-
+  void resizeZones(){
     // Updating zone properties
     SMT.get(zoneName).setX(round(x-sw*hitboxSpread));
     SMT.get(zoneName).setY(round(y-h-sw*hitboxSpread*2));
     SMT.get(zoneName).setWidth(round(sw*hitboxSpread*2));
     SMT.get(zoneName).setHeight(round(h*2+sw*hitboxSpread*4));
-    
+  }
+  
+  void update(){
+    super.update();
   }
 
   void animate(){

@@ -43,7 +43,6 @@ class MainInterface extends Scene{
     controls = new TrackControl[nc];
     float temp = 2 * PI / nc;
     for(int i = 0; i < nc; i++){
-      println(zoneNames[i][0]);
       TrackControl c = new TrackControl(x,y,r,5,i * temp - PI,increasedRotateRatio,inner,outer,centerCircle,color(247, 255, 58),color(255,46,135),zoneNames[i]);
       
       if(tracks[i].equals("bass.mp3")){

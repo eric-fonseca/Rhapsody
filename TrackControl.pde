@@ -115,13 +115,12 @@ class TrackControl extends Control{
           for(int i = 0; i < numberOfKnobs; i++){
             knobs[i].setNewPosition(widthSpacing, heightSpacing * (i + 1), PI);
             knobs[i].setColorValues(cSecondary, cPrimary);
-            knobs[i].update();
             if(doubleBar.orientRight){
               doubleBar.flipValues(); 
             }
             doubleBar.setNewPosition(widthSpacing/3, height/2);
             doubleBar.setColorValues(cSecondary);
-            doubleBar.update();
+            doubleBar.resizeZones();
           }
         } else { // If selection is right side
           tsx = cos(0) * outer.r + cx;
@@ -130,13 +129,12 @@ class TrackControl extends Control{
           for(int i = 0; i < numberOfKnobs; i++){
             knobs[i].setNewPosition(width - widthSpacing, heightSpacing * (i + 1), 0);
             knobs[i].setColorValues(cPrimary, cSecondary);
-            knobs[i].update();
             if(!doubleBar.orientRight){
-              doubleBar.flipValues(); 
+              doubleBar.flipValues();
             }
             doubleBar.setNewPosition(width - widthSpacing/3, height/2);
             doubleBar.setColorValues(cPrimary);
-            doubleBar.update();
+            doubleBar.resizeZones();
           }
         }
         rate = 0;

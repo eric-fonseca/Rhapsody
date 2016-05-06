@@ -66,21 +66,17 @@ void mousePressed(){
   if(songSelectScene.active){
     songSelectScene.handlePress(mouseX,mouseY);
   }
-  /*
   if(mainInterfaceScene.active){
     mainInterfaceScene.handlePress(mouseX,mouseY);
     audioControl.handlePress();
   }
-  */
 }
 
 void mouseDragged(){
-  /*
   if(mainInterfaceScene.active){
     mainInterfaceScene.handleDrag(mouseX,mouseY);
     audioControl.handleDrag();
   }
-  */
 }
 
 void mouseReleased(){

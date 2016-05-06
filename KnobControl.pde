@@ -59,7 +59,7 @@ class KnobControl extends Control{
         resetKnobAngle();
       }
       setAngle = sa_; // SetAngle should only be either 0 or PI
-      update();
+      resizeZones();
     }
     
       void resetKnobAngle(){
@@ -95,7 +95,10 @@ class KnobControl extends Control{
     }
     
    void update(){
-     super.update();
+     super.update(); 
+   }
+    
+   void resizeZones(){
     // Updating zone properties
     SMT.get(zoneName).setX(round(x - r*hitboxSpread/2));
     SMT.get(zoneName).setY(round(y - r*hitboxSpread/2));

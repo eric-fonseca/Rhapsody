@@ -150,109 +150,18 @@ class SongSelect extends Scene{
   }
   
   //Overriding mousePressed()
+
+  
   void handlePress(float x_, float y_){
     super.handlePress();
-    /*
-    if(playingVideo){
-      //back button
-      if(x_ > width/2 - 212 && x_ < width/2 - 32 && y_ > height * 0.83 && y_ < height * 0.83 + 80){
-        playingVideo = false;
-        musicVideo.stop();
-      }
-      //jam out button
-       else if(x_ > width/2 + 28 && x_ < width/2 + 208 && y_ > height * 0.83 && y_ < height * 0.83 + 80){
-        active = false;
-        playingVideo = false;
-        musicVideo.stop();
-        
-        File songDirectory = new File(sketchPath("") + "audio/" + songList.get(selectedSong).artist + "-" + songList.get(selectedSong).title);
-        String[] songTracks = songDirectory.list(new FilenameFilter(){ //get all files from song directory minus .DS_Store
-          public boolean accept(File dir, String name){
-              return !name.equals(".DS_Store");
-          }
-        });
-        audioControl = new AudioControl(songList.get(selectedSong).artist, songList.get(selectedSong).title, songTracks);
-        
-        mainInterfaceScene = new MainInterface(height/3, songTracks);
-        mainInterfaceScene.active = true;
-        
-        audioControl.init();
-        
-        SMT.remove(zoneNames[0]);
-        SMT.remove(zoneNames[1]);
-        SMT.remove(zoneNames[2]);
-        SMT.remove(zoneNames[3]);
-        SMT.remove(zoneNames[4]);
-      }
-    } else {
-      //current album
-      if(dist(x_, y_, width/2, height/2) < 250){
-        playingVideo = true;
-        musicVideo.loop();
-      }
-     
-      //left arrow
-      else if(mouseX > width*0.05 && mouseX < width*0.1 && mouseY > height/2-50 && mouseY < height/2+50){
-        songList.get(selectedSong).selected = false;
-        selectedSong--;
-       
-        if(selectedSong < 0){
-          selectedSong = songNames.length-1;
-        }
-        songList.get(selectedSong).selected = true;
-        positionSongs();
-      }
-      //right arrow
-       else if(mouseX > width*0.9 && mouseX < width*0.95 && mouseY > height/2-50 && mouseY < height/2+50){
-        songList.get(selectedSong).selected = false;
-        selectedSong++;
-        
-        if(selectedSong > songNames.length-1){
-          selectedSong = 0;
-        }
-        songList.get(selectedSong).selected = true;
-        positionSongs();
-      }
-    }
-    */
+    handleExitButtonPress(x_, y_);
+    handleJamButtonPress(x_, y_);
+    handleAlbumCirclePress(x_, y_);
+    handleLeftArrowPress();
+    handleRightArrowPress();
   }
   
-  void handleAlbumCirclePress(float x_, float y_){
-    if(!playingVideo){
-      if(dist(x_, y_, width/2, height/2) < 250){
-          playingVideo = true;
-          musicVideo.loop();
-      }
-    }
-  }
-  
-  void handleLeftArrowPress(){
-    if(!playingVideo){
-      songList.get(selectedSong).selected = false;
-      selectedSong++;
-      
-      if(selectedSong > songNames.length-1){
-        selectedSong = 0;
-      }
-      songList.get(selectedSong).selected = true;
-      positionSongs();
-    }
-  }
-  
-  void handleRightArrowPress(){
-    if(!playingVideo){
-       songList.get(selectedSong).selected = false;
-      selectedSong--;
-     
-      if(selectedSong < 0){
-        selectedSong = songNames.length-1;
-      }
-      songList.get(selectedSong).selected = true;
-      positionSongs();
-    }
-  }
-  
-  void handleExitButtonPress(float x_, float y_){
+    void handleExitButtonPress(float x_, float y_){
     if(playingVideo){
       if(x_ > width/2 - 212 && x_ < width/2 - 32 && y_ > height * 0.83 && y_ < height * 0.83 + 80){
         println("hitbox");
@@ -291,4 +200,41 @@ class SongSelect extends Scene{
       }
     }
   }
+  
+  void handleAlbumCirclePress(float x_, float y_){
+    if(!playingVideo){
+      if(dist(x_, y_, width/2, height/2) < 250){
+          playingVideo = true;
+          musicVideo.loop();
+      }
+    }
+  }
+  
+  void handleLeftArrowPress(){
+    if(!playingVideo){
+      songList.get(selectedSong).selected = false;
+      selectedSong++;
+      
+      if(selectedSong > songNames.length-1){
+        selectedSong = 0;
+      }
+      songList.get(selectedSong).selected = true;
+      positionSongs();
+    }
+  }
+  
+  void handleRightArrowPress(){
+    if(!playingVideo){
+       songList.get(selectedSong).selected = false;
+      selectedSong--;
+     
+      if(selectedSong < 0){
+        selectedSong = songNames.length-1;
+      }
+      songList.get(selectedSong).selected = true;
+      positionSongs();
+    }
+  }
+  
+
 }
