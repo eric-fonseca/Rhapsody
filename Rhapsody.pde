@@ -35,7 +35,6 @@ String songData = "";
 
 void setup(){
   minim = new Minim(this);
-  println(dataPath(""));
   
   size(displayWidth, displayHeight, SMT.RENDERER);
   
@@ -50,7 +49,7 @@ void setup(){
   mainInterfaceScene = new MainInterface(0, zoneNames0); //this is unused, we just need a dummy array
   mainInterfaceScene.active = false;
   
-   server = new Server(this, 5204);
+  server = new Server(this, 5204);
 }
 
 void draw(){

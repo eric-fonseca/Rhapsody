@@ -111,6 +111,7 @@ class TrackControl extends Control{
         if(Math.abs(a) > PI/2){ // If selection is left side
           tsx = cos(PI) * outer.r + cx;
           tsy = sin(PI) * outer.r + cy;
+          a = -PI;
           // Changes the knobs towards the left side
           for(int i = 0; i < numberOfKnobs; i++){
             knobs[i].setNewPosition(widthSpacing, heightSpacing * (i + 1), PI);
@@ -125,6 +126,7 @@ class TrackControl extends Control{
         } else { // If selection is right side
           tsx = cos(0) * outer.r + cx;
           tsy = sin(0) * outer.r + cy;
+          a = 0;
           // Changes the knobs towards the right side
           for(int i = 0; i < numberOfKnobs; i++){
             knobs[i].setNewPosition(width - widthSpacing, heightSpacing * (i + 1), 0);

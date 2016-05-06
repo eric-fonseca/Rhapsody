@@ -1,6 +1,6 @@
 // UI component at the center of the ControlCenter
 class CenterControl extends Control{
-  color cPrimary, cSecondary;
+  color cPrimary;
   
   // Animation variables
   float tr;
@@ -11,10 +11,9 @@ class CenterControl extends Control{
   final float frameLength = 25;
   final float animationCutoff = 2.5;
   
-  CenterControl(float x_, float y_, float r_, float sw_, color c1_, color c2_){
+  CenterControl(float x_, float y_, float r_, float sw_, color c_){
     super(x_, y_, r_, sw_, 1);
-    cPrimary = c1_;
-    cSecondary = c2_;
+    cPrimary = c_;
     tr = 0;
   }
   

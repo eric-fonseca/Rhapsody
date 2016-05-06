@@ -1,63 +1,102 @@
 class Visualizer{
-  int r;
-  color[] randomColors = new color[audioControl.audioTracks.length];
-  String artistName;
   AudioOutput out[];
+  String artistName;
   
+  // References
+  TrackControl[] controls;
+  DotPathControl inner, outer;
+  
+  // Visualizer variables
+  float sDeltaA, usDeltaA, usMinR, usMaxR;
+  float fExpand, fRadius;
+  float[] tExpand, tRadius;
+  
+  // constants
+  final float opacity = 75;
+  final int numMiniBars = 9; // make this an odd number
+  final float barBoost = 2.5;
+  final float barDecayRate = 0.75;
+  final float barChangeRate = 6;
+  final float selectedMaxBloom = 100;
   
   Visualizer(AudioOutput[] output) {
     out = output;
-    for(int i = 0; i < audioControl.audioTracks.length; i++){
-      randomColors[i] = color(random(256), random(256), random(256));
-    }
     artistName = audioControl.artist;
+    controls = mainInterfaceScene.controls;
+    inner = mainInterfaceScene.inner;
+    outer = mainInterfaceScene.outer;
+    init();
+  }
+  
+  void init(){
+    sDeltaA = PI*2/numMiniBars;
+    usDeltaA = PI / audioControl.audioTracks.length;
+    usMinR = inner.r;
+    usMaxR = outer.r;
+    tExpand = new float[audioControl.audioTracks.length];
+    tRadius = new float[audioControl.audioTracks.length];
   }
   
   void update(){
     songData = "";
-    pushMatrix();
-    
-    fill(#1A1F18, 20);
+    pushStyle();
+    fill(#FF2E87, opacity);
     noStroke();
-    rect(0,0,width,height);
-    translate(width/2, height/2);
     
     for(int i = 0; i < audioControl.audioTracks.length; i++){
-      r = i * 20 + 200;
-      
-      noFill();
-      fill(randomColors[i], 10);
-      stroke(randomColors[i], 20);
-      strokeWeight(10);
-      
       int bsize = out[i].bufferSize();
-      
+      float total = 0;
       for(int u = 0; u < bsize - 1; u += 10){
-        float x = (r)*cos(u*2*PI/bsize);
-        float y = (r)*sin(u*2*PI/bsize);
-        float x2 = (r + out[i].left.get(u)*100)*cos(u*2*PI/bsize);
-        float y2 = (r + out[i].left.get(u)*100)*sin(u*2*PI/bsize);
-       
-        line(x,y,x2,y2);
-        
-        songData += out[i].left.get(u) + "/"; //projector data
+        total += out[i].left.get(u);
       }
-      /*beginShape();
-      noFill();
-      stroke(randomColors[i], 20);
-      for(int y = 0; y < bsize; y+= 30){
-        float x3 = (r + out[i].left.get(y)*100)*cos(y*2*PI/bsize);
-        float y3 = (r + out[i].left.get(y)*100)*sin(y*2*PI/bsize);
-        vertex(x3,y3);
-        pushStyle();
-        stroke(randomColors[i]);
-        strokeWeight(2);
-        point(x3,y3);
-        popStyle();
+      float mapped = map(total,-1,10,0,1);
+      if(mainInterfaceScene.controls[i].selection){
+        for(int y = 0; y < numMiniBars; y++){
+          float sMinR = mainInterfaceScene.controls[i].r/2;
+          fRadius = mapped*selectedMaxBloom;
+          tRadius[i] += (fRadius - tRadius[i])/barChangeRate;
+          float expand = sMinR+tRadius[i];
+          pushMatrix();
+          pushStyle();
+          if(mainInterfaceScene.controls[i].getDirection() == "right"){
+            fill(mainInterfaceScene.controls[i].cPrimary, opacity*2/3);
+          } else {
+            fill(mainInterfaceScene.controls[i].cSecondary, opacity*2/3);
+          }
+          
+          translate(mainInterfaceScene.controls[i].x, mainInterfaceScene.controls[i].y);
+          rotate(y*sDeltaA);
+          ellipse(0,0,
+                  mainInterfaceScene.controls[i].r/2 + expand,
+                  mainInterfaceScene.controls[i].r/2 + expand);
+          popStyle();
+          popMatrix();
+        }
+      } else {
+        int centerIndex = (numMiniBars - 1)/2;
+        float miniDelta = usDeltaA/(numMiniBars + 1);
+        fExpand = mapped*(usMaxR-usMinR);
+        tExpand[i] += (fExpand - tExpand[i])/barChangeRate;
+        for(int y = 0; y < numMiniBars; y++){
+          int distCI = Math.abs(centerIndex - y);
+          float angle1 = -usDeltaA + miniDelta * (y + 0.75) * 2; 
+          float angle2 = angle1 + miniDelta;
+          float expand = usMinR+tExpand[i]*pow(barDecayRate,distCI)*barBoost;
+          
+          pushMatrix();
+          translate(width/2, height/2);
+          rotate(controls[i].a);
+          beginShape();
+          vertex(cos(angle1)*usMinR,sin(angle1)*usMinR);
+          vertex(cos(angle2)*usMinR,sin(angle2)*usMinR);
+          vertex(cos(angle2)*expand,sin(angle2)*expand);
+          vertex(cos(angle1)*expand,sin(angle1)*expand);
+          endShape(CLOSE);
+          popMatrix();
+        }
       }
-      endShape();*/
     }
-    popMatrix();
+    popStyle();
     
     float songTime = audioControl.audioPlayer[0].position()/1000f; //song time in seconds
     server.write(songData+"@"+artistName+"*"+songTime+"~");

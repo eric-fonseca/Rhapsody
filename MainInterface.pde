@@ -32,7 +32,7 @@ class MainInterface extends Scene{
     super.init();
     
     // Creating classes
-    centerCircle = new CenterControl(x,y,r*CenterControlRatio,8,color(247, 255, 58),color(255,46,135));
+    centerCircle = new CenterControl(x,y,r*CenterControlRatio,8,#FF2E87);
     centerCircle.animating = true;
     
     outer = new DotPathControl(x,y,r*outerRingRatio,30,outerRingRotate,increasedRotateRatio,5,color(255, 202));
@@ -43,7 +43,7 @@ class MainInterface extends Scene{
     controls = new TrackControl[nc];
     float temp = 2 * PI / nc;
     for(int i = 0; i < nc; i++){
-      TrackControl c = new TrackControl(x,y,r,5,i * temp - PI,increasedRotateRatio,inner,outer,centerCircle,color(247, 255, 58),color(255,46,135),zoneNames[i]);
+      TrackControl c = new TrackControl(x,y,r,5,i * temp - PI,increasedRotateRatio,inner,outer,centerCircle,color(247, 255, 58),#5B23AE,zoneNames[i]);
       
       if(tracks[i].equals("bass.mp3")){
         c.setIcon(loadImage("GUITAR.png"));
