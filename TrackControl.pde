@@ -8,6 +8,7 @@ class TrackControl extends Control{
   boolean isDragging = false;
   PImage icon;
   float iconSize = 48;
+  String[] labelNames = {"Gain", "Delay", "Vocoder"};
   String[] zoneNames;
   Zone zone;
   
@@ -62,7 +63,7 @@ class TrackControl extends Control{
     
     // Creating controls
     for (int i = 0; i < numberOfKnobs; i++){
-      knobs[i] = new KnobControl(0, 0, knobRadius, 5, PI/8, PI, 0, color(247, 255, 58), color(255,46,135),this,"Test",zoneNames[i+1]);
+      knobs[i] = new KnobControl(0, 0, knobRadius, 5, PI/6, PI, 0, color(247, 255, 58), color(255,46,135),this,labelNames[i],zoneNames[i+1]);
     }
     
     doubleBar = new DoubleBarControl(-50, -50, sw*2, color(247, 255, 58), height/3,this,"Frequency Filter",zoneNames[4]);

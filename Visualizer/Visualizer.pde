@@ -24,7 +24,7 @@ color[][] colorValues = {
                   {#FF2E87, #FE4E7B, #FC7D6A, #FAB157, #F8DF46, #F7FF3A}
 };
 color[] trackColors;
-PImage logo = loadImage(System.getProperty("user.home") + "/Desktop/Rhapsody-NMTP/Rhapsody/data/logo.png");
+PImage logo = loadImage(System.getProperty("user.home") + "/Desktop/Rhapsody/data/logo.png");
 
 void setup() {
   size(1940, 1240);
@@ -54,7 +54,7 @@ void draw() {
         trackColors = colorValues[numTracks - 1];
         
         artistName = songData.substring(songData.lastIndexOf("@") + 1, songData.lastIndexOf("*"));
-        musicVideo = new Movie(this, System.getProperty("user.home") + "/Desktop/Rhapsody-NMTP/Rhapsody/data/" + artistName + ".mp4"); //music videos should be placed in the data directory
+        musicVideo = new Movie(this, System.getProperty("user.home") + "/Desktop/Rhapsody/data/" + artistName + ".mp4"); //music videos should be placed in the data directory
         musicVideo.play();
         musicVideo.volume(0);
         

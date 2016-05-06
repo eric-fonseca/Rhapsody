@@ -206,6 +206,7 @@ class DoubleBarControl extends Control{
     void drawLabel(){
       // Label
       pushMatrix();
+      textAlign(CENTER);
       if(parent.getDirection() == "right"){
         translate(x + labelSpread,y);
         rotate(-PI/2);

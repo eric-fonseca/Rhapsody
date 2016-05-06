@@ -78,7 +78,7 @@ class AudioControl{
     for(int i = 0; i < audioTracks.length; i++){
       if(gainKnob[i].centerPressed){
         if(gainKnob[i].selection){
-          gain[i].setValue(gainKnob[i].getValue()*100-50);
+          gain[i].setValue(gainKnob[i].getValue()*75-50);
         }
         else{
           gain[i].setValue(0); 
@@ -143,7 +143,7 @@ class AudioControl{
   void handleDrag(){
     for(int i = 0; i < audioTracks.length; i++){
       if(gainKnob[i].movable && gainKnob[i].selection){
-        gain[i].setValue(gainKnob[i].getValue()*100-50);
+        gain[i].setValue(gainKnob[i].getValue()*75-50);
       }
       else if(delayKnob[i].movable){
         delay[i].setDelAmp(delayKnob[i].getValue());

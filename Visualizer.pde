@@ -38,7 +38,7 @@ class Visualizer{
   }
   
   void update(){
-    songData = "";
+    songData = ""; 
     pushStyle();
     fill(#FF2E87, opacity);
     noStroke();
@@ -109,8 +109,8 @@ class Visualizer{
         audioControl.out[i].close();
       }
       minim.stop();
-      songSelectScene.active = true;
-      songSelectScene.resetZones();
+      TransitionOut.init();
+      TransitionOut.active = true;
     }
   }
 }

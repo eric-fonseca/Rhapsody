@@ -6,8 +6,10 @@ class MainInterface extends Scene{
   boolean rsc, lsc; // right selection check, left selection check
   String[] tracks;
   
+  PImage quitBtn = loadImage("btn_quit.png");
+  
   CenterControl centerCircle;
-  DotPathControl outer, inner;
+  DotPathControl outer, inner, inCircle;
   TrackControl[] controls;
   
   // Constants used to safely & quickly change aspects of the program, to act as an interface for Team Designers/Developers
@@ -39,7 +41,8 @@ class MainInterface extends Scene{
     outer.animating = true;
     
     inner = new DotPathControl(x,y,r*innerRingRatio,20,innerRingRotate,increasedRotateRatio,5,color(255, 202));
-   
+    inCircle = new DotPathControl(x,y,r*innerRingRatio*3/4,20,innerRingRotate,increasedRotateRatio,5,color(255, 202));
+    inCircle.animating = true;
     controls = new TrackControl[nc];
     float temp = 2 * PI / nc;
     for(int i = 0; i < nc; i++){
@@ -58,31 +61,46 @@ class MainInterface extends Scene{
         c.setIcon(loadImage("VOCALS.png"));
       }
       else if(tracks[i].equals("synth.mp3")){
-        c.setIcon(loadImage("SYNTH.png")); //replace with new image
+        c.setIcon(loadImage("SYNTH.png"));
       }
       else if(tracks[i].equals("keyboard.mp3")){
         c.setIcon(loadImage("PIANO.png"));
       }
       else if(tracks[i].equals("strings.mp3")){
-        c.setIcon(loadImage("STRINGS.png")); //replace with new image
+        c.setIcon(loadImage("STRINGS.png"));
       }
       else if(tracks[i].equals("misc.mp3")){
-        c.setIcon(loadImage("MISC.png")); //replace with new image
+        c.setIcon(loadImage("MISC.png"));
       }
       
       c.animating = true;
       controls[i] = c;
     }
   }
+  void drawQuitButton(){
+    //fill(#F7FF3A); 
+    //noStroke();
+    //rect(width/2 -60, 10, 100, 40);
+    image(quitBtn, width/2 - 65, 10, 100, 40);
+    /*
+    pushStyle();
+    textSize(25);
+    fill(#FF2E87);
+    text("START OVER?", width/2 - 95, height/8);
+    image(quitBtn, width/2 - 135, height/7, 100, 40); 
+    image(quitBtn, width/2 + 5, height/7, 100, 40);
+    popStyle();
+    */
+  }
+
   
   // Overriding update(), acting as draw()
   // This function draws all of the classes, built intending it to be ran every frame. Call within Draw()
   void update(){
     super.update();
     clear();
-    
+
     visualizer.update();
-    
     outer.animate();
     if(outer.phases[1]){
       centerCircle.isDrawingIn = true;
@@ -92,7 +110,6 @@ class MainInterface extends Scene{
     }
     
     splitControls();
-    
     if(centerCircle.isDrawingOut){
       for(int i = 0; i < nc; i++){
         limitSelections(controls[i], i);
@@ -102,6 +119,8 @@ class MainInterface extends Scene{
         controls[i].drawEchoes();
       }
     }
+    inCircle.animate();
+    drawQuitButton(); 
     
     if(!rsc){
       cri = -1;

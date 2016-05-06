@@ -197,8 +197,10 @@ class SongSelect extends Scene{
           }
         });
         
+        
+        TransitionIn.active = true;
+        TransitionIn.init();
         mainInterfaceScene = new MainInterface(height/3, songTracks);
-        mainInterfaceScene.active = true;
         
         audioControl = new AudioControl(songList.get(selectedSong).artist, songList.get(selectedSong).title, songTracks);
         audioControl.init();

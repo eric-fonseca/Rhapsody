@@ -15,6 +15,7 @@ import processing.net.*;
 // Screen Objects are globally accessible
 public SongSelect songSelectScene;
 public MainInterface mainInterfaceScene;
+public Transition TransitionIn, TransitionOut;
 
 // Zone names have to be hardcoded - pretty icky looking
 private String[] zoneNames0 = {"TrackControl0", "KnobControl00", "KnobControl01", "KnobControl02", "DoubleControl0"};
@@ -49,6 +50,9 @@ void setup(){
   mainInterfaceScene = new MainInterface(0, zoneNames0); //this is unused, we just need a dummy array
   mainInterfaceScene.active = false;
   
+  TransitionIn = new Transition(this, "songChosen.mp4", false);
+  TransitionOut = new Transition(this, "songOutro.mp4", true);
+  
   server = new Server(this, 5204);
 }
 
@@ -58,6 +62,12 @@ void draw(){
   }
   if(mainInterfaceScene.active){
     mainInterfaceScene.update();
+  }
+  if(TransitionIn.active){
+    TransitionIn.update();
+  }
+  if(TransitionOut.active){
+    TransitionOut.update();
   }
 }
 
@@ -90,6 +100,11 @@ void movieEvent(Movie m) {
 // I blame the library, and this is not because I am bad at programming
 
   // Functions for Song Selection Screen
+  void drawBackButton(Zone zone){}
+  void touchDownBackButton(Zone zone, Touch t){
+    
+  }
+  
   void drawAlbumCircle(Zone zone){
     zone.drag(false,false); 
   }

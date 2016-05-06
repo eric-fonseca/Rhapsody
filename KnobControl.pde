@@ -79,6 +79,10 @@ class KnobControl extends Control{
     float getValue(){
       float value;
       if(setAngle == 0){
+        if(knobAngle > -a*1.1 && knobAngle < a){
+         println("catch");
+         return 1.0;
+        }
         if(knobAngle > a*1.1){
          value = map(knobAngle, a, PI, 0, 0.5);
          return value;
@@ -88,6 +92,9 @@ class KnobControl extends Control{
          return value;
         }
       } else {
+       if(knobAngle > PI - a){
+         return 1.0;
+       }
        value = map(knobAngle, a - PI, PI - a, 0, 1.0);
        return value;
       }
@@ -296,6 +303,7 @@ class KnobControl extends Control{
          
          // Label
          pushMatrix();
+         textAlign(CENTER);
          if(parent.getDirection() == "right"){
            translate(x + r * labelSpread,y);
            rotate(-PI/2);
@@ -351,6 +359,7 @@ class KnobControl extends Control{
        return; 
      }
      
+     println(knobAngle);
      float tDist = dist(x_, y_, x, y);
      if(tDist < r/2 * centerCircle){
        return;
