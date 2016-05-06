@@ -22,7 +22,7 @@ class TrackControl extends Control{
   final float widthSpacingRatio = 0.20; // Spacing of of far the knobs are drawn from the edges of the screen
   final float knobRadius = 125;
   final float dynamicAnimationRate = 10; // Speed of how quickly this class snaps to new given positions
-  final float maxIconSize = 96;
+  final float maxIconSize = 84;
   final float minIconSize = 48;
   
   // Animation constants

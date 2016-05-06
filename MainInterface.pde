@@ -58,16 +58,16 @@ class MainInterface extends Scene{
         c.setIcon(loadImage("VOCALS.png"));
       }
       else if(tracks[i].equals("synth.mp3")){
-        c.setIcon(loadImage("DRUMS.png")); //replace with new image
+        c.setIcon(loadImage("SYNTH.png")); //replace with new image
       }
       else if(tracks[i].equals("keyboard.mp3")){
         c.setIcon(loadImage("PIANO.png"));
       }
       else if(tracks[i].equals("strings.mp3")){
-        c.setIcon(loadImage("DRUMS.png")); //replace with new image
+        c.setIcon(loadImage("STRINGS.png")); //replace with new image
       }
       else if(tracks[i].equals("misc.mp3")){
-        c.setIcon(loadImage("DRUMS.png")); //replace with new image
+        c.setIcon(loadImage("MISC.png")); //replace with new image
       }
       
       c.animating = true;
