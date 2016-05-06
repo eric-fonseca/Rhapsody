@@ -48,6 +48,7 @@ class Visualizer{
       float total = 0;
       for(int u = 0; u < bsize - 1; u += 10){
         total += out[i].left.get(u);
+        songData += out[i].left.get(u) + "/"; //projector data
       }
       float mapped = map(total,-1,10,0,1);
       if(mainInterfaceScene.controls[i].selection){
@@ -99,7 +100,8 @@ class Visualizer{
     popStyle();
     
     float songTime = audioControl.audioPlayer[0].position()/1000f; //song time in seconds
-    server.write(songData+"@"+artistName+"*"+songTime+"~");
+    long currentTime = System.currentTimeMillis();
+    server.write(songData+"@"+artistName+"*"+currentTime+"%"+songTime+"~");
     
     if(!audioControl.audioPlayer[0].isPlaying()){ //song is finished playing
       mainInterfaceScene.active = false;

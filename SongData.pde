@@ -32,9 +32,9 @@ class SongData{
   
   void drawSong() {
     if (!hide){
-      xpos = lerp(xpos, targetxpos, 0.15f);
-      ypos = lerp(ypos, targetypos, 0.15f);
-      size = lerp(size, targetsize, 0.15f);
+      xpos = lerp(xpos, targetxpos, 0.1f);
+      ypos = lerp(ypos, targetypos, 0.1f);
+      size = lerp(size, targetsize, 0.1f);
       
         if(selected){
         image(glow,xpos-size*.725,ypos-size*.725,size*1.45,size*1.45);
