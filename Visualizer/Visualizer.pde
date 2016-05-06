@@ -26,8 +26,6 @@ color[][] colorValues = {
 color[] trackColors;
 PImage logo = loadImage(System.getProperty("user.home") + "/Desktop/Rhapsody-NMTP/Rhapsody/data/logo.png");
 
-import ddf.minim.*;
-
 void setup() {
   size(1940, 1240);
   background(#000000);

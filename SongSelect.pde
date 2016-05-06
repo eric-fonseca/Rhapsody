@@ -206,6 +206,7 @@ class SongSelect extends Scene{
       if(dist(x_, y_, width/2, height/2) < 250){
           playingVideo = true;
           musicVideo.loop();
+          musicVideo.jump(20);
       }
     }
   }
