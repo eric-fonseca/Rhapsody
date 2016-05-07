@@ -175,7 +175,6 @@ class SongSelect extends Scene{
     void handleExitButtonPress(float x_, float y_){
     if(playingVideo){
       if(x_ > width/2 - 212 && x_ < width/2 - 32 && y_ > height * 0.83 && y_ < height * 0.83 + 80){
-        println("hitbox");
         playingVideo = false;
         musicVideo.stop();
       }
@@ -185,7 +184,6 @@ class SongSelect extends Scene{
   void handleJamButtonPress(float x_, float y_){
     if(playingVideo){
       if(x_ > width/2 + 28 && x_ < width/2 + 208 && y_ > height * 0.83 && y_ < height * 0.83 + 80){
-        println("hitbox");
         active = false;
         playingVideo = false;
         musicVideo.stop();
@@ -218,7 +216,7 @@ class SongSelect extends Scene{
       if(dist(x_, y_, width/2, height/2) < 250){
           playingVideo = true;
           musicVideo.loop();
-          //musicVideo.jump(20);
+          musicVideo.jump(20);
       }
     }
   }

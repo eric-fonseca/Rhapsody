@@ -224,6 +224,13 @@ class TrackControl extends Control{
     
     pushMatrix();
     translate(x,y);
+    if(selection){
+      if(getDirection() == "right"){
+       rotate(-PI/2);
+      } else {
+       rotate(PI/2);
+      } 
+    }
     rotate(a);
     image(icon,-iconSize/2,-iconSize/2,iconSize,iconSize);
     popMatrix();

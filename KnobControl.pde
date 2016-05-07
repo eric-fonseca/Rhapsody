@@ -6,6 +6,8 @@ class KnobControl extends Control{
   Boolean centerPressed = false;
   color cPrimary, cSecondary;
   PImage outerGlow = loadImage("knobGlow.png");
+  PImage muted = loadImage("Volume-Off.png");
+  PImage playing = loadImage("Volume-.png");
   String label;
   TrackControl parent;
   String zoneName;
@@ -80,7 +82,6 @@ class KnobControl extends Control{
       float value;
       if(setAngle == 0){
         if(knobAngle > -a*1.1 && knobAngle < a){
-         println("catch");
          return 1.0;
         }
         if(knobAngle > a*1.1){
@@ -228,12 +229,25 @@ class KnobControl extends Control{
          translate(x,y);
          noStroke();
          if(selection){
-           image(outerGlow, -r_/2, -r_/2, r_, r_);
            fill(cPrimary);
+           ellipse(0,0,r_,r_);
+           //image(outerGlow, -r_/2, -r_/2, r_, r_);
+           if(parent.getDirection() == "right"){
+             rotate(-PI/2);
+           } else {
+             rotate(PI/2);
+           }
+           image(playing, -r_/4, -r_/4, r_/2, r_/2);
          } else {
            fill(unselectedCenterButtonColor);
+           ellipse(0,0,r_,r_);
+           if(parent.getDirection() == "right"){
+             rotate(-PI/2);
+           } else {
+             rotate(PI/2);
+           }
+           image(muted, -r_/4, -r_/4, r_/2, r_/2);
          }
-         ellipse(0,0,r_,r_);
          popMatrix();
        }
      
@@ -359,7 +373,6 @@ class KnobControl extends Control{
        return; 
      }
      
-     println(knobAngle);
      float tDist = dist(x_, y_, x, y);
      if(tDist < r/2 * centerCircle){
        return;

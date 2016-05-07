@@ -146,7 +146,7 @@ class AudioControl{
         gain[i].setValue(gainKnob[i].getValue()*75-50);
       }
       else if(delayKnob[i].movable){
-        delay[i].setDelAmp(delayKnob[i].getValue());
+        delay[i].setDelAmp(delayKnob[i].getValue()*0.75);
       }
       else if(vocoderKnob[i].movable){
         wave[i].setFrequency(vocoderKnob[i].getValue()*480+20);

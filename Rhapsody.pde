@@ -102,7 +102,14 @@ void movieEvent(Movie m) {
   // Functions for Song Selection Screen
   void drawBackButton(Zone zone){}
   void touchDownBackButton(Zone zone, Touch t){
-    
+    mainInterfaceScene.handleBackButtonPress();
+  }
+  void touchUpBackButton(Zone zone, Touch t){
+    mainInterfaceScene.handleBackButtonRelease(); 
+  }
+  void drawConfirmButton(Zone zone){}
+  void touchDownConfirmButton(Zone zone, Touch t){
+    mainInterfaceScene.handleConfirmButtonPress();
   }
   
   void drawAlbumCircle(Zone zone){

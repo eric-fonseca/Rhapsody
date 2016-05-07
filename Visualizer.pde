@@ -67,6 +67,9 @@ class Visualizer{
           
           translate(mainInterfaceScene.controls[i].x, mainInterfaceScene.controls[i].y);
           rotate(y*sDeltaA);
+          if(expand > 100){
+            expand = 100; 
+          }
           ellipse(0,0,
                   mainInterfaceScene.controls[i].r/2 + expand,
                   mainInterfaceScene.controls[i].r/2 + expand);

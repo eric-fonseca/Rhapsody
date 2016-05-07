@@ -5,8 +5,14 @@ class MainInterface extends Scene{
   int cri, cli; // current right index, current left index
   boolean rsc, lsc; // right selection check, left selection check
   String[] tracks;
+  boolean backButtonDown = false;
+  String backZoneName = "BackButton";
+  String confirmZoneName = "ConfirmButton";
+  Zone backZone, confirmZone;
   
   PImage quitBtn = loadImage("btn_quit.png");
+  PImage background = loadImage("BG_Dots.png");
+  PImage exitArrow = loadImage("exitArrow-02.png");
   
   CenterControl centerCircle;
   DotPathControl outer, inner, inCircle;
@@ -76,21 +82,23 @@ class MainInterface extends Scene{
       c.animating = true;
       controls[i] = c;
     }
+    
+    backZone = new Zone(backZoneName, round(width/2 - 32), 64, 64, 64);
+    confirmZone = new Zone(confirmZoneName, round(width/2 - 50), round(height - 72), 100, 40);
+    SMT.add(backZone);
+    SMT.add(confirmZone);
+    SMT.get(confirmZoneName).setTouchable(false);
+    SMT.get(confirmZoneName).setPickable(false);
   }
   void drawQuitButton(){
-    //fill(#F7FF3A); 
-    //noStroke();
-    //rect(width/2 -60, 10, 100, 40);
-    image(quitBtn, width/2 - 65, 10, 100, 40);
-    /*
-    pushStyle();
-    textSize(25);
-    fill(#FF2E87);
-    text("START OVER?", width/2 - 95, height/8);
-    image(quitBtn, width/2 - 135, height/7, 100, 40); 
-    image(quitBtn, width/2 + 5, height/7, 100, 40);
-    popStyle();
-    */
+    image(exitArrow, width/2 - 32, 64, 64, 64);
+    if(backButtonDown){
+      pushStyle();
+      textSize(25);
+      fill(#FF2E87);
+      image(quitBtn, width/2 - 50, height - 72, 100, 40);
+      popStyle();
+    }
   }
 
   
@@ -99,6 +107,7 @@ class MainInterface extends Scene{
   void update(){
     super.update();
     clear();
+    image(background,0,0,width,height);
 
     visualizer.update();
     outer.animate();
@@ -216,6 +225,14 @@ class MainInterface extends Scene{
         }
         c.a = a;
       }
+      
+  void deleteZones(){
+    for(int i = 0; i < controls.length; i++){
+      for(int u = 0; u < controls[i].zoneNames.length; u++){
+        SMT.remove(controls[i].zoneNames[u]);
+      }
+    }
+  }
   
   // Function to relay mousePress data to controls. Call within mousePressed();
   void handlePress(float x_, float y_){ 
@@ -239,5 +256,29 @@ class MainInterface extends Scene{
     outer.selection = false;
     outer.dragPause(false);
     inner.dragPause(false);
+  }
+  
+  
+  void handleBackButtonPress(){
+    backButtonDown = true;
+    SMT.get(confirmZoneName).setTouchable(true);
+    SMT.get(confirmZoneName).setPickable(true);
+  }
+  
+  void handleBackButtonRelease(){
+    backButtonDown = false;
+    SMT.get(confirmZoneName).setTouchable(false);
+    SMT.get(confirmZoneName).setPickable(false);
+  }
+  
+  void handleConfirmButtonPress(){
+    mainInterfaceScene.active = false;
+    for(int i = 0; i < audioControl.audioPlayer.length; i++){
+      audioControl.out[i].close();
+    }
+    minim.stop();
+    deleteZones();
+    TransitionOut.init();
+    TransitionOut.active = true;
   }
 }

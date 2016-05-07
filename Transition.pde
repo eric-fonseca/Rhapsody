@@ -21,7 +21,6 @@ class Transition extends Scene{
     clear();
     
     if((System.currentTimeMillis() - startT)/1000 > m.duration()){
-      println("notyeah");
       if(isOut){
         transitionOut();
       } else {
@@ -36,6 +35,7 @@ class Transition extends Scene{
     m.stop();
     songSelectScene.active = true;
     songSelectScene.resetZones();
+    mainInterfaceScene.deleteZones();
     this.active = false;
   }
   
