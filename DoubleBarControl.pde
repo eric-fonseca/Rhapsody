@@ -216,7 +216,7 @@ class DoubleBarControl extends Control{
       }
        
       fill(255);
-      textSize(32);
+      textSize(height/35);
       text(label,0, 0);
       popMatrix(); 
     }

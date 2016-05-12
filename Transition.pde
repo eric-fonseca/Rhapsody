@@ -37,6 +37,7 @@ class Transition extends Scene{
     songSelectScene.resetZones();
     mainInterfaceScene.deleteZones();
     this.active = false;
+//    sketchReference.setup();
   }
   
   void transitionIn(){

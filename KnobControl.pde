@@ -19,7 +19,7 @@ class KnobControl extends Control{
   final color pressedbackgroundColor = #404040;
   final color unselectedCenterButtonColor = #C8C8C8;
   final float hitboxSpread = 1.4;
-  final float labelSpread = 1.15;
+  final float labelSpread = 1.1;
   final float centerCircle = 0.7;
   final float scanPadding = 1.1;
   final int unselectedAlpha = 95;
@@ -327,7 +327,7 @@ class KnobControl extends Control{
          }
          
          fill(255);
-         textSize(32);
+         textSize(height/35);
          text(label,0, 0);
          popMatrix();
        }

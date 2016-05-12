@@ -92,7 +92,7 @@ class MainInterface extends Scene{
   }
   void drawQuitButton(){
     image(exitArrow, width/2 - 32, 64, 64, 64);
-    if(backButtonDown){
+    if(backButtonDown){  
       pushStyle();
       textSize(25);
       fill(#FF2E87);
@@ -147,7 +147,7 @@ class MainInterface extends Scene{
           if(cri != -1){
             if(i != cri){
               c.selection = false; // refuse to select
-              controls[cri].addEcho();
+              //controls[cri].addEcho();
             } 
             rsc = true;
           } else { // cri does not have index
@@ -160,7 +160,7 @@ class MainInterface extends Scene{
           if(cli != -1){
             if(i != cli){
               c.selection = false; // refuse to select
-              controls[cli].addEcho();
+              //controls[cli].addEcho();
             }
             lsc = true;
           } else { // cli does not have index
@@ -232,6 +232,8 @@ class MainInterface extends Scene{
         SMT.remove(controls[i].zoneNames[u]);
       }
     }
+    SMT.remove(backZoneName);
+    SMT.remove(confirmZoneName);
   }
   
   // Function to relay mousePress data to controls. Call within mousePressed();
@@ -272,13 +274,15 @@ class MainInterface extends Scene{
   }
   
   void handleConfirmButtonPress(){
-    mainInterfaceScene.active = false;
-    for(int i = 0; i < audioControl.audioPlayer.length; i++){
-      audioControl.out[i].close();
+    if(backButtonDown){
+      mainInterfaceScene.active = false;
+      for(int i = 0; i < audioControl.audioPlayer.length; i++){
+        audioControl.out[i].close();
+      }
+      minim.stop();
+      deleteZones();
+      TransitionOut.init();
+      TransitionOut.active = true;
     }
-    minim.stop();
-    deleteZones();
-    TransitionOut.init();
-    TransitionOut.active = true;
   }
 }

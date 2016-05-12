@@ -100,14 +100,18 @@ void movieEvent(Movie m) {
 // I blame the library, and this is not because I am bad at programming
 
   // Functions for Song Selection Screen
-  void drawBackButton(Zone zone){}
+  void drawBackButton(Zone zone){
+    zone.drag(false,false);
+  }
   void touchDownBackButton(Zone zone, Touch t){
     mainInterfaceScene.handleBackButtonPress();
   }
   void touchUpBackButton(Zone zone, Touch t){
     mainInterfaceScene.handleBackButtonRelease(); 
   }
-  void drawConfirmButton(Zone zone){}
+  void drawConfirmButton(Zone zone){
+    zone.drag(false,false);
+  }
   void touchDownConfirmButton(Zone zone, Touch t){
     mainInterfaceScene.handleConfirmButtonPress();
   }
