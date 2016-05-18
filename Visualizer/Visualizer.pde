@@ -29,8 +29,11 @@ PImage logo = loadImage(System.getProperty("user.home") + "/Desktop/Rhapsody/dat
 void setup() {
   size(1940, 1240);
   background(#000000);
-  frame.removeNotify();
- frame.setUndecorated(true);
+  
+  // Delete the dashes before the following two lines of code to full screen.
+
+  //frame.removeNotify();
+  //frame.setUndecorated(true);
   
   // Create the Client, connect to server at 127.0.0.1 (localhost), port 5204
   client = new Client(this, "127.0.0.1", 5204);
